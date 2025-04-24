@@ -1,22 +1,49 @@
 "use client";
-import Navbar from "./components/Navbar";
-import TechnicalProwess from "./components/TechnicalProwess";
-import Hero from "./components/Hero";
-import Projects from "./components/Projects";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { toggleEditMode } from "@/slices/editModeSlice";
 import { Toggle } from "@/components/ui/toggle";
 import { Eye, PencilLine } from "lucide-react";
-import Sidebar from "./Sidebar";
+import Navbar from "../components/Navbar";
+import Hero from "../components/Hero";
+import Projects from "../components/Projects";
+import TechnicalProwess from "../components/TechnicalProwess";
+import Sidebar from "../Sidebar";
+import { useEffect } from "react";
+import { fetchContent } from "@/app/actions/portfolio";
+import { useParams } from "next/navigation";
+import { setPortfolioData } from "@/slices/dataSlice";
 
 const Page = () => {
   const isEditMode = useSelector((state: RootState) => state.editMode.isEditMode);
   const dispatch = useDispatch();
 
+    const params = useParams();
+    const portfolioId = params.portfolioId as string;
+    const {portfolioData} = useSelector((state: RootState) => state.data);
+    console.log(portfolioData)
+
   const toggleMode = () => {
     dispatch(toggleEditMode());
   };
+
+  useEffect(()=>{
+    getContent()
+  },[])
+
+  
+  const getContent = async()=>{
+    try {
+      const result : any = await fetchContent({portfolioId});
+      if(result.success){
+        dispatch(setPortfolioData(result.data.sections));
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
 
   return (
     <div className="min-h-screen flex flex-col">

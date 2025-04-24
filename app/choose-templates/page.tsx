@@ -8,9 +8,12 @@ import { GripHorizontalIcon, MousePointer2, CheckCircle } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { createPortfolio } from '../actions/portfolio';
 import toast from 'react-hot-toast';
+import { setPortfolioData } from '@/slices/dataSlice';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 
 const PortfolioThemePage = () => {
-  const { user } = useUser();
+  const {user,isLoaded } = useUser();
   const [selectedTheme, setSelectedTheme] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   
@@ -18,7 +21,7 @@ const PortfolioThemePage = () => {
   const [themes] = useState([
     {
       id: 1,
-      name: 'CleanSlate',
+      name: 'NeoSpark',
       description: 'A minimalist theme with a responsive layout, dark/light mode support and smooth transitions',
       image: '/portfolio.png',
     },
@@ -54,32 +57,33 @@ const PortfolioThemePage = () => {
     },
   ]);
 
-  
-  if(!user){
-    router.push('/');
-    return null;
-  }
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.push('/');
+    }
+  }, [user,isLoaded]);
 
   const handleSelectTheme = (id : any) => {
     setSelectedTheme(id);
   };
-
-  
-
   
   const handleCreateTemplate = async () => {
     if (selectedTheme && user) {
       setIsCreating(true);
       try {
         const themeName = themes.find((theme) => theme.id === selectedTheme)?.name;
+        if(!themeName){
+          toast.error("Invalid template");
+          return;
+        }
         const result = await createPortfolio(user.id, themeName);
-        
         if (result.success) {
           toast.success('Portfolio created successfully');
-          // Redirect to portfolio editor or show success message
-          router.push('/portfolio');
+          router.push(`/portfolio/${result?.data?.id}`);
         } else {
-          // Handle error
           toast.error('Failed to create portfolio');
           console.error("Failed to create portfolio:", result.error);
         }
@@ -159,7 +163,7 @@ const PortfolioThemePage = () => {
             className="bg-white text-black font-medium !py-6 !px-8 rounded-full shadow-lg text-lg transition-all duration-300 hover:bg-gray-100 hover:scale-105 hover:shadow-xl flex items-center gap-3 border border-gray-200"
           >
             {isCreating ? (
-              <>Loading...</>
+              <>Creating Template...</>
             ) : (
               <>
                 <CheckCircle className="h-5 w-5" />

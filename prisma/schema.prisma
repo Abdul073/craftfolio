@@ -12,8 +12,8 @@ model Portfolio {
   id           String   @id @default(uuid())
   userId       String
   templateName String   @default("default")
-  content      Json
-  isTemplate   Boolean
+  content      Json 
+  isTemplate   Boolean  @default(false)
   isPublished  Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

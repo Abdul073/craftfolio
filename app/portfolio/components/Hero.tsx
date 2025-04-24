@@ -1,55 +1,106 @@
 'use client';
 
-import { Button } from '@/components/ui/button'
-import { ArrowRight, MessageSquareIcon } from 'lucide-react'
-import React, { useEffect } from 'react'
-import { motion, AnimatePresence, useAnimate } from 'framer-motion'
+import { Button } from '@/components/ui/button';
+import { ArrowRight, MessageSquareIcon } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { motion, useAnimate } from 'framer-motion';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCurrentEdit } from '@/slices/editModeSlice';
+import { RootState } from '@/store/store';
+import { useParams } from 'next/navigation';
+import { supabase } from '@/lib/supabase-client';
 
 const Hero = () => {
-  // For the badge text rotation
   const badgeTexts = ["Available for freelance", "Seeking opportunities"];
   const [badgeScope, animateBadge] = useAnimate();
   const [badgeIndex, setBadgeIndex] = React.useState(0);
-  
-  // For the title text rotation
+
   const titleTexts = ["Developer", "Engineer"];
   const [titleScope, animateTitle] = useAnimate();
   const [titleIndex, setTitleIndex] = React.useState(0);
+
+  const params = useParams();
+  const portfolioId = params.portfolioId as string;
+
+  const dispatch = useDispatch();
+
+  const {portfolioData} = useSelector((state: RootState) => state.data);
+  const heroData = portfolioData?.find((section : any) => section.type === "hero")?.data;
+  const {isEditMode} = useSelector((state: RootState) => state.editMode);
   
+
   useEffect(() => {
-    // Badge text animation
-    const intervalId = setInterval(() => {
-      animateBadge(badgeScope.current, { opacity: 0, y: 20 }, { duration: 0.3 });
-      
-      setTimeout(() => {
-        setBadgeIndex((prev) => (prev + 1) % badgeTexts.length);
-        animateBadge(badgeScope.current, { opacity: 1, y: 0 }, { duration: 0.3 });
-      }, 300);
-    }, 3000);
     
-    // Title text animation
-    const titleIntervalId = setInterval(() => {
-      animateTitle(titleScope.current, { opacity: 0, y: 20 }, { duration: 0.3 });
-      
-      setTimeout(() => {
-        setTitleIndex((prev) => (prev + 1) % titleTexts.length);
-        animateTitle(titleScope.current, { opacity: 1, y: 0 }, { duration: 0.3 });
-      }, 300);
-    }, 4000);
-    
-    return () => {
-      clearInterval(intervalId);
-      clearInterval(titleIntervalId);
-    };
-  }, []);
+    if (portfolioId) {
+      const intervalId = setInterval(() => {
+        if (badgeScope.current) {
+          animateBadge(badgeScope.current, { opacity: 0, y: 20 }, { duration: 0.3 });
+  
+          setTimeout(() => {
+            setBadgeIndex((prev) => (prev + 1) % badgeTexts.length);
+            if (badgeScope.current) {
+              animateBadge(badgeScope.current, { opacity: 1, y: 0 }, { duration: 0.3 });
+            }
+          }, 300);
+        }
+      }, 3000);
+  
+      const titleIntervalId = setInterval(() => {
+        if (titleScope.current) {
+          animateTitle(titleScope.current, { opacity: 0, y: 20 }, { duration: 0.3 });
+  
+          setTimeout(() => {
+            setTitleIndex((prev) => (prev + 1) % titleTexts.length);
+            if (titleScope.current) {
+              animateTitle(titleScope.current, { opacity: 1, y: 0 }, { duration: 0.3 });
+            }
+          }, 300);
+        }
+      }, 4000);
+  
+      const subscription = supabase
+        .channel(`portfolio-${portfolioId}`)
+        .on('postgres_changes', 
+          { 
+            event: 'UPDATE', 
+            schema: 'public', 
+            table: 'Portfolio', 
+            filter: `id=eq.${portfolioId}` 
+          }, 
+          (payload) => {
+            console.log('Portfolio update detected!', payload);
+          }
+        )
+        .subscribe((status) => {
+          console.log(`Supabase subscription status: ${status}`);
+        });
+        
+      return () => {
+        clearInterval(intervalId);
+        clearInterval(titleIntervalId);
+        subscription.unsubscribe();
+      };
+    }
+  }, [portfolioId]);
+
+  const handleSectionEdit = ()=>{
+    dispatch(setCurrentEdit("hero"));
+  }
 
   return (
-    <div className="flex-1 flex flex-col items-center mt-12 px-4 md:px-8">
+    <div className="relative flex-1 flex flex-col items-center mt-12 px-4 md:px-8">
+
+     {isEditMode && <div className="absolute top-4 right-4 z-10">
+        <Button onClick={()=>handleSectionEdit()} className="bg-white text-black border border-gray-300 shadow hover:bg-gray-100 transition-all px-4 py-2 text-sm">
+          ✏️ Edit This Section
+        </Button>
+      </div>}
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-green-900  text-white text-sm px-4 py-2 rounded-full inline-flex items-center mb-6"
+        className="bg-green-900 text-white text-sm px-4 py-2 rounded-full inline-flex items-center mb-6"
       >
         <span className="h-2 w-2 bg-yellow-400 rounded-full mr-2"></span>
         <span ref={badgeScope} className="text-sm">{badgeTexts[badgeIndex]}</span>
@@ -61,10 +112,10 @@ const Hero = () => {
         transition={{ duration: 0.7, delay: 0.2 }}
         className="text-4xl md:text-6xl lg:text-[66px] tracking-[-0.02em] font-bold text-center leading-snug md:leading-20"
       >
-        Hi, I'm Aditya <br />
+        Hi, I'm {heroData?.name} <br />
         <span className="text-[yellow]">Aspiring Software<span ref={titleScope}> {titleTexts[titleIndex]}</span>.</span>
       </motion.h1>
-      
+
       <motion.p 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -89,7 +140,7 @@ const Hero = () => {
             View Projects <ArrowRight size={18} />
           </Button>
         </motion.div>
-        
+
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button
             variant="outline"
@@ -110,18 +161,11 @@ const Hero = () => {
         <motion.div 
           initial={{ height: 32 }}
           animate={{ height: 32 }}
-          // transition={{ 
-          //   duration: 0.8, 
-          //   delay: 1.2,
-          //   repeat: Infinity,
-          //   repeatType: "reverse",
-          //   ease: "easeInOut"
-          // }}
           className="w-0.5 bg-white/50 mx-auto mt-2"
         ></motion.div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;

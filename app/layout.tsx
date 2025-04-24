@@ -6,6 +6,7 @@ import { Raleway } from "next/font/google";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 import { Spotlight } from "./portfolio/components/Spotlight";
+import ClientLayout from "@/Providers";
 
 const montserrat = Raleway({
   subsets: ["latin"],
@@ -24,22 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
       <html lang="en">
         <body
           className={`${montserrat.className} main-bg-noise antialiased`}
         >
-          {/* <div className="absolute inset-0">
-          <Spotlight
-            className="-top-40 left-0 md:-top-80 md:left-5"
-            fill="white"
-          />
-        </div> */}
-      <Toaster />
-
-          {children}
+          <ClientLayout>{children}</ClientLayout>
         </body>
       </html>
-    </ClerkProvider>
   );
 }

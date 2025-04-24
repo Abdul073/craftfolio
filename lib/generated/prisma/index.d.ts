@@ -2102,7 +2102,7 @@ export namespace Prisma {
     userId: string
     templateName?: string
     content: JsonNullValueInput | InputJsonValue
-    isTemplate: boolean
+    isTemplate?: boolean
     isPublished?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -2113,7 +2113,7 @@ export namespace Prisma {
     userId: string
     templateName?: string
     content: JsonNullValueInput | InputJsonValue
-    isTemplate: boolean
+    isTemplate?: boolean
     isPublished?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -2146,7 +2146,7 @@ export namespace Prisma {
     userId: string
     templateName?: string
     content: JsonNullValueInput | InputJsonValue
-    isTemplate: boolean
+    isTemplate?: boolean
     isPublished?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
