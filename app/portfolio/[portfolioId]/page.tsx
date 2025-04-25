@@ -7,13 +7,13 @@ import { Eye, PencilLine } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import Projects from "../components/Projects";
-import TechnicalProwess from "../components/TechnicalProwess";
 import Sidebar from "../Sidebar";
 import { useEffect } from "react";
 import { fetchContent } from "@/app/actions/portfolio";
 import { useParams } from "next/navigation";
 import { setPortfolioData } from "@/slices/dataSlice";
 import { Spotlight } from "../components/Spotlight";
+import ProfessionalJourney from "../components/ProfessionalJourney";
 
 const Page = () => {
   const isEditMode = useSelector((state: RootState) => state.editMode.isEditMode);
@@ -84,8 +84,8 @@ const Page = () => {
         <Navbar />
         <Sidebar />
         <Hero />
-        <TechnicalProwess />
         <Projects />
+        <ProfessionalJourney />
       </div>
     </div>
   );

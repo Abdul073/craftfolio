@@ -65,10 +65,22 @@ export const templates: any = {
               ],
             },
             {
-              link: "https://janedoe.vercel.app",
-              title: "Portfolio Website",
-              description: "This very portfolio you're seeing!",
+              liveLink: "https://ecommerce-demo.vercel.app",
+              githubLink: "https://github.com/janedoe/ecommerce",
+              projectName: "Chatify",
+              projectTitle: "Chat website in React",
+              projectDescription:
+                "Built a responsive chat website using React.js + Tailwind",
+              projectImage: "https://www.janedoe.com/ecommerce.png",
+              techStack: [
+                "Next.js",
+                "Tailwind CSS",
+                "React",
+                "Node.js",
+                "MongoDB",
+              ],
             },
+            
           ],
         },
         type: "projects",

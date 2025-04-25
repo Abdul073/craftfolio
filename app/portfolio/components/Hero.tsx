@@ -124,7 +124,7 @@ const Hero = () => {
         style={{background : heroData?.badge?.color}}
         className={` text-white text-sm px-4 py-2 rounded-full inline-flex items-center mb-6`}
       >
-        <span className="h-2 w-2 bg-yellow-400 rounded-full mr-2"></span>
+        <span className="h-2 w-2 rounded-full mr-2"></span>
         <span ref={badgeScope} className="text-sm">{badgeTexts[badgeIndex]}</span>
       </motion.div>
 }
@@ -135,7 +135,7 @@ const Hero = () => {
         className="text-4xl md:text-6xl lg:text-[66px] tracking-[-0.02em] font-bold text-center leading-snug md:leading-20"
       >
         Hi, I'm {heroData.name} <br />
-        <span className="text-[yellow]">{heroData.titlePrefix}<span ref={titleScope}> {titleTexts[titleIndex]}</span>.</span>
+        <span className="text-green-500">{heroData.titlePrefix}<span ref={titleScope}> {titleTexts[titleIndex]}</span>.</span>
       </motion.h1>
 
       <motion.p 
@@ -159,7 +159,7 @@ const Hero = () => {
             <motion.div key={item.label} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button
           variant={item.style}
-          className="flex bg-[yellow] hover:bg-yellow-400 text-black items-center gap-2 !px-7 py-5 cursor-pointer text-sm transition-colors">
+          className="flex bg-green-500 hover:bg-green-800 hover:text-white text-black items-center gap-2 !px-7 py-5 cursor-pointer text-sm transition-colors">
             {item.label} <ArrowRight size={18} />
           </Button>
         </motion.div>

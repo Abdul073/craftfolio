@@ -4,6 +4,7 @@ import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import HeroSidebar from '@/components/sidebar-forms/HeroSidebar';
+import ProjectSidebar from '@/components/sidebar-forms/ProjectSidebar';
 
 const Sidebar = () => {
   const { currentlyEditing } = useSelector((state: RootState) => state.editMode);
@@ -36,7 +37,8 @@ const Sidebar = () => {
 
       <div className="flex flex-col h-full">
         {currentlyEditing === "hero" && <HeroSidebar />}
-        {/* Add more conditions here for other sections like about, projects, etc */}
+        {currentlyEditing === "projects" && <ProjectSidebar />}
+
       </div>
     </div>
   );

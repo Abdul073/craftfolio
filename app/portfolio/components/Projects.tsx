@@ -4,58 +4,74 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Github, ExternalLink, Code2, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { Button } from '@/components/ui/button';
+import { setCurrentEdit } from '@/slices/editModeSlice';
+import { supabase } from '@/lib/supabase-client';
 
 interface Project {
   id: number;
-  title: string;
-  description: string;
-  image: string;
-  techStack: string[];
-  github: string;
-  liveLink: string;
-  year: string;
+  projectTitle?: string;
+  projectName? : string;
+  projectDescription?: string;
+  projectImage?: string;
+  techStack?: string[];
+  githubLink?: string;
+  liveLink?: string;
+  year?: string;
 }
 
 const Projects: React.FC = () => {
-  // State to track if section is in view
   const [isInView, setIsInView] = useState<boolean>(false);
-  // Ref for the section
   const sectionRef = useRef<HTMLElement | null>(null);
+  const params = useParams();
+  const portfolioId = params.portfolioId as string;
+  const dispatch = useDispatch();
 
-  const projectData: Project[] = [
-    {
-      id: 1,
-      title: "E-Commerce Platform",
-      description: "A full-featured e-commerce platform with product listings, cart functionality, user authentication, and payment processing integration. This project includes a responsive design that works across all devices and implements modern UX patterns for a seamless shopping experience.",
-      image: "/portfolio.png",
-      techStack: ["React", "Node.js", "MongoDB", "Stripe", "Redux"],
-      github: "https://github.com/username/ecommerce-platform",
-      liveLink: "https://ecommerce-demo.example.com",
-      year: "2023"
-    },
-    {
-      id: 2,
-      title: "Task Management System",
-      description: "A collaborative task management application with real-time updates, drag-and-drop functionality, and team collaboration features. Users can create projects, assign tasks, set deadlines, and track progress through an intuitive dashboard interface. The system includes notifications and detailed reporting capabilities.",
-      image: "/portfolio.png",
-      techStack: ["NextJS", "TypeScript", "Firebase", "TailwindCSS"],
-      github: "https://github.com/username/task-management",
-      liveLink: "https://task-manager-demo.example.com",
-      year: "2024"
-    },
-    {
-      id: 3,
-      title: "Weather Dashboard",
-      description: "An interactive weather dashboard displaying current conditions and forecasts using multiple weather APIs with location detection. Features include hourly and 7-day forecasts, historical weather data comparison, severe weather alerts, and customizable display units. The app utilizes geolocation and remembers user preferences.",
-      image: "/portfolio.png",
-      techStack: ["Vue.js", "OpenWeather API", "Mapbox", "SCSS"],
-      github: "https://github.com/username/weather-dashboard",
-      liveLink: "https://weather-demo.example.com",
-      year: "2024"
-    }
-  ];
+  const [projectsData, setProjectsData] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const { portfolioData } = useSelector((state: RootState) => state.data);
+  const { isEditMode } = useSelector((state: RootState) => state.editMode);
 
-  // Animation variants
+    useEffect(() => {
+      if (portfolioData) {
+        const portfolioSectionData = portfolioData.find((section: any) => section.type === "projects")?.data;
+        if (portfolioSectionData) {
+          setProjectsData(portfolioSectionData);
+          setIsLoading(false);
+        }
+      }
+    }, [portfolioData]);
+
+    useEffect(()=>{
+      const subscription = supabase
+            .channel(`portfolio-project-${portfolioId}`)
+            .on('postgres_changes', 
+              { 
+                event: 'UPDATE', 
+                schema: 'public', 
+                table: 'Portfolio', 
+                filter: `id=eq.${portfolioId}` 
+              }, 
+              (payload) => {
+                console.log('project update detected!', payload);
+              }
+            )
+            .subscribe((status) => {
+              console.log(`Supabase subscription status project: ${status}`);
+            });
+
+            return ()=>{
+              subscription.unsubscribe();
+
+            }
+            
+    },[portfolioId])
+
+
   const headingVariants = {
     hidden: { opacity: 0, y: -20 },
     visible: { 
@@ -114,7 +130,6 @@ const Projects: React.FC = () => {
     }
   };
 
-  // Set up intersection observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -137,32 +152,36 @@ const Projects: React.FC = () => {
     };
   }, []);
 
+    const handleSectionEdit = () => {
+        dispatch(setCurrentEdit("projects"));
+      };
+
+      console.log(projectsData,portfolioData)
+
+
   return (
     <section ref={sectionRef} className="py-24 w-full overflow-hidden min-h-screen text-white">
+      {isEditMode && (
+        <div className="flex items-center justify-end">
+          <Button
+            onClick={handleSectionEdit} 
+            className="bg-white text-black border border-gray-300 shadow hover:bg-gray-100 transition-all px-4 py-2 text-sm"
+          >
+            ✏️ Edit This Section
+          </Button>
+        </div>
+      )}
       <div className="container mx-auto max-w-6xl px-4">
         <motion.div 
-          className="text-center mb-16"
+          className=" max-w-xl block mx-auto"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          <motion.h3 
-            className="text-yellow-400 font-medium mb-3"
-            variants={headingVariants}
-          >
-            Projects
-          </motion.h3>
+           <h1 className="text-5xl font-bold mb-4 text-center text-green-400">My Projects</h1>
+        <p className="text-xl text-gray-300 text-center mb-16">
+        A showcase of my full-stack projects, built using modern web technologies and frameworks.
+      </p>
           
-          <motion.h2 
-            className="text-4xl md:text-4xl font-bold text-white"
-            variants={headingVariants}
-          >
-            Engineering With Precision
-          </motion.h2>
-          
-          <motion.div 
-            className="h-1 bg-yellow-400 mx-auto mt-6"
-            variants={lineVariants}
-          ></motion.div>
         </motion.div>
 
         <motion.div 
@@ -171,25 +190,25 @@ const Projects: React.FC = () => {
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          {projectData.map((project, index) => (
+          {projectsData?.map((project : Project, index : number) => (
             <motion.div 
-              key={project.id}
-              variants={projectVariants}
+              key={index}
+              variants={projectVariants}  
               className="bg-stone-800/30 border border-gray-400/25 rounded-lg overflow-hidden transition-colors duration-300 hover:bg-zinc-900/80"
             >
               <div className={`flex flex-col md:flex-row items-center`}>
                 <div className="w-full md:w-2/5 relative">
                   <div className="relative overflow-hidden m-4">
                     <motion.img 
-                      src={project.image} 
-                      alt={`${project.title} project screenshot`}
+                      src={project?.projectImage} 
+                      alt={`${project?.projectTitle} project screenshot`}
                       className="w-full h-52 object-cover rounded-lg"
                       initial="rest"
                       whileHover="hover"
                       variants={imageVariants}
                     />
                     <motion.div 
-                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-yellow-400/35 blur-lg z-0"
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-green-400/35 blur-lg z-0"
                       initial={{ opacity: 0.5, scale: 1 }}
                       whileHover={{ opacity: 0.8, scale: 1.3 }}
                       transition={{ duration: 0.3 }}
@@ -201,10 +220,10 @@ const Projects: React.FC = () => {
                       transition={{ type: "intertia", stiffness: 400, damping: 10 }}
                     >
                       <Link 
-                        href={project.github}
+                        href={project?.githubLink || "#"}
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="flex items-center gap-2 px-3 py-1.5 bg-transparent border border-yellow-400/30 text-yellow-400 rounded-md hover:text-white transition-colors duration-300 text-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-transparent border border-green-400/30 text-green-400 rounded-md hover:text-white transition-colors duration-300 text-sm"
                       >
                         <Github className="h-4 w-4" />
                         GitHub
@@ -215,10 +234,10 @@ const Projects: React.FC = () => {
                       transition={{ type: "intertia", stiffness: 400, damping: 10 }}
                     >
                       <Link 
-                        href={project.liveLink}
+                        href={project?.liveLink || "#"}
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="flex items-center gap-2 px-3 py-1.5 bg-stone-700/30 text-white border rounded-md hover:border-yellow-400/30 transition-colors duration-300 text-sm font-medium"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-stone-700/30 text-white border rounded-md hover:border-green-400/30 transition-colors duration-300 text-sm font-medium"
                       >
                         <ExternalLink className="h-4 w-4" />
                         Live Demo
@@ -229,17 +248,17 @@ const Projects: React.FC = () => {
                 
                 <div className="w-full md:w-3/5 p-5 md:p-6">
                   <div className="flex flex-wrap items-center justify-between mb-3">
-                    <h3 className="text-xl md:text-2xl font-bold text-white hover:text-yellow-400 transition-colors duration-300">
-                      {project.title}
+                    <h3 className="text-xl md:text-2xl font-bold text-white hover:text-green-400 transition-colors duration-300">
+                      {project?.projectTitle}
                     </h3>
                     <div className="flex items-center text-gray-400 text-sm mt-1 md:mt-0">
                       <Calendar className="h-4 w-4 mr-1" />
-                      {project.year}
+                      {project?.year}
                     </div>
                   </div>
                   
                   <p className="text-gray-300 mb-4">
-                    {project.description}
+                    {project?.projectDescription}
                   </p>
                   
                   <div>
@@ -248,10 +267,10 @@ const Projects: React.FC = () => {
                       Tech Stack
                     </h4>
                     <div className="flex flex-wrap gap-2">
-                      {project.techStack.map((tech, idx) => (
+                      {project?.techStack?.map((tech, idx) => (
                         <motion.span 
                           key={idx}
-                          className="px-3 py-1 bg-gray-800 rounded-full text-sm font-medium text-white hover:scale-[1.05] cursor-pointer hover:border-yellow-400 border border-gray-700 transition-all duration-300"
+                          className="px-3 py-1 bg-gray-800 rounded-full text-sm font-medium text-white hover:scale-[1.05] cursor-pointer hover:border-green-400 border border-gray-700 transition-all duration-300"
                         >
                           {tech}
                         </motion.span>

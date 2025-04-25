@@ -38,7 +38,7 @@ const Navbar = () => {
       transition={spring}
       style={{ 
         position: 'sticky',
-        top: scrolled ? '2rem' : '0',
+        top: scrolled ? '1rem' : '0',
         padding: scrolled ? '0.75rem' : '1.25rem',
         height: scrolled ? '4rem' : '5rem',
         boxShadow: scrolled ? '0 2px 10px rgba(0,0,0,0.1)' : 'none',
@@ -88,14 +88,14 @@ const Navbar = () => {
               className="flex items-center justify-center gap-4"
             >
               <motion.a layout transition={spring} href="https://github.com" target="_blank" rel="noopener noreferrer">
-                <GithubIcon className="cursor-pointer hover:text-yellow-300 transition-colors" size={20}/>
+                <GithubIcon className="cursor-pointer hover:text-green-300 transition-colors" size={20}/>
               </motion.a>
               <motion.a layout transition={spring} href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-                <LinkedinIcon className="cursor-pointer hover:text-yellow-300 transition-colors" size={20}/>
+                <LinkedinIcon className="cursor-pointer hover:text-green-300 transition-colors" size={20}/>
               </motion.a>
             </motion.div>
             <motion.div layout transition={spring}>
-              <Button className="px-4 md:px-8 py-2 rounded-md bg-yellow-300 text-black hover:bg-yellow-400 cursor-pointer flex items-center gap-2 font-medium">
+              <Button className="px-4 md:px-8 py-2 rounded-md bg-green-500 text-black hover:bg-green-400 cursor-pointer flex items-center gap-2 font-medium">
                 <PaperclipIcon size={18} /> Resume
               </Button>
             </motion.div>

@@ -186,7 +186,7 @@
       { value: "blue", label: "Blue" },
       { value: "red", label: "Red" },
       { value: "purple", label: "Purple" },
-      { value: "yellow", label: "Yellow" },
+      { value: "green", label: "Yellow" },
       { value: "indigo", label: "Indigo" },
       { value: "pink", label: "Pink" }
     ];
@@ -199,7 +199,7 @@
     ];
 
     return (
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className="flex-1 scrollbar-thin scrollbar-thumb-stone-600 scrollbar-track-transparent  overflow-y-auto px-4 py-6">
         <CardHeader className="p-0 pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-xl font-bold text-white">Hero Section</CardTitle>
           {hasChanges && (

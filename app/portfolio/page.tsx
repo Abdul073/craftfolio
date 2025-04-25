@@ -1,6 +1,5 @@
 "use client";
 import Navbar from "./components/Navbar";
-import TechnicalProwess from "./components/TechnicalProwess";
 import Hero from "./components/Hero";
 import Projects from "./components/Projects";
 import { useDispatch, useSelector } from "react-redux";
@@ -50,7 +49,6 @@ const Page = () => {
         <Navbar />
         <Sidebar />
         <Hero />
-        <TechnicalProwess />
         <Projects />
       </div>
     </div>
