@@ -20,7 +20,7 @@ const Page = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-10 bg-card border border-border shadow-lg rounded-lg p-6 flex flex-col items-center">
+      {/* <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-10 bg-card border border-border shadow-lg rounded-lg p-6 flex flex-col items-center">
         <span className="text-base font-semibold mb-4 text-foreground">View Mode</span>
         
         <div className="flex flex-col gap-3">
@@ -44,8 +44,8 @@ const Page = () => {
             <span className="font-medium">Preview</span>
           </Toggle>
         </div>
-      </div>
-
+      </div> */}
+  
       <div className="custom-bg">
         <Navbar />
         <Sidebar />

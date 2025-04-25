@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const editModeSlice = createSlice({
   name: "editMode",
-  initialState: { isEditMode: true, currentlyEditing: "hero" },
+  initialState: { isEditMode: true, currentlyEditing: "" },
   reducers: {
     toggleEditMode: (state) => {
       state.isEditMode = !state.isEditMode;

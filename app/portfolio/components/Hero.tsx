@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { ArrowRight, MessageSquareIcon } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, useAnimate } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentEdit } from '@/slices/editModeSlice';
@@ -10,110 +10,132 @@ import { RootState } from '@/store/store';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase-client';
 
+
 const Hero = () => {
-  const badgeTexts = ["Available for freelance", "Seeking opportunities"];
-  const [badgeScope, animateBadge] = useAnimate();
-  const [badgeIndex, setBadgeIndex] = React.useState(0);
-
-  const titleTexts = ["Developer", "Engineer"];
-  const [titleScope, animateTitle] = useAnimate();
-  const [titleIndex, setTitleIndex] = React.useState(0);
-
   const params = useParams();
   const portfolioId = params.portfolioId as string;
-
   const dispatch = useDispatch();
-
-  const {portfolioData} = useSelector((state: RootState) => state.data);
-  const heroData = portfolioData?.find((section : any) => section.type === "hero")?.data;
-  const {isEditMode} = useSelector((state: RootState) => state.editMode);
   
-
+  const { portfolioData } = useSelector((state: RootState) => state.data);
+  const { isEditMode } = useSelector((state: RootState) => state.editMode);
+  
+  const [badgeScope, animateBadge] = useAnimate();
+  const [titleScope, animateTitle] = useAnimate();
+  
+  const [badgeIndex, setBadgeIndex] = useState(0);
+  const [titleIndex, setTitleIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [heroData, setHeroData] = useState<any>(null);
+  
   useEffect(() => {
-    
-    if (portfolioId) {
-      const intervalId = setInterval(() => {
-        if (badgeScope.current) {
-          animateBadge(badgeScope.current, { opacity: 0, y: 20 }, { duration: 0.3 });
-  
-          setTimeout(() => {
-            setBadgeIndex((prev) => (prev + 1) % badgeTexts.length);
-            if (badgeScope.current) {
-              animateBadge(badgeScope.current, { opacity: 1, y: 0 }, { duration: 0.3 });
-            }
-          }, 300);
-        }
-      }, 3000);
-  
-      const titleIntervalId = setInterval(() => {
-        if (titleScope.current) {
-          animateTitle(titleScope.current, { opacity: 0, y: 20 }, { duration: 0.3 });
-  
-          setTimeout(() => {
-            setTitleIndex((prev) => (prev + 1) % titleTexts.length);
-            if (titleScope.current) {
-              animateTitle(titleScope.current, { opacity: 1, y: 0 }, { duration: 0.3 });
-            }
-          }, 300);
-        }
-      }, 4000);
-  
-      const subscription = supabase
-        .channel(`portfolio-${portfolioId}`)
-        .on('postgres_changes', 
-          { 
-            event: 'UPDATE', 
-            schema: 'public', 
-            table: 'Portfolio', 
-            filter: `id=eq.${portfolioId}` 
-          }, 
-          (payload) => {
-            console.log('Portfolio update detected!', payload);
-          }
-        )
-        .subscribe((status) => {
-          console.log(`Supabase subscription status: ${status}`);
-        });
-        
-      return () => {
-        clearInterval(intervalId);
-        clearInterval(titleIntervalId);
-        subscription.unsubscribe();
-      };
+    if (portfolioData) {
+      const heroSectionData = portfolioData.find((section: any) => section.type === "hero")?.data;
+      if (heroSectionData) {
+        setHeroData(heroSectionData);
+        setIsLoading(false);
+      }
     }
-  }, [portfolioId]);
+  }, [portfolioData]);
+  
+  useEffect(() => {
+    if (!portfolioId || !heroData || isLoading) return;
+    
+    const badgeTexts = heroData?.badge?.texts || [];
+    const intervalId = setInterval(() => {
+      if (badgeScope.current && badgeTexts.length > 1) {
+        animateBadge(badgeScope.current, { opacity: 0, y: 20 }, { duration: 0.3 });
 
-  const handleSectionEdit = ()=>{
+        setTimeout(() => {
+          setBadgeIndex((prev) => (prev + 1) % badgeTexts.length);
+          if (badgeScope.current) {
+            animateBadge(badgeScope.current, { opacity: 1, y: 0 }, { duration: 0.3 });
+          }
+        }, 300);
+      }
+    }, 3000);
+
+    const titleTexts = heroData?.titleSuffixOptions || [];
+    const titleIntervalId = setInterval(() => {
+      if (titleScope.current && titleTexts.length > 1) {
+        animateTitle(titleScope.current, { opacity: 0, y: 20 }, { duration: 0.3 });
+
+        setTimeout(() => {
+          setTitleIndex((prev) => (prev + 1) % titleTexts.length);
+          if (titleScope.current) {
+            animateTitle(titleScope.current, { opacity: 1, y: 0 }, { duration: 0.3 });
+          }
+        }, 300);
+      }
+    }, 4000);
+
+    const subscription = supabase
+      .channel(`portfolio-${portfolioId}`)
+      .on('postgres_changes', 
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'Portfolio', 
+          filter: `id=eq.${portfolioId}` 
+        }, 
+        (payload) => {
+          console.log('Portfolio update detected!', payload);
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Supabase subscription status: ${status}`);
+      });
+      
+    return () => {
+      clearInterval(intervalId);
+      clearInterval(titleIntervalId);
+      subscription.unsubscribe();
+    };
+  }, [portfolioId, heroData, isLoading, badgeScope, titleScope, animateBadge, animateTitle]);
+
+  const handleSectionEdit = () => {
     dispatch(setCurrentEdit("hero"));
+  };
+
+  if (isLoading || !heroData) {
+    return <div className="flex items-center justify-center h-64">Loading...</div>;
   }
+
+  const badgeTexts = heroData.badge?.texts || [];
+  const titleTexts = heroData.titleSuffixOptions || [];
+
 
   return (
     <div className="relative flex-1 flex flex-col items-center mt-12 px-4 md:px-8">
+      {isEditMode && (
+        <div className="absolute top-4 right-4 z-10">
+          <Button 
+            onClick={handleSectionEdit} 
+            className="bg-white text-black border border-gray-300 shadow hover:bg-gray-100 transition-all px-4 py-2 text-sm"
+          >
+            ✏️ Edit This Section
+          </Button>
+        </div>
+      )}
 
-     {isEditMode && <div className="absolute top-4 right-4 z-10">
-        <Button onClick={()=>handleSectionEdit()} className="bg-white text-black border border-gray-300 shadow hover:bg-gray-100 transition-all px-4 py-2 text-sm">
-          ✏️ Edit This Section
-        </Button>
-      </div>}
-
-      <motion.div 
+    {heroData?.badge?.isVisible &&  <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-green-900 text-white text-sm px-4 py-2 rounded-full inline-flex items-center mb-6"
+        style={{background : heroData?.badge?.color}}
+        className={` text-white text-sm px-4 py-2 rounded-full inline-flex items-center mb-6`}
       >
         <span className="h-2 w-2 bg-yellow-400 rounded-full mr-2"></span>
         <span ref={badgeScope} className="text-sm">{badgeTexts[badgeIndex]}</span>
       </motion.div>
-
+}
       <motion.h1 
         initial={{ opacity: 0, y: 30 }} 
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.2 }}
         className="text-4xl md:text-6xl lg:text-[66px] tracking-[-0.02em] font-bold text-center leading-snug md:leading-20"
       >
-        Hi, I'm {heroData?.name} <br />
-        <span className="text-[yellow]">Aspiring Software<span ref={titleScope}> {titleTexts[titleIndex]}</span>.</span>
+        Hi, I'm {heroData.name} <br />
+        <span className="text-[yellow]">{heroData.titlePrefix}<span ref={titleScope}> {titleTexts[titleIndex]}</span>.</span>
       </motion.h1>
 
       <motion.p 
@@ -121,12 +143,9 @@ const Hero = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.4 }}
         className="text-center mt-6 text-xl font-medium max-w-2xl"
+        dangerouslySetInnerHTML={{ __html: heroData.subtitle }}
       >
-        Craving to build innovative solutions that make an impact.
-        <br />
-        Enthusiastic problem solver, always curious about new technologies.
-        <br />
-        Committed to continuous learning and growth.
+        
       </motion.p>
 
       <motion.div 
@@ -135,20 +154,18 @@ const Hero = () => {
         transition={{ duration: 0.7, delay: 0.6 }}
         className="flex items-center justify-center gap-6 mt-8"
       >
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button className="flex bg-[yellow] hover:bg-yellow-400 text-black items-center gap-2 !px-7 py-5 cursor-pointer text-sm transition-colors">
-            View Projects <ArrowRight size={18} />
-          </Button>
-        </motion.div>
-
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        {heroData?.actions?.map((item : any)=>{
+          return(
+            <motion.div key={item.label} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button
-            variant="outline"
-            className="flex items-center gap-2 !px-7 py-5 cursor-pointer text-sm border-white hover:bg-gray-800 transition-colors"
-          >
-            Contact Me <MessageSquareIcon size={18} />
+          variant={item.style}
+          className="flex bg-[yellow] hover:bg-yellow-400 text-black items-center gap-2 !px-7 py-5 cursor-pointer text-sm transition-colors">
+            {item.label} <ArrowRight size={18} />
           </Button>
         </motion.div>
+          )
+        })}
+
       </motion.div>
 
       <motion.div 

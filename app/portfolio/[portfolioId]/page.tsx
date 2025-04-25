@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { fetchContent } from "@/app/actions/portfolio";
 import { useParams } from "next/navigation";
 import { setPortfolioData } from "@/slices/dataSlice";
+import { Spotlight } from "../components/Spotlight";
 
 const Page = () => {
   const isEditMode = useSelector((state: RootState) => state.editMode.isEditMode);
@@ -21,7 +22,6 @@ const Page = () => {
     const params = useParams();
     const portfolioId = params.portfolioId as string;
     const {portfolioData} = useSelector((state: RootState) => state.data);
-    console.log(portfolioData)
 
   const toggleMode = () => {
     dispatch(toggleEditMode());
@@ -72,6 +72,13 @@ const Page = () => {
           </Toggle>
         </div>
       </div>
+
+<div className="absolute inset-0">
+          <Spotlight
+            className="-top-40 left-0 md:-top-80 md:left-5"
+            fill="white"
+          />
+        </div>
 
       <div className="custom-bg">
         <Navbar />

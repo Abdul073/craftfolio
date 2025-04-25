@@ -1,11 +1,6 @@
 import { type Metadata } from "next";
-import {
-  ClerkProvider
-} from "@clerk/nextjs";
 import { Raleway } from "next/font/google";
 import "./globals.css";
-import { Toaster } from 'react-hot-toast';
-import { Spotlight } from "./portfolio/components/Spotlight";
 import ClientLayout from "@/Providers";
 
 const montserrat = Raleway({

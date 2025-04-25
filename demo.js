@@ -3,12 +3,11 @@ const data = {
     {
       "type": "hero",
       "data": {
-        "name": "Aditya",
+        "name": "Alex Morgan",
         "titlePrefix": "Aspiring Software",
         "titleSuffixOptions": [
           "Engineer",
           "Developer",
-          "Architect"
         ],
         "subtitle": "Craving to build innovative solutions that make an impact.\nEnthusiastic problem solver, always curious about new technologies.\nCommitted to continuous learning and growth.",
         "badge": {

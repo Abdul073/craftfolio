@@ -1,30 +1,29 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { ChevronRight, ChevronLeft, Menu } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
-import { redirect, useParams } from 'next/navigation';
-import { updateHero } from '../actions/portfolio';
 import HeroSidebar from '@/components/sidebar-forms/HeroSidebar';
 
 const Sidebar = () => {
+  const { currentlyEditing } = useSelector((state: RootState) => state.editMode);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const {currentlyEditing} = useSelector((state: RootState) => state.editMode);
-
-  const [isExpanded, setIsExpanded] = useState(currentlyEditing === "hero" ? true : false);
+  useEffect(() => {
+    if (currentlyEditing) {
+      setIsExpanded(true);
+    }
+  }, [currentlyEditing]);
 
   const toggleSidebar = () => {
-    setIsExpanded(!isExpanded);
+    setIsExpanded(prev => !prev);
   };
 
+  if (!currentlyEditing) return null; 
 
   return (
-    <div className={`fixed left-0 top-0 h-screen z-[99999] transition-all duration-300 ease-in-out ${isExpanded ? 'w-80' : 'hidden'} bg-[#1b0808] border-r border-gray-800 flex flex-col`}>
-      <div className="absolute -right-3 top-6">
+    <div className={`fixed left-0 top-0 h-screen z-[99999] transition-all duration-300 ease-in-out ${isExpanded ? 'w-80' : 'w-0'} bg-[#1b0808] border-r border-gray-800 overflow-hidden`}>
+      <div className="absolute -right-3 top-6 z-10">
         <Button 
           onClick={toggleSidebar} 
           size="sm" 
@@ -35,10 +34,10 @@ const Sidebar = () => {
         </Button>
       </div>
 
-
-      {isExpanded && (
-        currentlyEditing === "hero" ? <HeroSidebar /> : null
-      )}
+      <div className="flex flex-col h-full">
+        {currentlyEditing === "hero" && <HeroSidebar />}
+        {/* Add more conditions here for other sections like about, projects, etc */}
+      </div>
     </div>
   );
 };

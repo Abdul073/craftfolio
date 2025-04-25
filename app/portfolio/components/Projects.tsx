@@ -177,7 +177,7 @@ const Projects: React.FC = () => {
               variants={projectVariants}
               className="bg-stone-800/30 border border-gray-400/25 rounded-lg overflow-hidden transition-colors duration-300 hover:bg-zinc-900/80"
             >
-              <div className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center`}>
+              <div className={`flex flex-col md:flex-row items-center`}>
                 <div className="w-full md:w-2/5 relative">
                   <div className="relative overflow-hidden m-4">
                     <motion.img 
@@ -198,13 +198,13 @@ const Projects: React.FC = () => {
                   <div className="p-3 bg-zinc-900/90 flex justify-center gap-3">
                     <motion.div
                       whileHover={{ scale: 1.05 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                      transition={{ type: "intertia", stiffness: 400, damping: 10 }}
                     >
                       <Link 
                         href={project.github}
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="flex items-center gap-2 px-3 py-1.5 bg-transparent border border-yellow-400 text-yellow-400 rounded-md hover:bg-yellow-400 hover:text-black transition-colors duration-300 text-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-transparent border border-yellow-400/30 text-yellow-400 rounded-md hover:text-white transition-colors duration-300 text-sm"
                       >
                         <Github className="h-4 w-4" />
                         GitHub
@@ -212,13 +212,13 @@ const Projects: React.FC = () => {
                     </motion.div>
                     <motion.div
                       whileHover={{ scale: 1.05 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                      transition={{ type: "intertia", stiffness: 400, damping: 10 }}
                     >
                       <Link 
                         href={project.liveLink}
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="flex items-center gap-2 px-3 py-1.5 bg-yellow-400 text-black rounded-md hover:bg-yellow-500 transition-colors duration-300 text-sm font-medium"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-stone-700/30 text-white border rounded-md hover:border-yellow-400/30 transition-colors duration-300 text-sm font-medium"
                       >
                         <ExternalLink className="h-4 w-4" />
                         Live Demo
@@ -243,7 +243,7 @@ const Projects: React.FC = () => {
                   </p>
                   
                   <div>
-                    <h4 className="flex items-center gap-2 text-yellow-400 font-semibold mb-2">
+                    <h4 className="flex items-center gap-2 font-semibold mb-2">
                       <Code2 className="h-4 w-4" />
                       Tech Stack
                     </h4>
@@ -251,12 +251,7 @@ const Projects: React.FC = () => {
                       {project.techStack.map((tech, idx) => (
                         <motion.span 
                           key={idx}
-                          whileHover={{ 
-                            y: -2,
-                            backgroundColor: "#f59e0b",
-                            color: "#000"
-                          }}
-                          className="px-3 py-1 bg-gray-800 rounded-full text-sm font-medium text-yellow-400 border border-gray-700 transition-all duration-300"
+                          className="px-3 py-1 bg-gray-800 rounded-full text-sm font-medium text-white hover:scale-[1.05] cursor-pointer hover:border-yellow-400 border border-gray-700 transition-all duration-300"
                         >
                           {tech}
                         </motion.span>
