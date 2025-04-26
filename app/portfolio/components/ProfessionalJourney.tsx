@@ -5,8 +5,15 @@ import { setCurrentEdit } from '@/slices/editModeSlice';
 import { supabase } from '@/lib/supabase-client';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import EditButton from './EditButton';
 
 const ProfessionalJourney = () => {
+
+  interface Technology {
+    name: string;
+    logo: string;
+  }
+
   interface Experience {
     role?: string;
     companyName?: string;
@@ -14,10 +21,9 @@ const ProfessionalJourney = () => {
     startDate?: string;
     endDate?: string;
     description?: string;
-    techStack?: string[];
+    techStack?: Technology[];
   }
 
-  const { isEditMode } = useSelector((state: RootState) => state.editMode);
   const { portfolioData } = useSelector((state: RootState) => state.data);
   const [experienceData, setExperienceData] = useState<Experience[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -106,24 +112,16 @@ const ProfessionalJourney = () => {
     <div className="text-white min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
         <div 
-          className={`mb-16 transition-all duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}
+          className={`mb-16 transition-all relative duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}
         >
           <h1 className="text-5xl font-bold mb-4 text-center text-green-400">Professional Journey</h1>
           <p className="text-xl text-gray-300 text-center">
             Building real-world experience through innovative projects
           </p>
+        <EditButton  sectionName="experience"/>
+
         </div>
 
-        {isEditMode && (
-          <div className="flex items-center justify-end">
-            <Button
-              onClick={handleSectionEdit} 
-              className="bg-white text-black border border-gray-300 shadow hover:bg-gray-100 transition-all px-4 py-2 text-sm"
-            >
-              ✏️ Edit This Section
-            </Button>
-          </div>
-        )}
 
         {experienceData.length === 0 ? (
           <div className="text-center py-12 text-gray-400">
@@ -136,12 +134,11 @@ const ProfessionalJourney = () => {
             {experienceData.map((experience, index) => (
               <div
                 key={index}
-                className={`relative transition-all duration-700 ${visibleItems[index] ? 'opacity-100' : 'opacity-0'} ${index !== experienceData.length - 1 ? 'mb-16' : ''}`}
+                className={`relative  transition-all duration-700 ${visibleItems[index] ? 'opacity-100' : 'opacity-0'} ${index !== experienceData.length - 1 ? 'mb-16' : ''}`}
               >
                 <div className="absolute left-6 transform -translate-x-1/2 w-3 h-3 rounded-full bg-green-500 border-4 border-gray-900"></div>
                 
-                {/* Card content */}
-                <div className="ml-16 bg-stone-900/60 rounded-lg p-6 border border-gray-700">
+                <div className="ml-16 hover:border-green-400 transition-all duration-300 ease-in bg-stone-900/60 rounded-lg p-6 border border-gray-700">
                   <h2 
                     className={`text-2xl font-bold mb-2 transition-all duration-700 delay-100 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
                   >
@@ -167,8 +164,8 @@ const ProfessionalJourney = () => {
                           key={techIndex}
                           className="bg-green-900/20 text-green-400 px-3 py-1 rounded-full text-sm border border-green-700/30"
                         >
-                          {tech}
-                        </span>
+                          <img  src={tech.logo} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
+                          </span>
                       ))}
                     </div>
                   )}

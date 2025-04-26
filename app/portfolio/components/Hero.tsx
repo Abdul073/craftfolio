@@ -9,6 +9,7 @@ import { setCurrentEdit } from '@/slices/editModeSlice';
 import { RootState } from '@/store/store';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase-client';
+import EditButton from './EditButton';
 
 
 const Hero = () => {
@@ -17,7 +18,6 @@ const Hero = () => {
   const dispatch = useDispatch();
   
   const { portfolioData } = useSelector((state: RootState) => state.data);
-  const { isEditMode } = useSelector((state: RootState) => state.editMode);
   
   const [badgeScope, animateBadge] = useAnimate();
   const [titleScope, animateTitle] = useAnimate();
@@ -106,17 +106,6 @@ const Hero = () => {
 
   return (
     <div className="relative flex-1 flex flex-col items-center mt-12 px-4 md:px-8">
-      {isEditMode && (
-        <div className="absolute top-4 right-4 z-10">
-          <Button 
-            onClick={handleSectionEdit} 
-            className="bg-white text-black border border-gray-300 shadow hover:bg-gray-100 transition-all px-4 py-2 text-sm"
-          >
-            ✏️ Edit This Section
-          </Button>
-        </div>
-      )}
-
     {heroData?.badge?.isVisible &&  <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -128,6 +117,7 @@ const Hero = () => {
         <span ref={badgeScope} className="text-sm">{badgeTexts[badgeIndex]}</span>
       </motion.div>
 }
+
       <motion.h1 
         initial={{ opacity: 0, y: 30 }} 
         animate={{ opacity: 1, y: 0 }}
@@ -136,6 +126,10 @@ const Hero = () => {
       >
         Hi, I'm {heroData.name} <br />
         <span className="text-green-500">{heroData.titlePrefix}<span ref={titleScope}> {titleTexts[titleIndex]}</span>.</span>
+        <div className='absolute right-24 top-8'>
+        <EditButton sectionName="hero" />
+
+        </div>
       </motion.h1>
 
       <motion.p 

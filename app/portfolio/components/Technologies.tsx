@@ -19,6 +19,7 @@ import { setCurrentEdit } from '@/slices/editModeSlice';
 import { RootState } from '@/store/store';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase-client';
+import EditButton from './EditButton';
 
 const Technologies = () => {
 
@@ -33,7 +34,6 @@ const Technologies = () => {
   const [technologiesData, setTechnologiesData] = useState<Technology[]>([]);
 
   const dispatch = useDispatch();
-  const { isEditMode } = useSelector((state: RootState) => state.editMode);
   const { portfolioData } = useSelector((state: RootState) => state.data);
 
   const params = useParams();
@@ -85,24 +85,18 @@ const Technologies = () => {
 
   return (
     <div className={`py-16 text-white`}>
-
-      {isEditMode && (
-        <div className="flex items-center justify-end">
-          <Button
-            onClick={handleSectionEdit}
-            className="bg-white text-black border border-gray-300 shadow hover:bg-gray-100 transition-all px-4 py-2 text-sm"
-          >
-            ✏️ Edit This Section
-          </Button>
-        </div>
-      )}
-
-      <div className="max-w-xl block mx-auto">
+<div className='max-w-4xl mx-auto'>
+  
+<div className="container block relative mx-auto">
         <h1 className="text-5xl font-bold mb-4 text-center text-green-400">My Tech Stack</h1>
         <p className="text-xl text-gray-300 text-center mb-16">
           Technologies I Worked On.
         </p>
+        <EditButton  sectionName="technologies"/>
+
       </div>
+</div>
+
 
       <div
         className="relative overflow-hidden"
@@ -117,7 +111,7 @@ const Technologies = () => {
                      hover:bg-gradient-to-br from-green-400/70 to-stone-900
                       rounded-xl py-6 px-8 border border-transparent
                        hover:border-green-400 flex flex-col items-center
-                        justify-center transition-all duration-300 shadow${index+1}
+                        justify-center transition-all duration-300 ease-in shadow${index+1}
                         shadow-lg shadow-green-500/10 hover:shadow-xl hover:shadow-green-500/20">
                   <img src={tech.logo} alt={tech.name} className="w-12 h-12" />
                 </div>

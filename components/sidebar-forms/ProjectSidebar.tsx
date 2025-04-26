@@ -6,19 +6,25 @@ import { Label } from '@radix-ui/react-label'
 import { Textarea } from '../ui/textarea'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
-import { Plus, X, Edit, Trash, Upload, Cloud } from 'lucide-react'
+import { Plus, X, Edit, Trash, Upload, Cloud, Check } from 'lucide-react'
 import { updatePortfolioData } from '@/slices/dataSlice'
 import { useParams } from 'next/navigation'
 import { updateProjects } from '@/app/actions/portfolio'
 import toast from 'react-hot-toast'
+import { techList } from '@/lib/techlist'
 
 const ProjectSidebar = () => {
+  interface Technology {
+    name: string;
+    logo: string;
+  }
+  
   interface Project {
     projectTitle?: string;
     projectName?: string;
     projectDescription?: string;
     projectImage?: string;
-    techStack?: string[];
+    techStack?: Technology[];
     githubLink?: string;
     liveLink?: string;
     year?: string;
@@ -41,8 +47,13 @@ const ProjectSidebar = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentProject, setCurrentProject] = useState<Project>(emptyProject);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [techInput, setTechInput] = useState<string>("");
   const [isUploaded, setIsUploaded] = useState<boolean>(false);
+  
+  // Tech search state
+  const [techSearchValue, setTechSearchValue] = useState<string>("");
+  const [techSuggestions, setTechSuggestions] = useState<Technology[]>([]);
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
+  
   const params = useParams();
   const portfolioId = params.portfolioId as string;
 
@@ -60,19 +71,43 @@ const ProjectSidebar = () => {
     }
   }, [currentProject.projectImage]);
 
-  const addTechStack = () => {
-    if (techInput.trim()) {
-      setCurrentProject({
-        ...currentProject,
-        techStack: [...(currentProject.techStack || []), techInput.trim()]
-      });
-      setTechInput("");
+  const handleTechSearch = (value: string): void => {
+    setTechSearchValue(value)
+    setHasSearched(value.trim() !== "")
+    
+    if(value.trim() === "") {
+      setTechSuggestions([])
+    } else {
+      const results = techList.filter((item: Technology) => 
+        item.name.toLowerCase().includes(value.toLowerCase()))
+      setTechSuggestions(results.slice(0, 6))
     }
   }
 
-  const removeTechItem = (index: number) => {
-    const updatedTechStack = [...(currentProject.techStack || [])];
-    updatedTechStack.splice(index, 1);
+  const addTechToProject = (item: Technology): void => {
+    if (!currentProject.techStack?.some(tech => tech.name === item.name)) {
+      setCurrentProject({
+        ...currentProject,
+        techStack: [...(currentProject.techStack || []), item]
+      });
+    }
+    setTechSearchValue("")
+    setTechSuggestions([])
+    setHasSearched(false)
+  }
+
+  const addCustomTech = (): void => {
+    if (techSearchValue.trim() !== "") {
+      const customTech: Technology = {
+        name: techSearchValue,
+        logo: "https://cdn-icons-png.flaticon.com/512/6062/6062643.png"
+      }
+      addTechToProject(customTech)
+    }
+  }
+
+  const removeTechItem = (name: string) => {
+    const updatedTechStack = currentProject.techStack?.filter(tech => tech.name !== name) || [];
     setCurrentProject({
       ...currentProject,
       techStack: updatedTechStack
@@ -88,7 +123,7 @@ const ProjectSidebar = () => {
       setProjects(updatedProjects);
       setEditingIndex(null);
     } else {
-     const updatedProjects = [...projects, currentProject];
+      const updatedProjects = [...projects, currentProject];
       dispatch(updatePortfolioData({ sectionType: "projects", newData: updatedProjects }));
       await updateProjects({ portfolioId: portfolioId, projects: updatedProjects });
       setProjects(updatedProjects);
@@ -152,8 +187,6 @@ const ProjectSidebar = () => {
     setCurrentProject({...currentProject, projectImage: ""});
     setIsUploaded(false);
   }
-
-  console.log(projects,projectsData)
 
   return (
     <div className="custom-scrollbar">
@@ -252,43 +285,80 @@ const ProjectSidebar = () => {
             </div>
 
             <div className="space-y-2">
-              <div className="flex flex-col justify-between items-start">
-                <Label className="text-sm font-medium text-gray-300">Tech Stack</Label>
-                <div className="flex gap-2">
-                  <Input 
-                    value={techInput} 
-                    onChange={(e) => setTechInput(e.target.value)} 
-                    placeholder="Add technology" 
-                    className="bg-gray-800 border-gray-700 text-white w-48" 
-                  />
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={addTechStack}
-                    className="h-9 bg-gray-800 border-gray-600 hover:bg-gray-700 text-gray-300"
-                  >
-                    <Plus className="h-4 w-4 mr-1" /> Add
-                  </Button>
-                </div>
+              <Label className="text-sm font-medium text-gray-300">Tech Stack</Label>
+              <div className='flex items-center justify-between gap-4 mb-4'>
+                <Input 
+                  type='text'
+                  value={techSearchValue}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTechSearch(e.target.value)}
+                  placeholder='Search Technologies...'
+                  className="bg-gray-800 border-gray-700 text-white"
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter' && techSuggestions.length > 0) {
+                      addTechToProject(techSuggestions[0])
+                    } else if (e.key === 'Enter' && techSearchValue.trim() !== "") {
+                      addCustomTech();
+                    }
+                  }}
+                />
+                <Button onClick={addCustomTech}>Add</Button>
               </div>
               
-              {currentProject.techStack && currentProject.techStack.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {currentProject.techStack.map((tech, index) => (
-                    <div key={index} className="flex items-center bg-gray-700 rounded-md px-2 py-1">
-                      <span className="text-sm text-white mr-1">{tech}</span>
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => removeTechItem(index)}
-                        className="h-5 w-5 p-0 ml-1 text-gray-400 hover:text-white hover:bg-gray-600 rounded-full"
+              {/* Technology Suggestions */}
+              {techSuggestions.length > 0 ? (
+                <div className='mb-6'>
+                  <h3 className='text-sm font-medium mb-2'>Suggestions</h3>
+                  <div>
+                    {techSuggestions.map((item: Technology) => (
+                      <div 
+                        onClick={() => addTechToProject(item)}
+                        key={item.name}
+                        className='flex bg-stone-700/25 border border-white/15 px-4 mt-2 rounded-lg items-center justify-between gap-4 py-2 cursor-pointer hover:bg-stone-700/40 transition-colors'
                       >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
+                        <span className='text-sm'>{item.name}</span>
+                        <img src={item.logo} alt={item.name} width={25} height={25} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                hasSearched && (
+                  <div className='bg-stone-700/25 border border-white/15 rounded-lg p-4 text-center mb-6'>
+                    <p className='text-sm text-gray-400'>No technologies found matching "{techSearchValue}"</p>
+                    <p className='text-xs mt-1 text-gray-500'>Use the Add button to add it as a custom technology</p>
+                  </div>
+                )
+              )}
+              
+              {/* Selected Technologies */}
+              {currentProject.techStack && currentProject.techStack.length > 0 ? (
+                <div>
+                  <h3 className='text-sm font-medium mb-2'>Selected Technologies</h3>
+                  <div>
+                    {currentProject.techStack.map((item: Technology) => (
+                      <div 
+                        key={item.name}
+                        className='flex bg-stone-700/25 border border-white/15 px-4 mt-2 rounded-lg items-center justify-between py-2'
+                      >
+                        <div className='flex items-center gap-4'>
+                          <img src={item.logo} alt={item.name} width={25} height={25} />
+                          <span className='text-sm'>{item.name}</span>
+                        </div>
+                        <Button 
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeTechItem(item.name)}
+                          className='p-1 h-auto hover:bg-red-500/20'
+                        >
+                          <X size={16} className='text-red-400' />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className='bg-stone-700/25 border border-white/15 rounded-lg p-4 text-center mb-2'>
+                  <p className='text-sm text-gray-400'>No technologies selected</p>
                 </div>
               )}
             </div>
@@ -329,7 +399,7 @@ const ProjectSidebar = () => {
             <Button 
               type="button" 
               onClick={handleSaveProject}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full"
             >
               {editingIndex !== null ? 'Update Project' : 'Add Project'}
             </Button>
@@ -344,7 +414,7 @@ const ProjectSidebar = () => {
                     <div className="flex justify-between items-start">
                       <div>
                         <h4 className="font-medium text-white">{project.projectName}</h4>
-                        <p className="text-sm text-gray-400 mt-1">{project.projectDescription?.substring(0, 100)}...</p>
+                        <p className="text-sm text-gray-400 mt-1">{project.projectDescription?.substring(0, 20)}...</p>
                       </div>
                       <div className="flex gap-2">
                         <Button 
@@ -367,13 +437,6 @@ const ProjectSidebar = () => {
                         </Button>
                       </div>
                     </div>
-                    {project.techStack && project.techStack.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {project.techStack.map((tech, techIndex) => (
-                          <span key={techIndex} className="text-xs bg-gray-700 px-2 py-1 rounded">{tech}</span>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>

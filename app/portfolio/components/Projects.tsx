@@ -6,24 +6,31 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
-import { Button } from '@/components/ui/button';
 import { setCurrentEdit } from '@/slices/editModeSlice';
 import { supabase } from '@/lib/supabase-client';
-// Keep framer motion import
 import { motion } from 'framer-motion';
+import EditButton from './EditButton';
+
+
+interface Technology {
+  name: string;
+  logo: string;
+}
 
 interface Project {
   projectTitle?: string;
   projectName? : string;
   projectDescription?: string;
   projectImage?: string;
-  techStack?: string[];
+  techStack?: Technology[];
   githubLink?: string;
   liveLink?: string;
   year?: string;
 }
 
 const Projects: React.FC = () => {
+
+
   const [isInView, setIsInView] = useState<boolean>(false);
   const sectionRef = useRef<HTMLElement | null>(null);
   const params = useParams();
@@ -34,7 +41,6 @@ const Projects: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   
   const { portfolioData } = useSelector((state: RootState) => state.data);
-  const { isEditMode } = useSelector((state: RootState) => state.editMode);
 
   useEffect(() => {
     if (portfolioData) {
@@ -104,17 +110,6 @@ const Projects: React.FC = () => {
     }
   };
 
-  const lineVariants = {
-    hidden: { width: 0 },
-    visible: { 
-      width: "6rem",
-      transition: {
-        delay: 0.2,
-        duration: 0.4
-      }
-    }
-  };
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -151,11 +146,6 @@ const Projects: React.FC = () => {
     }
   };
 
-  const handleSectionEdit = () => {
-    dispatch(setCurrentEdit("projects"));
-  };
-
-  // Show a loading state while waiting for data
   if (isLoading) {
     return (
       <section className="py-24 w-full overflow-hidden min-h-screen text-white">
@@ -166,31 +156,23 @@ const Projects: React.FC = () => {
     );
   }
 
-  // Render projects only when data is available
+
   return (
     <section ref={sectionRef} className="py-24 w-full overflow-hidden min-h-screen text-white">
-      {isEditMode && (
-        <div className="flex items-center justify-end">
-          <Button
-            onClick={handleSectionEdit} 
-            className="bg-white text-black border border-gray-300 shadow hover:bg-gray-100 transition-all px-4 py-2 text-sm"
-          >
-            ✏️ Edit This Section
-          </Button>
-        </div>
-      )}
-      <div className="container mx-auto max-w-6xl px-4">
-        <motion.div 
+     
+      <div className="container relative mx-auto max-w-6xl px-4">
+        <div className='max-w-4xl mx-auto'>
+        <div 
           className="max-w-xl block mx-auto"
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          variants={headingVariants}
         >
           <h1 className="text-5xl font-bold mb-4 text-center text-green-400">My Projects</h1>
           <p className="text-xl text-gray-300 text-center mb-16">
             A showcase of my full-stack projects, built using modern web technologies and frameworks.
           </p>
-        </motion.div>
+          <EditButton sectionName="projects" />
+        </div>
+        </div>
+
 
         {/* Add conditional rendering for projects list */}
         {Array.isArray(projectsData) && projectsData.length > 0 ? (
@@ -204,7 +186,7 @@ const Projects: React.FC = () => {
               <motion.div 
                 key={index}
                 variants={projectVariants}  
-                className="bg-stone-800/30 border border-gray-400/25 rounded-lg overflow-hidden transition-colors duration-300 hover:bg-zinc-900/80"
+                className="bg-stone-800/30 border hover:border-green-400  border-gray-400/25 rounded-lg overflow-hidden transition-colors duration-300 hover:bg-zinc-900/80"
               >
                 <div className={`flex flex-col md:flex-row items-center`}>
                   <div className="w-full md:w-2/5 relative">
@@ -277,13 +259,13 @@ const Projects: React.FC = () => {
                         Tech Stack
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        {project?.techStack?.map((tech, idx) => (
+                        {project?.techStack?.map((tech : Technology, idx : number) => (
                           <motion.span 
                             key={idx}
                             whileHover={{ scale: 1.05 }}
                             className="px-3 py-1 bg-gray-800 rounded-full text-sm font-medium text-white cursor-pointer hover:border-green-400 border border-gray-700 transition-all duration-300"
                           >
-                            {tech}
+                          <img  src={tech.logo} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
                           </motion.span>
                         ))}
                       </div>

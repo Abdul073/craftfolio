@@ -319,8 +319,8 @@ const HeroSidebar = () => {
                     })}
                     className="w-full bg-gray-800 border border-gray-700 text-white rounded-md py-2 px-3"
                   >
-                    {colorOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
+                    {colorOptions.map((option,index) => (
+                      <option key={index} value={option.value}>
                         {option.label}
                       </option>
                     ))}

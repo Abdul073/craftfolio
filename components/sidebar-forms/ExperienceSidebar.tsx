@@ -6,13 +6,19 @@ import { Label } from '../ui/label'
 import { Textarea } from '../ui/textarea'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
-import { Plus, X, Edit, Trash } from 'lucide-react'
+import { Plus, X, Edit, Trash, Check } from 'lucide-react'
 import { updatePortfolioData } from '@/slices/dataSlice'
 import { useParams } from 'next/navigation'
 import { updateExperience } from '@/app/actions/portfolio'
 import toast from 'react-hot-toast'
+import { techList } from '@/lib/techlist'
 
 const ExperienceSidebar = () => {
+  interface Technology {
+    name: string;
+    logo: string;
+  }
+  
   interface Experience {
     role?: string;
     companyName?: string;
@@ -20,7 +26,7 @@ const ExperienceSidebar = () => {
     startDate?: string;
     endDate?: string;
     description?: string;
-    techStack?: string[];
+    techStack?: Technology[];
   }
   
   const emptyExperience: Experience = {
@@ -40,6 +46,8 @@ const ExperienceSidebar = () => {
   const [currentExperience, setCurrentExperience] = useState<Experience>(emptyExperience);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [techInput, setTechInput] = useState<string>("");
+  const [suggestions, setSuggestions] = useState<Technology[]>([]);
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
   const params = useParams();
   const portfolioId = params.portfolioId as string;
 
@@ -51,13 +59,38 @@ const ExperienceSidebar = () => {
     }
   }, [experienceData]);
 
-  const addTechStack = () => {
-    if (techInput.trim()) {
+  const handleTechInputChange = (value: string) => {
+    setTechInput(value);
+    setHasSearched(value.trim() !== "");
+    
+    if(value.trim() === "") {
+      setSuggestions([]);
+    } else {
+      const results = techList.filter((item: Technology) => 
+        item.name.toLowerCase().includes(value.toLowerCase()));
+      setSuggestions(results.slice(0, 4));
+    }
+  }
+
+  const addTechItem = (tech: Technology) => {
+    if (!currentExperience.techStack?.some(item => item.name === tech.name)) {
       setCurrentExperience({
         ...currentExperience,
-        techStack: [...(currentExperience.techStack || []), techInput.trim()]
+        techStack: [...(currentExperience.techStack || []), tech]
       });
-      setTechInput("");
+    }
+    setTechInput("");
+    setSuggestions([]);
+    setHasSearched(false);
+  }
+
+  const addCustomTech = () => {
+    if (techInput.trim() !== "") {
+      const customTech: Technology = {
+        name: techInput.trim(),
+        logo: "https://cdn-icons-png.flaticon.com/512/6062/6062643.png"
+      };
+      addTechItem(customTech);
     }
   }
 
@@ -182,19 +215,26 @@ const ExperienceSidebar = () => {
 
             <div className="space-y-2">
               <div className="flex flex-col justify-between items-start">
-                <Label className="text-sm font-medium text-gray-300">Tech Stack / Skills</Label>
-                <div className="flex gap-2">
+                <Label className="text-sm font-medium text-gray-300 mb-2">Tech Stack / Skills</Label>
+                <div className="flex gap-2 w-full">
                   <Input 
                     value={techInput} 
-                    onChange={(e) => setTechInput(e.target.value)} 
-                    placeholder="Add technology or skill" 
-                    className="bg-gray-800 border-gray-700 text-white w-48" 
+                    onChange={(e) => handleTechInputChange(e.target.value)} 
+                    placeholder="Search technologies..." 
+                    className="bg-gray-800 border-gray-700 text-white flex-1" 
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && suggestions.length > 0) {
+                        addTechItem(suggestions[0]);
+                      } else if (e.key === 'Enter' && techInput.trim() !== "") {
+                        addCustomTech();
+                      }
+                    }}
                   />
                   <Button 
                     type="button" 
                     variant="outline" 
                     size="sm" 
-                    onClick={addTechStack}
+                    onClick={addCustomTech}
                     className="h-9 bg-gray-800 border-gray-600 hover:bg-gray-700 text-gray-300"
                   >
                     <Plus className="h-4 w-4 mr-1" /> Add
@@ -202,22 +242,52 @@ const ExperienceSidebar = () => {
                 </div>
               </div>
               
-              {currentExperience.techStack && currentExperience.techStack.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {currentExperience.techStack.map((tech, index) => (
-                    <div key={index} className="flex items-center bg-gray-700 rounded-md px-2 py-1">
-                      <span className="text-sm text-white mr-1">{tech}</span>
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => removeTechItem(index)}
-                        className="h-5 w-5 p-0 ml-1 text-gray-400 hover:text-white hover:bg-gray-600 rounded-full"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
+              {/* Tech suggestions */}
+              {suggestions.length > 0 && (
+                <div className="mb-4 mt-1">
+                  {suggestions.map((tech) => (
+                    <div 
+                      key={tech.name}
+                      onClick={() => addTechItem(tech)}
+                      className="flex bg-stone-700/25 border border-white/15 px-3 py-2 mt-1 rounded-lg items-center justify-between gap-2 cursor-pointer hover:bg-stone-700/40 transition-colors"
+                    >
+                      <span className="text-sm">{tech.name}</span>
+                      <img src={tech.logo} alt={tech.name} width={20} height={20} />
                     </div>
                   ))}
+                </div>
+              )}
+              
+              {hasSearched && suggestions.length === 0 && (
+                <div className="bg-stone-700/25 border border-white/15 rounded-lg p-3 text-center my-2">
+                  <p className="text-sm text-gray-400">No technologies found matching "{techInput}"</p>
+                  <p className="text-xs mt-1 text-gray-500">Click Add to create it as a custom technology</p>
+                </div>
+              )}
+              
+              {/* Selected tech stack */}
+              {currentExperience.techStack && currentExperience.techStack.length > 0 && (
+                <div className="mt-3">
+                  <Label className="text-xs font-medium text-gray-400 mb-1">Selected Technologies</Label>
+                  <div className="space-y-2 mt-2">
+                    {currentExperience.techStack.map((tech, index) => (
+                      <div key={index} className="flex items-center justify-between bg-gray-700 rounded-md px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <img src={tech.logo} alt={tech.name} className="w-5 h-5" />
+                          <span className="text-sm text-white">{tech.name}</span>
+                        </div>
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => removeTechItem(index)}
+                          className="h-6 w-6 p-0 text-gray-400 hover:text-white hover:bg-gray-600 rounded-full"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -225,7 +295,7 @@ const ExperienceSidebar = () => {
             <Button 
               type="button" 
               onClick={handleSaveExperience}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full"
             >
               {editingIndex !== null ? 'Update Experience' : 'Add Experience'}
             </Button>
@@ -244,6 +314,15 @@ const ExperienceSidebar = () => {
                         <p className="text-xs text-gray-500 mt-1">
                           {experience.startDate} - {experience.endDate}
                         </p>
+                        {experience.techStack && experience.techStack.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {experience.techStack.map((tech, techIndex) => (
+                              <div key={techIndex} className="bg-gray-700/60 text-xs text-gray-300 px-2 py-1 rounded">
+                                {tech.name}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="flex gap-2">
                         <Button 

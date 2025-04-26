@@ -56,7 +56,7 @@ const Navbar = () => {
               marginRight: scrolled ? 0 : '1rem'
             }}
           >
-            <h1 className="text-2xl font-semibold tracking-wide whitespace-nowrap">Aditya</h1>
+            <h1 className="text-2xl font-semibold tracking-wide whitespace-nowrap">Alex Morgan</h1>
           </motion.div>
           
           <motion.div 

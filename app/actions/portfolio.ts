@@ -192,6 +192,50 @@ export async function updateTechnologies({
   }
 }
 
+export async function updateSection({
+  sectionName,
+  portfolioId,
+  sectionContent,
+}: {
+  sectionName: string;
+  portfolioId: string;
+  sectionContent: any;
+}) {
+  try {
+    const portfolio = await prisma.portfolio.findUnique({
+      where: { id: portfolioId },
+    });
+    if (!portfolio || !portfolio.content) {
+      return { success: false, error: "Portfolio not found" };
+    }
+    const allSections = (portfolio.content as { sections: any }).sections;
+    const portfolioSection = allSections.find(
+      (section: any) => section.type === sectionName
+    );
+    if (!portfolioSection) {
+      return { success: false, error: `${sectionName} section not found}` };
+    }
+    const updatedContent = {
+      sections: allSections.map((section: any) => {
+        if (section.type === sectionName) {
+          return { type: sectionName, data: sectionContent };
+        }
+        return section;
+      }),
+    };
+
+    await prisma.portfolio.update({
+      where: { id: portfolioId },
+      data: { content: updatedContent },
+    });
+
+    return { success: true, data: updatedContent };
+  } catch (error) {
+    console.error("Failed to update hero:", error);
+    return { success: false, error: "Failed to update hero" };
+  }
+}
+
 
 export async function fetchContent({ portfolioId }: { portfolioId: string }) {
   try {
