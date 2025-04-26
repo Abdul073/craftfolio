@@ -1,0 +1,166 @@
+import React, { useState } from 'react'
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../ui/card'
+import { techList } from '@/lib/techlist'
+import { X, Check } from 'lucide-react'
+import { useDispatch } from 'react-redux'
+import { updatePortfolioData } from '@/slices/dataSlice'
+import { useParams } from 'next/navigation'
+import { updateTechnologies } from '@/app/actions/portfolio'
+
+interface Technology {
+  name: string;
+  logo: string;
+}
+
+const TechnologiesSidebar: React.FC = () => {
+    const [searchValue, setSearchValue] = useState<string>("")
+    const [suggestions, setSuggestions] = useState<Technology[]>([])
+    const [selected, setSelected] = useState<Technology[]>([])
+    const [hasSearched, setHasSearched] = useState<boolean>(false)
+
+    const dispatch = useDispatch();
+
+    const params = useParams();
+    const portfolioId = params.portfolioId as string;
+
+    const handleChange = (value: string): void => {
+        setSearchValue(value)
+        setHasSearched(value.trim() !== "")
+        
+        if(value.trim() === "") {
+            setSuggestions([])
+        } else {
+            const results = techList.filter((item: Technology) => 
+                item.name.toLowerCase().includes(value.toLowerCase()))
+            setSuggestions(results.slice(0, 6))
+        }
+    }
+
+    const addSuggestion = (item: Technology): void => {
+        if (!selected.some(tech => tech.name === item.name)) {
+            setSelected([...selected, item])
+        }
+        setSearchValue("")
+        setSuggestions([])
+        setHasSearched(false)
+    }
+
+    const removeTech = (itemToRemove: Technology): void => {
+        setSelected(selected.filter(item => item.name !== itemToRemove.name))
+    }
+
+    const handleAddCustomTech = (): void => {
+        if (searchValue.trim() !== "") {
+            const customTech: Technology = {
+                name: searchValue,
+                logo: "https://cdn-icons-png.flaticon.com/512/6062/6062643.png"
+            }
+            addSuggestion(customTech)
+        }
+    }
+
+    const handleSaveChanges = async()=>{
+        dispatch(updatePortfolioData({ sectionType: "technologies", newData: selected }));
+        await updateTechnologies({ portfolioId: portfolioId, selectedTech: selected });
+        console.log("Saving technologies:", selected)
+    }
+
+    return (
+        <div className='custom-scrollbar h-full min-h-screen'>
+            <Card className='h-full'>
+                <CardHeader>
+                    <CardTitle>Technologies</CardTitle>
+                    <CardDescription>Search and add technologies to your stack</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div>
+                        <div className='flex items-center justify-between gap-4 mb-4'>
+                            <Input 
+                                type='text' 
+                                value={searchValue} 
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e.target.value)} 
+                                placeholder='Search Technologies...'
+                                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                                    if (e.key === 'Enter' && suggestions.length > 0) {
+                                        addSuggestion(suggestions[0])
+                                    }
+                                }}
+                            />
+                            <Button onClick={handleAddCustomTech}>Add</Button>
+                        </div>
+                        
+                        {/* Suggestions Section */}
+                        {suggestions.length > 0 ? (
+                            <div className='mb-6'>
+                                <h3 className='text-sm font-medium mb-2'>Suggestions</h3>
+                                <div>
+                                    {suggestions.map((item: Technology) => (
+                                        <div 
+                                            onClick={() => addSuggestion(item)} 
+                                            key={item.name} 
+                                            className='flex bg-stone-700/25 border border-white/15 px-4 mt-2 rounded-lg items-center justify-between gap-4 py-2 cursor-pointer hover:bg-stone-700/40 transition-colors'
+                                        >
+                                            <span className='text-sm'>{item.name}</span>
+                                            <img src={item.logo} alt={item.name} width={25} height={25} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            hasSearched && (
+                                <div className='bg-stone-700/25 border border-white/15 rounded-lg p-4 text-center mb-6'>
+                                    <p className='text-sm text-gray-400'>No technologies found matching "{searchValue}"</p>
+                                    <p className='text-xs mt-1 text-gray-500'>Use the Select button to add it as a custom technology</p>
+                                </div>
+                            )
+                        )}
+                        
+                        {selected.length > 0 ? (
+                            <div>
+                                <h3 className='text-sm font-medium mb-2'>Selected Technologies</h3>
+                                <div>
+                                    {selected.map((item: Technology) => (
+                                        <div 
+                                            key={item.name} 
+                                            className='flex bg-stone-700/25 border border-white/15 px-4 mt-2 rounded-lg items-center justify-between py-2'
+                                        >
+                                            <div className='flex items-center gap-4'>
+                                                <img src={item.logo} alt={item.name} width={25} height={25} />
+                                                <span className='text-sm'>{item.name}</span>
+                                            </div>
+                                            <Button 
+                                                variant="ghost" 
+                                                size="sm" 
+                                                onClick={() => removeTech(item)}
+                                                className='p-1 h-auto hover:bg-red-500/20'
+                                            >
+                                                <X size={16} className='text-red-400' />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className='bg-stone-700/25 border border-white/15 rounded-lg p-4 text-center'>
+                                <p className='text-sm text-gray-400'>No technologies selected</p>
+                                </div>
+                        )}
+                    </div>
+                </CardContent>
+                <CardFooter className='pt-4 pb-6'>
+                    <Button 
+                        className='w-full' 
+                        onClick={handleSaveChanges}
+                        disabled={selected.length === 0}
+                    >
+                        Save Changes
+                    </Button>
+                </CardFooter>
+            </Card>
+        </div>
+    )
+}
+
+export default TechnologiesSidebar

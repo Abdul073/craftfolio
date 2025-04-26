@@ -124,7 +124,7 @@ const Hero = () => {
         style={{background : heroData?.badge?.color}}
         className={` text-white text-sm px-4 py-2 rounded-full inline-flex items-center mb-6`}
       >
-        <span className="h-2 w-2 rounded-full mr-2"></span>
+        <span className="h-2 w-2 bg-[yellow] animate-caret-blink rounded-full mr-2"></span>
         <span ref={badgeScope} className="text-sm">{badgeTexts[badgeIndex]}</span>
       </motion.div>
 }

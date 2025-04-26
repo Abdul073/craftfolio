@@ -14,6 +14,8 @@ import { useParams } from "next/navigation";
 import { setPortfolioData } from "@/slices/dataSlice";
 import { Spotlight } from "../components/Spotlight";
 import ProfessionalJourney from "../components/ProfessionalJourney";
+import Technologies from "../components/Technologies";
+import Contact from "../components/Contact";
 
 const Page = () => {
   const isEditMode = useSelector((state: RootState) => state.editMode.isEditMode);
@@ -85,7 +87,9 @@ const Page = () => {
         <Sidebar />
         <Hero />
         <Projects />
+        <Technologies />
         <ProfessionalJourney />
+        <Contact />
       </div>
     </div>
   );

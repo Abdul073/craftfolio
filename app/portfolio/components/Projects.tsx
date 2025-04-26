@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Github, ExternalLink, Code2, Calendar } from 'lucide-react';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,9 +9,10 @@ import { RootState } from '@/store/store';
 import { Button } from '@/components/ui/button';
 import { setCurrentEdit } from '@/slices/editModeSlice';
 import { supabase } from '@/lib/supabase-client';
+// Keep framer motion import
+import { motion } from 'framer-motion';
 
 interface Project {
-  id: number;
   projectTitle?: string;
   projectName? : string;
   projectDescription?: string;
@@ -36,41 +36,62 @@ const Projects: React.FC = () => {
   const { portfolioData } = useSelector((state: RootState) => state.data);
   const { isEditMode } = useSelector((state: RootState) => state.editMode);
 
-    useEffect(() => {
-      if (portfolioData) {
-        const portfolioSectionData = portfolioData.find((section: any) => section.type === "projects")?.data;
-        if (portfolioSectionData) {
-          setProjectsData(portfolioSectionData);
-          setIsLoading(false);
-        }
+  useEffect(() => {
+    if (portfolioData) {
+      const portfolioSectionData = portfolioData.find((section: any) => section.type === "projects")?.data;
+      if (portfolioSectionData) {
+        setProjectsData(portfolioSectionData || []);
+        setIsLoading(false);
       }
-    }, [portfolioData]);
+    }
+  }, [portfolioData]);
 
-    useEffect(()=>{
-      const subscription = supabase
-            .channel(`portfolio-project-${portfolioId}`)
-            .on('postgres_changes', 
-              { 
-                event: 'UPDATE', 
-                schema: 'public', 
-                table: 'Portfolio', 
-                filter: `id=eq.${portfolioId}` 
-              }, 
-              (payload) => {
-                console.log('project update detected!', payload);
-              }
-            )
-            .subscribe((status) => {
-              console.log(`Supabase subscription status project: ${status}`);
-            });
+  useEffect(() => {
+    const subscription = supabase
+      .channel(`portfolio-project-${portfolioId}`)
+      .on('postgres_changes', 
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'Portfolio', 
+          filter: `id=eq.${portfolioId}` 
+        }, 
+        (payload) => {
+          console.log('project update detected!', payload);
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Supabase subscription status project: ${status}`);
+      });
 
-            return ()=>{
-              subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    }
+  }, [portfolioId]);
 
-            }
-            
-    },[portfolioId])
-
+  useEffect(() => {
+    if (!isLoading) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const [entry] = entries;
+          if (entry.isIntersecting) {
+            setIsInView(true);
+          }
+        },
+        { threshold: 0.1 }
+      );
+      
+      if (sectionRef.current) {
+        observer.observe(sectionRef.current);
+      }
+      
+      return () => {
+        if (sectionRef.current) {
+          observer.unobserve(sectionRef.current);
+        }
+      };
+    }
+  }, [isLoading]);
 
   const headingVariants = {
     hidden: { opacity: 0, y: -20 },
@@ -130,35 +151,22 @@ const Projects: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          setIsInView(true);
-        }
-      },
-      { threshold: 0.1 }
+  const handleSectionEdit = () => {
+    dispatch(setCurrentEdit("projects"));
+  };
+
+  // Show a loading state while waiting for data
+  if (isLoading) {
+    return (
+      <section className="py-24 w-full overflow-hidden min-h-screen text-white">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="flex items-center justify-center h-64">Loading...</div>
+        </div>
+      </section>
     );
-    
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-    
-    return () => {
-      if (sectionRef.current) {
-        observer.disconnect();
-      }
-    };
-  }, []);
+  }
 
-    const handleSectionEdit = () => {
-        dispatch(setCurrentEdit("projects"));
-      };
-
-      console.log(projectsData,portfolioData)
-
-
+  // Render projects only when data is available
   return (
     <section ref={sectionRef} className="py-24 w-full overflow-hidden min-h-screen text-white">
       {isEditMode && (
@@ -173,115 +181,123 @@ const Projects: React.FC = () => {
       )}
       <div className="container mx-auto max-w-6xl px-4">
         <motion.div 
-          className=" max-w-xl block mx-auto"
+          className="max-w-xl block mx-auto"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
+          variants={headingVariants}
         >
-           <h1 className="text-5xl font-bold mb-4 text-center text-green-400">My Projects</h1>
-        <p className="text-xl text-gray-300 text-center mb-16">
-        A showcase of my full-stack projects, built using modern web technologies and frameworks.
-      </p>
-          
+          <h1 className="text-5xl font-bold mb-4 text-center text-green-400">My Projects</h1>
+          <p className="text-xl text-gray-300 text-center mb-16">
+            A showcase of my full-stack projects, built using modern web technologies and frameworks.
+          </p>
         </motion.div>
 
-        <motion.div 
-          className="space-y-10"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          {projectsData?.map((project : Project, index : number) => (
-            <motion.div 
-              key={index}
-              variants={projectVariants}  
-              className="bg-stone-800/30 border border-gray-400/25 rounded-lg overflow-hidden transition-colors duration-300 hover:bg-zinc-900/80"
-            >
-              <div className={`flex flex-col md:flex-row items-center`}>
-                <div className="w-full md:w-2/5 relative">
-                  <div className="relative overflow-hidden m-4">
-                    <motion.img 
-                      src={project?.projectImage} 
-                      alt={`${project?.projectTitle} project screenshot`}
-                      className="w-full h-52 object-cover rounded-lg"
-                      initial="rest"
-                      whileHover="hover"
-                      variants={imageVariants}
-                    />
-                    <motion.div 
-                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-green-400/35 blur-lg z-0"
-                      initial={{ opacity: 0.5, scale: 1 }}
-                      whileHover={{ opacity: 0.8, scale: 1.3 }}
-                      transition={{ duration: 0.3 }}
-                    ></motion.div>
-                  </div>
-                  <div className="p-3 bg-zinc-900/90 flex justify-center gap-3">
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ type: "intertia", stiffness: 400, damping: 10 }}
-                    >
-                      <Link 
-                        href={project?.githubLink || "#"}
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="flex items-center gap-2 px-3 py-1.5 bg-transparent border border-green-400/30 text-green-400 rounded-md hover:text-white transition-colors duration-300 text-sm"
-                      >
-                        <Github className="h-4 w-4" />
-                        GitHub
-                      </Link>
-                    </motion.div>
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ type: "intertia", stiffness: 400, damping: 10 }}
-                    >
-                      <Link 
-                        href={project?.liveLink || "#"}
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="flex items-center gap-2 px-3 py-1.5 bg-stone-700/30 text-white border rounded-md hover:border-green-400/30 transition-colors duration-300 text-sm font-medium"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                        Live Demo
-                      </Link>
-                    </motion.div>
-                  </div>
-                </div>
-                
-                <div className="w-full md:w-3/5 p-5 md:p-6">
-                  <div className="flex flex-wrap items-center justify-between mb-3">
-                    <h3 className="text-xl md:text-2xl font-bold text-white hover:text-green-400 transition-colors duration-300">
-                      {project?.projectTitle}
-                    </h3>
-                    <div className="flex items-center text-gray-400 text-sm mt-1 md:mt-0">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {project?.year}
+        {/* Add conditional rendering for projects list */}
+        {Array.isArray(projectsData) && projectsData.length > 0 ? (
+          <motion.div 
+            className="space-y-10"
+            variants={containerVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+          >
+            {projectsData.map((project, index) => (
+              <motion.div 
+                key={index}
+                variants={projectVariants}  
+                className="bg-stone-800/30 border border-gray-400/25 rounded-lg overflow-hidden transition-colors duration-300 hover:bg-zinc-900/80"
+              >
+                <div className={`flex flex-col md:flex-row items-center`}>
+                  <div className="w-full md:w-2/5 relative">
+                    <div className="relative overflow-hidden m-4">
+                      <motion.img 
+                        src={project?.projectImage} 
+                        alt={`${project?.projectTitle} project screenshot`}
+                        className="w-full h-52 object-cover rounded-lg"
+                        initial="rest"
+                        whileHover="hover"
+                        variants={imageVariants}
+                      />
+                      <motion.div 
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-green-400/35 blur-lg z-0"
+                        initial={{ opacity: 0.5, scale: 1 }}
+                        whileHover={{ opacity: 0.8, scale: 1.3 }}
+                        transition={{ duration: 0.3 }}
+                      ></motion.div>
                     </div>
-                  </div>
-                  
-                  <p className="text-gray-300 mb-4">
-                    {project?.projectDescription}
-                  </p>
-                  
-                  <div>
-                    <h4 className="flex items-center gap-2 font-semibold mb-2">
-                      <Code2 className="h-4 w-4" />
-                      Tech Stack
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {project?.techStack?.map((tech, idx) => (
-                        <motion.span 
-                          key={idx}
-                          className="px-3 py-1 bg-gray-800 rounded-full text-sm font-medium text-white hover:scale-[1.05] cursor-pointer hover:border-green-400 border border-gray-700 transition-all duration-300"
+                    <div className="p-3 bg-zinc-900/90 flex justify-center gap-3">
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                      >
+                        <Link 
+                          href={project?.githubLink || "#"}
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex items-center gap-2 px-3 py-1.5 bg-transparent border border-green-400/30 text-green-400 rounded-md hover:text-white transition-colors duration-300 text-sm"
                         >
-                          {tech}
-                        </motion.span>
-                      ))}
+                          <Github className="h-4 w-4" />
+                          GitHub
+                        </Link>
+                      </motion.div>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                      >
+                        <Link 
+                          href={project?.liveLink || "#"}
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex items-center gap-2 px-3 py-1.5 bg-stone-700/30 text-white border rounded-md hover:border-green-400/30 transition-colors duration-300 text-sm font-medium"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          Live Demo
+                        </Link>
+                      </motion.div>
+                    </div>
+                  </div>
+                  
+                  <div className="w-full md:w-3/5 p-5 md:p-6">
+                    <div className="flex flex-wrap items-center justify-between mb-3">
+                      <h3 className="text-xl md:text-2xl font-bold text-white hover:text-green-400 transition-colors duration-300">
+                        {project?.projectTitle}
+                      </h3>
+                      <div className="flex items-center text-gray-400 text-sm mt-1 md:mt-0">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {project?.year}
+                      </div>
+                    </div>
+                    
+                    <p className="text-gray-300 mb-4">
+                      {project?.projectDescription}
+                    </p>
+                    
+                    <div>
+                      <h4 className="flex items-center gap-2 font-semibold mb-2">
+                        <Code2 className="h-4 w-4" />
+                        Tech Stack
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {project?.techStack?.map((tech, idx) => (
+                          <motion.span 
+                            key={idx}
+                            whileHover={{ scale: 1.05 }}
+                            className="px-3 py-1 bg-gray-800 rounded-full text-sm font-medium text-white cursor-pointer hover:border-green-400 border border-gray-700 transition-all duration-300"
+                          >
+                            {tech}
+                          </motion.span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <div className="text-center text-gray-400 py-10">
+            No projects found. Add some projects to see them here.
+          </div>
+        )}
       </div>
     </section>
   );

@@ -1,160 +1,182 @@
-import React, { useEffect } from 'react';
-import { motion, useAnimation } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/store/store';
+import { setCurrentEdit } from '@/slices/editModeSlice';
+import { supabase } from '@/lib/supabase-client';
+import { useParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 const ProfessionalJourney = () => {
-  // Define your professional experiences as data
-  const experiences = [
-    {
-      id: 1,
-      title: "Software Development Intern",
-      company: "SkyShine Technologies",
-      remote: true,
-      period: "Feb 2025 - Present",
-      description: "End-to-end development of a web-based platform using the MERN stack to display subscription pricing for multiple cloud, VPS, and dedicated server plans, including maintenance support tiers.",
-      technologies: ["MongoDB", "Express.js", "React", "Node.js"],
-      achievements: [
-        "Integrated dynamic pricing modules for server plans",
-        "Collaborated with UI/UX designer to improve user flow and visual hierarchy",
-        "Designed and implemented secure customer login panel"
-      ]
-    },
-    {
-      id: 2,
-      title: "Freelance Web Developer",
-      company: "Self-employed",
-      remote: false,
-      period: "Jan 2024 - Jan 2025",
-      description: "Developed responsive websites and web applications for small businesses and startups, focusing on modern UI/UX principles and performance optimization.",
-      technologies: ["React", "Tailwind CSS", "NextJS"],
-      achievements: [
-        "Built 10+ custom websites with modern frameworks",
-        "Implemented SEO best practices resulting in 40% traffic increase",
-        "Maintained client relationships and delivered projects on schedule"
-      ]
-    }
-  ];
+  interface Experience {
+    role?: string;
+    companyName?: string;
+    location?: string;
+    startDate?: string;
+    endDate?: string;
+    description?: string;
+    techStack?: string[];
+  }
 
-  // Animation for the heading section
-  const headingControls = useAnimation();
-  const [headingRef, headingInView] = useInView({
-    threshold: 0.3,
-    triggerOnce: true
-  });
+  const { isEditMode } = useSelector((state: RootState) => state.editMode);
+  const { portfolioData } = useSelector((state: RootState) => state.data);
+  const [experienceData, setExperienceData] = useState<Experience[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const params = useParams();
+  const dispatch = useDispatch();
+  
+  const portfolioId = params.portfolioId as string;
+
+  const [isHeadingVisible, setIsHeadingVisible] = useState(false);
+  const [visibleItems, setVisibleItems] = useState<boolean[]>([]);
 
   useEffect(() => {
-    if (headingInView) {
-      headingControls.start('visible');
-    }
-  }, [headingControls, headingInView]);
+    const timer = setTimeout(() => {
+      setIsHeadingVisible(true);
+    }, 300);
 
-  // Subtle animation variants
-  const headingVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { 
-      opacity: 1, 
-      x: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (portfolioData) {
+      const experienceSectionData = portfolioData.find((section: any) => section.type === "experience")?.data;
+      if (experienceSectionData) {
+        setExperienceData(experienceSectionData || []);
+        setIsLoading(false);
+      }
     }
+  }, [portfolioData]);
+
+  useEffect(() => {
+    if (experienceData.length > 0) {
+      setVisibleItems(Array(experienceData.length).fill(false));
+      
+      experienceData.forEach((_, index) => {
+        setTimeout(() => {
+          setVisibleItems(prev => {
+            const newState = [...prev];
+            newState[index] = true;
+            return newState;
+          });
+        }, 500 + (index * 200)); // Staggered timing
+      });
+    }
+  }, [experienceData]);
+
+  useEffect(() => {
+    const subscription = supabase
+      .channel(`portfolio-experience-${portfolioId}`)
+      .on('postgres_changes', 
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'Portfolio', 
+          filter: `id=eq.${portfolioId}` 
+        }, 
+        (payload) => {
+          console.log('project experience detected!', payload);
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Supabase subscription status experience: ${status}`);
+      });
+
+    return () => {
+      subscription.unsubscribe();
+    }
+  }, [portfolioId]);
+
+  const handleSectionEdit = () => {
+    dispatch(setCurrentEdit("experience"));
   };
+
+  console.log(experienceData)
+
+  if (isLoading) {
+    return (
+      <section className="py-24 w-full overflow-hidden min-h-screen text-white">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="flex items-center justify-center h-64">Loading...</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <div className="text-white min-h-screen p-8">
       <div className="max-w-4xl mx-auto">
-        <motion.div
-          ref={headingRef}
-          initial="hidden"
-          animate={headingControls}
-          variants={headingVariants}
-          className="mb-16"
+        <div 
+          className={`mb-16 transition-all duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}
         >
           <h1 className="text-5xl font-bold mb-4 text-center text-green-400">Professional Journey</h1>
           <p className="text-xl text-gray-300 text-center">
             Building real-world experience through innovative projects
           </p>
-        </motion.div>
+        </div>
 
-        <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-green-500/30"></div>
+        {isEditMode && (
+          <div className="flex items-center justify-end">
+            <Button
+              onClick={handleSectionEdit} 
+              className="bg-white text-black border border-gray-300 shadow hover:bg-gray-100 transition-all px-4 py-2 text-sm"
+            >
+              ✏️ Edit This Section
+            </Button>
+          </div>
+        )}
 
-          {/* Map through experiences data */}
-          {experiences.map((experience, index) => {
-            const [ref, inView] = useInView({
-              threshold: 0.2,
-              triggerOnce: true
-            });
-            
-            return (
-              <motion.div
-                key={experience.id}
-                ref={ref}
-                initial={{ opacity: 0 }}
-                animate={inView ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className={`relative ${index !== experiences.length - 1 ? 'mb-16' : ''}`}
+        {experienceData.length === 0 ? (
+          <div className="text-center py-12 text-gray-400">
+            No professional experience added yet.
+          </div>
+        ) : (
+          <div className="relative">
+            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-green-500/30"></div>
+
+            {experienceData.map((experience, index) => (
+              <div
+                key={index}
+                className={`relative transition-all duration-700 ${visibleItems[index] ? 'opacity-100' : 'opacity-0'} ${index !== experienceData.length - 1 ? 'mb-16' : ''}`}
               >
-                {/* Timeline dot */}
                 <div className="absolute left-6 transform -translate-x-1/2 w-3 h-3 rounded-full bg-green-500 border-4 border-gray-900"></div>
                 
                 {/* Card content */}
                 <div className="ml-16 bg-stone-900/60 rounded-lg p-6 border border-gray-700">
-                  <motion.h2 
-                    className="text-2xl font-bold mb-2"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
+                  <h2 
+                    className={`text-2xl font-bold mb-2 transition-all duration-700 delay-100 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
                   >
-                    {experience.title}
-                  </motion.h2>
+                    {experience.role}
+                  </h2>
                   
                   <div className="flex flex-wrap items-center gap-2 mb-4 text-gray-400">
-                    <span>{experience.company}</span>
-                    {experience.remote && (
-                      <>
-                        <span className="w-1 h-1 bg-green-500 rounded-full"></span>
-                        <span className="bg-green-900/40 text-green-400 px-3 py-1 rounded-full text-sm">Remote</span>
-                      </>
-                    )}
-                    <span className="bg-green-900/40 text-green-400 px-3 py-1 rounded-full text-sm">{experience.period}</span>
+                    <span>{experience.companyName}</span>
+                    <span className="bg-green-900/40 text-green-400 px-3 py-1 rounded-full text-sm">{experience.location}</span>
+                    <span className="bg-green-900/40 text-green-400 px-3 py-1 rounded-full text-sm">{experience.startDate} - {experience.endDate}</span>
                   </div>
 
-                  <motion.p 
-                    className="text-gray-300 mb-4"
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
+                  <p 
+                    className={`text-gray-300 mb-4 transition-all duration-700 delay-200 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
                   >
                     {experience.description}
-                  </motion.p>
+                  </p>
 
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {experience.technologies.map((tech, techIndex) => (
-                      <span 
-                        key={techIndex}
-                        className="bg-green-900/20 text-green-400 px-3 py-1 rounded-full text-sm border border-green-700/30"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  <ul className="space-y-2">
-                    {experience.achievements.map((achievement, achievementIndex) => (
-                      <li 
-                        key={achievementIndex}
-                        className="flex items-start"
-                      >
-                        <span className="text-green-400 mr-2">•</span>
-                        <span>{achievement}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  {experience.techStack && experience.techStack.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {experience.techStack.map((tech, techIndex) => (
+                        <span 
+                          key={techIndex}
+                          className="bg-green-900/20 text-green-400 px-3 py-1 rounded-full text-sm border border-green-700/30"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </motion.div>
-            );
-          })}
-        </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

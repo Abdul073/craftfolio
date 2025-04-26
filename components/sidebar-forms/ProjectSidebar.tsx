@@ -14,7 +14,6 @@ import toast from 'react-hot-toast'
 
 const ProjectSidebar = () => {
   interface Project {
-    id: number;
     projectTitle?: string;
     projectName?: string;
     projectDescription?: string;
@@ -26,7 +25,6 @@ const ProjectSidebar = () => {
   }
   
   const emptyProject: Project = {
-    id: Date.now(),
     projectName: "",
     projectTitle: "",
     projectDescription: "",
@@ -57,7 +55,6 @@ const ProjectSidebar = () => {
   }, [projectsData]);
 
   useEffect(() => {
-    // Reset isUploaded when starting to edit a new project
     if (currentProject.projectImage === "") {
       setIsUploaded(false);
     }
@@ -156,8 +153,10 @@ const ProjectSidebar = () => {
     setIsUploaded(false);
   }
 
+  console.log(projects,projectsData)
+
   return (
-    <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-stone-600 scrollbar-track-transparent">
+    <div className="custom-scrollbar">
       <Card>
         <CardHeader>
           <CardTitle>Projects</CardTitle>
@@ -341,7 +340,7 @@ const ProjectSidebar = () => {
               <h3 className="text-lg font-medium text-white">Saved Projects</h3>
               <div className="space-y-4">
                 {projects.map((project, index) => (
-                  <div key={project.id} className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                  <div key={index} className="p-4 bg-gray-800 rounded-lg border border-gray-700">
                     <div className="flex justify-between items-start">
                       <div>
                         <h4 className="font-medium text-white">{project.projectName}</h4>

@@ -57,7 +57,6 @@
   --radius-xl: calc(var(--radius) + 4px);
   --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
 }
-
 @keyframes spotlight {
   0% {
     opacity: 0;
@@ -66,6 +65,15 @@
   100% {
     opacity: 1;
     transform: translate(-50%, -40%) scale(1);
+  }
+}
+
+@keyframes scroll {
+  0% {
+    transform: "translateX(0)";
+  }
+  100% {
+    transform: "translateX(-100%)";
   }
 }
 
@@ -146,6 +154,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  .custom-scrollbar {
+    @apply overflow-y-auto scrollbar-thin scrollbar-thumb-stone-600 scrollbar-track-transparent;
+  }
 }
 .custom-bg {
   position: relative;
@@ -173,4 +184,10 @@
   50% {
     opacity: 0.5;
   }
+}
+
+
+.shadow2{
+    filter: drop-shadow(10px 10px 100px #c5ba20)
+      drop-shadow(-10px -10px 50px #c5ba20);
 }

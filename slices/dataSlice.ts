@@ -14,6 +14,7 @@ export const dataSlice = createSlice({
     setPortfolioData: (state, action) => {
       state.portfolioData = action.payload;
     },
+
     updatePortfolioData: (
       state,
       action: PayloadAction<{ sectionType: string; newData: any }>

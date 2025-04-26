@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import HeroSidebar from '@/components/sidebar-forms/HeroSidebar';
 import ProjectSidebar from '@/components/sidebar-forms/ProjectSidebar';
+import ExperienceSidebar from '@/components/sidebar-forms/ExperienceSidebar';
+import TechnologiesSidebar from '@/components/sidebar-forms/TechnologiesSidebar';
 
 const Sidebar = () => {
   const { currentlyEditing } = useSelector((state: RootState) => state.editMode);
@@ -24,7 +26,7 @@ const Sidebar = () => {
 
   return (
     <div className={`fixed left-0 top-0 h-screen z-[99999] transition-all duration-300 ease-in-out ${isExpanded ? 'w-80' : 'w-0'} bg-[#1b0808] border-r border-gray-800 overflow-hidden`}>
-      <div className="absolute -right-3 top-6 z-10">
+      <div className="absolute right-6 top-6 z-10">
         <Button 
           onClick={toggleSidebar} 
           size="sm" 
@@ -38,6 +40,8 @@ const Sidebar = () => {
       <div className="flex flex-col h-full">
         {currentlyEditing === "hero" && <HeroSidebar />}
         {currentlyEditing === "projects" && <ProjectSidebar />}
+        {currentlyEditing === "experience" && <ExperienceSidebar />}
+        {currentlyEditing === "technologies" && <TechnologiesSidebar />}
 
       </div>
     </div>
