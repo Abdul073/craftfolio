@@ -12,9 +12,19 @@ model Portfolio {
   id           String   @id @default(uuid())
   userId       String
   templateName String   @default("default")
-  content      Json 
+  content      Json
   isTemplate   Boolean  @default(false)
   isPublished  Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Template {
+  id             String   @id @default(uuid())
+  name           String   // Template name (like "Modern", "Creative", etc.)
+  description    String   // Short description about the template
+  features       String[] // List of features (like ['Dark mode', 'Minimal design', 'Fast loading'])
+  previewImageUrl String  // URL of the preview image (for showing in template gallery)
+  defaultContent Json     // The default content/structure of the template (sections, layout)
+  createdAt      DateTime @default(now())
 }

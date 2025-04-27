@@ -5,30 +5,25 @@ import Head from 'next/head';
 
 // CSS variables for easy color customization
 const ColorTheme = {
-  // Primary brand colors
   primary: 'var(--primary)',
   primaryHover: 'var(--primary-hover)',
   primaryLight: 'var(--primary-light)',
   primaryDark: 'var(--primary-dark)',
   primaryGlow: 'var(--primary-glow)',
   
-  // Background colors
   bgMain: 'var(--bg-main)',
   bgCard: 'var(--bg-card)',
   bgCardHover: 'var(--bg-card-hover)',
   bgNav: 'var(--bg-nav)',
   
-  // Text colors
   textPrimary: 'var(--text-primary)',
   textSecondary: 'var(--text-secondary)',
   textMuted: 'var(--text-muted)',
   
-  // Border colors
   borderLight: 'var(--border-light)',
   borderDark: 'var(--border-dark)',
 }
 
-// Animation variants
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
   visible: { 
@@ -90,7 +85,6 @@ export default function Home() {
   const [showPreview, setShowPreview] = useState(false);
   const [resumeUploaded, setResumeUploaded] = useState(false);
 
-  // Navbar scroll effect
   const [scrolled, setScrolled] = useState(false);
   
   useEffect(() => {
@@ -205,7 +199,6 @@ export default function Home() {
     }
   ];
 
-  // Testimonials - new section
   const testimonials = [
     {
       id: 1,
@@ -235,7 +228,7 @@ export default function Home() {
 
   return (
     <div 
-      className="relative min-h-screen" 
+      className="relative min-h-screen scrollbar custom-scrollbar" 
       style={{
         /* CSS Variable definitions */
         "--primary": "#10b981", // emerald-500

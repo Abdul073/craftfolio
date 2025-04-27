@@ -4,13 +4,25 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { templates } from "@/lib/templateContent";
 
-export async function createPortfolio(userId: string, templateName: string) {
+export async function createPortfolio(userId: string, templateName: string, creationMethod: string) {
   try {
+
+    const template = await prisma.template.findFirst({
+      where: {
+        name: templateName,
+      },
+      select: { defaultContent: true }
+    })
+
+    if(!template || !template.defaultContent) {
+      return { success: false, error: "Template not found" }
+    }
+
     const newTemplate = await prisma.portfolio.create({
       data: {
         isTemplate: false,
         userId: userId,
-        content: templates[templateName],
+        content: template?.defaultContent,
         isPublished: false,
         templateName: templateName,
       },
@@ -236,6 +248,16 @@ export async function updateSection({
   }
 }
 
+export async function fetchThemesApi(){
+  try {
+    const themes = await prisma.template.findMany();
+    console.log(themes)
+    return { success: true, data: themes };
+  }catch(error){
+    return { success: false, error: error };
+
+  }
+}
 
 export async function fetchContent({ portfolioId }: { portfolioId: string }) {
   try {
