@@ -1,82 +1,96 @@
 "use client";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import Navbar from "../components/Navbar";
-import Hero from "../components/Hero";
-import Projects from "../components/Projects";
-import Sidebar from "../Sidebar";
-import { useEffect } from "react";
-import { fetchContent } from "@/app/actions/portfolio";
+import { useEffect, useState } from "react";
+import { fetchContent, getThemeNameApi } from "@/app/actions/portfolio";
 import { useParams } from "next/navigation";
 import { setPortfolioData } from "@/slices/dataSlice";
 import { Spotlight } from "../components/Spotlight";
-import ProfessionalJourney from "../components/ProfessionalJourney";
-import Technologies from "../components/Technologies";
-import Contact from "../components/Contact";
+import { templatesConfig } from "@/lib/templateConfig";
 
 const Page = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const portfolioId = params.portfolioId as string;
   const { portfolioData } = useSelector((state: RootState) => state.data);
-  const allSections = portfolioData?.map((item : any) => item.type);
+  const allSections = portfolioData?.map((item: any) => item.type);
+  
+  const [currentTheme, setCurrentTheme] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  console.log({ portfolioData, allSections });
+  // Only access Template after currentTheme is set
+  const Template = currentTheme ? templatesConfig[currentTheme] : null;
+
+  const getComponentForSection = (sectionType: string) => {
+    if (!Template || !Template.sections || !Template.sections[sectionType]) {
+      return null;
+    }
+    const SectionComponent = Template.sections[sectionType];
+    return SectionComponent ? <SectionComponent key={`${sectionType}`} /> : null;
+  };
 
   useEffect(() => {
-    getContent();
-  }, []);
-
-  const getContent = async () => {
-    try {
-      const result: any = await fetchContent({ portfolioId });
-      if (result.success) {
-        dispatch(setPortfolioData(result.data.sections));
+    const initializePortfolio = async () => {
+      setIsLoading(true);
+      
+      try {
+        // First get theme name so we know which template to use
+        const themeResult: any = await getThemeNameApi({ portfolioId });
+        if (themeResult.success) {
+          setCurrentTheme(themeResult.data.templateName);
+        }
+        
+        // Then fetch content data
+        const contentResult: any = await fetchContent({ portfolioId });
+        if (contentResult.success) {
+          dispatch(setPortfolioData(contentResult.data.sections));
+        }
+      } catch (error) {
+        console.log("Error initializing portfolio:", error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    };
+    
+    initializePortfolio();
+  }, [portfolioId, dispatch]);
 
-  const renderSection = (sectionType : any) => {
-    switch (sectionType) {
-      case "userInfo":
-        return null;
-      case "hero":
-        return <Hero key="hero" />;
-      case "projects":
-        return <Projects key="projects" />;
-      case "experience":
-        return <ProfessionalJourney key="experience" />;
-      case "technologies":
-        return <Technologies key="technologies" />;
-      case "contact":
-        return <Contact key="contact" />;
-      default:
-        return null;
-    }
-  };
+  console.log(Template,currentTheme)
+
+  // Don't try to render anything template-specific until we have the theme
+  if (!Template || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-xl">Loading portfolio...</p>
+      </div>
+    );
+  }
+
+  const NavbarComponent = Template.navbar;
+  const SidebarComponent = Template.sidebar;
+  const SpotlightComponent = Template.spotlight;
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="absolute inset-0">
-        <Spotlight className="-top-40 left-0 md:-top-80 md:left-5" fill="white" />
-      </div>
+      {SpotlightComponent && (
+        <div className="absolute inset-0">
+          <Spotlight
+            className="-top-40 left-0 md:-top-80 md:left-5"
+            fill="white"
+          />
+        </div>
+      )}
 
       <div className="custom-bg">
-        <Navbar />
-        <Sidebar />
+        {NavbarComponent && <NavbarComponent />}
+        {SidebarComponent && <SidebarComponent />}
         
-        {allSections && allSections.map((section : any) => renderSection(section))}
-        
-        {(!allSections || allSections.length === 0) && (
-          <>
-            <Hero />
-            <Projects />
-            <Technologies />
-            <ProfessionalJourney />
-            <Contact />
-          </>
+        {allSections && allSections.length > 0 ? (
+          allSections.map((section: any) => getComponentForSection(section))
+        ) : (
+          <div className="flex items-center justify-center h-screen">
+            <p className="text-xl">Portfolio content not found</p>
+          </div>
         )}
       </div>
     </div>

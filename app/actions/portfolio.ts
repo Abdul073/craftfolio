@@ -259,6 +259,18 @@ export async function fetchThemesApi(){
   }
 }
 
+export async function getThemeNameApi({portfolioId} : {portfolioId: string}){
+  try {
+    const theme = await prisma.portfolio.findUnique({
+      where: { id: portfolioId },
+    });
+    return { success: true, data: theme };
+  }catch(error){
+    return { success: false, error: error };
+
+  }
+}
+
 export async function fetchContent({ portfolioId }: { portfolioId: string }) {
   try {
     console.log(portfolioId);
