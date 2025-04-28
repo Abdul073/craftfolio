@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
       <html lang="en">
         <body
-          className={`${montserrat.className} main-bg-noise antialiased`}
+          className={`${montserrat.className} antialiased`}
         >
           <ClientLayout>{children}</ClientLayout>
         </body>

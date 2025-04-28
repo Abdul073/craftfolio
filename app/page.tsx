@@ -167,7 +167,7 @@ export default function Home() {
 
   return (
     <div
-      className="relative min-h-screen scrollbar custom-scrollbar"
+      className="relative min-h-screen scrollbar main-bg-noise  custom-scrollbar"
       style={{
         /* CSS Variable definitions */
         "--primary": "#10b981", // emerald-500

@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { setPortfolioData } from "@/slices/dataSlice";
 import { Spotlight } from "../components/Spotlight";
 import { templatesConfig } from "@/lib/templateConfig";
+import Sidebar from "../Sidebar";
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,6 @@ const Page = () => {
   const [currentTheme, setCurrentTheme] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Only access Template after currentTheme is set
   const Template = currentTheme ? templatesConfig[currentTheme] : null;
 
   const getComponentForSection = (sectionType: string) => {
@@ -34,15 +34,14 @@ const Page = () => {
       setIsLoading(true);
       
       try {
-        // First get theme name so we know which template to use
         const themeResult: any = await getThemeNameApi({ portfolioId });
         if (themeResult.success) {
           setCurrentTheme(themeResult.data.templateName);
         }
         
-        // Then fetch content data
         const contentResult: any = await fetchContent({ portfolioId });
         if (contentResult.success) {
+          console.log({portfolioData,contentResult})
           dispatch(setPortfolioData(contentResult.data.sections));
         }
       } catch (error) {
@@ -55,9 +54,6 @@ const Page = () => {
     initializePortfolio();
   }, [portfolioId, dispatch]);
 
-  console.log(Template,currentTheme)
-
-  // Don't try to render anything template-specific until we have the theme
   if (!Template || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -67,8 +63,9 @@ const Page = () => {
   }
 
   const NavbarComponent = Template.navbar;
-  const SidebarComponent = Template.sidebar;
   const SpotlightComponent = Template.spotlight;
+
+  console.log(portfolioData)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -81,9 +78,9 @@ const Page = () => {
         </div>
       )}
 
-      <div className="custom-bg">
+      <div className="custom-bg min-h-screen">
         {NavbarComponent && <NavbarComponent />}
-        {SidebarComponent && <SidebarComponent />}
+       <Sidebar />
         
         {allSections && allSections.length > 0 ? (
           allSections.map((section: any) => getComponentForSection(section))

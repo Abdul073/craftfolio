@@ -1,8 +1,9 @@
 import dynamic from "next/dynamic";
 
-export const templatesConfig = {
+export const templatesConfig : any= {
     NeoSpark : {
         navbar : dynamic(()=>import("@/components/NeoSpark/Navbar")),
+        spotlight : true,
         sections:{
             hero : dynamic(()=>import("@/components/NeoSpark/Hero")),
         projects : dynamic(()=>import("@/components/NeoSpark/Projects")),
@@ -12,6 +13,11 @@ export const templatesConfig = {
         }
     },
     SimpleWhite:{
-        navbar : dynamic(()=>import("@/components/NeoSpark/Navbar")),
+        sections:{
+            hero : dynamic(()=>import("@/components/SimpleWhite/Hero")),
+            projects : dynamic(()=>import("@/components/SimpleWhite/Projects")),
+            skills : dynamic(()=>import("@/components/SimpleWhite/Skills")),
+            experience : dynamic(()=>import("@/components/SimpleWhite/Experience")),
+        }
     }
 }

@@ -115,7 +115,7 @@ const PortfolioThemePage = () => {
 
   return (
     <div 
-      className="min-h-screen relative" 
+      className="min-h-screen main-bg-noise  relative" 
       style={{
         "--primary": "#10b981", // emerald-500
         "--primary-hover": "#059669", // emerald-600

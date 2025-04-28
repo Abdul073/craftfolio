@@ -114,9 +114,14 @@ Return ONLY valid JSON in this format without any explanations:
 
 // summary generator
 const summaryGeneratorTemplate = PromptTemplate.fromTemplate(`
-Based on the resume data below, generate 3 concise and professional summary lines.
+Based on the resume data below, generate 1 concise and professional summary line.
 Each line should be a separate sentence highlighting key strengths, skills, or career objectives.
 Make it personal and engaging, representing the individual's professional identity.
+
+
+Eg 1: Enthusiastic and results-driven web developer passionate about building innovative and scalable web applications using modern technologies like React.js, Node.js, and the MERN stack.
+Eg 2 : Craving to build innovative solutions that make an impact. Enthusiastic problem solver, always curious about new technologies. Committed to continuous learning and growth.
+
 
 Resume data:
 {resume_data}

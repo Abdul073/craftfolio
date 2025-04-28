@@ -17,6 +17,17 @@
   scroll-behavior: smooth;
 }
 
+.simple-white {
+  background-size: cover;
+  background-repeat: repeat;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  z-index: 0;
+  background-image: url("/simple-white.png");
+  scroll-behavior: smooth;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -186,8 +197,7 @@
   }
 }
 
-
-.shadow2{
-    filter: drop-shadow(10px 10px 100px #c5ba20)
-      drop-shadow(-10px -10px 50px #c5ba20);
+.shadow2 {
+  filter: drop-shadow(10px 10px 100px #c5ba20)
+    drop-shadow(-10px -10px 50px #c5ba20);
 }
