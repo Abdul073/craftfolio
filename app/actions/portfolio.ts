@@ -6,7 +6,7 @@ import { templates } from "@/lib/templateContent";
 
 export async function createPortfolio(userId: string, templateName: string, creationMethod: string) {
   try {
-
+    console.log({templateName,userId});
     const template = await prisma.template.findFirst({
       where: {
         name: templateName,

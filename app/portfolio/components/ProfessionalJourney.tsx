@@ -96,7 +96,6 @@ const ProfessionalJourney = () => {
     dispatch(setCurrentEdit("experience"));
   };
 
-  console.log(experienceData)
 
   if (isLoading) {
     return (

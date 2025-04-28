@@ -241,7 +241,7 @@ const Projects: React.FC = () => {
                   <div className="w-full md:w-3/5 p-5 md:p-6">
                     <div className="flex flex-wrap items-center justify-between mb-3">
                       <h3 className="text-xl md:text-2xl font-bold text-white hover:text-green-400 transition-colors duration-300">
-                        {project?.projectTitle}
+                        {project?.projectName}
                       </h3>
                       <div className="flex items-center text-gray-400 text-sm mt-1 md:mt-0">
                         <Calendar className="h-4 w-4 mr-1" />

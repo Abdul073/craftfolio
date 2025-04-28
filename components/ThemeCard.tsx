@@ -110,7 +110,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
               <img
                 src={image}
                 alt={`${theme.name} theme preview ${index + 1}`}
-                className="max-w-[98%] mx-auto h-full object-fill  transition-transform duration-500"
+                className="max-w-full mx-auto h-full object-fill  transition-transform duration-500"
               />
             </div>
           ))}

@@ -134,4 +134,7 @@ export const templates: any = {
       }
     ],
   },
+  SimpleWhite : {
+    
+  }
 };
