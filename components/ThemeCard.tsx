@@ -110,7 +110,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
               <img
                 src={image}
                 alt={`${theme.name} theme preview ${index + 1}`}
-                className="w-full h-full object-cover transition-transform duration-500"
+                className="max-w-[98%] mx-auto h-full object-fill  transition-transform duration-500"
               />
             </div>
           ))}
@@ -149,7 +149,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
         <p className="mb-4" style={{ color: ColorTheme.textSecondary }}>{theme.description}</p>
         
         {/* Features Section */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <h4 className="text-sm font-semibold mb-2" style={{ color: ColorTheme.textPrimary }}>Features:</h4>
           <div className="flex flex-wrap gap-2">
             {theme.features.map((feature, index) => (
@@ -166,7 +166,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
               </span>
             ))}
           </div>
-        </div>
+        </div> */}
         
         {/* Buttons */}
         <div className="flex justify-between items-center">

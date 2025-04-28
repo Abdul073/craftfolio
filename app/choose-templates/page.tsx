@@ -79,7 +79,7 @@ const PortfolioThemePage = () => {
         if (result.success) {
           toast.success('Portfolio created successfully');
           if (creationMethod === 'import') {
-            router.push(`/portfolio/${result?.data?.id}/import-resume`);
+            router.push(`/portfolio/${result?.data?.id}`);
           } else {
             router.push(`/portfolio/${result?.data?.id}`);
           }
@@ -180,7 +180,7 @@ const PortfolioThemePage = () => {
       </div>
       
       {/* Fixed navbar */}
-      <header className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-md shadow-lg' : 'bg-transparent'}`} style={{ backgroundColor: scrolled ? ColorTheme.bgNav : 'transparent' }}>
+      <header className={`w-full z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-md shadow-lg' : 'bg-transparent'}`} style={{ backgroundColor: scrolled ? ColorTheme.bgNav : 'transparent' }}>
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -226,10 +226,10 @@ const PortfolioThemePage = () => {
         </div>
       </header>
 
-      <div className="container mx-auto max-w-[85%] px-4 pb-24">
+      <div className="container mx-auto max-w-[70%] px-4 pb-24">
         {/* Hero section */}
         <motion.div 
-          className="pt-32 text-center mb-16"
+          className="pt-16 text-center mb-16"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -257,7 +257,7 @@ const PortfolioThemePage = () => {
 
         {/* Themes grid */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-14"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}

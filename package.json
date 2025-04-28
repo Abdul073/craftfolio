@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.16.0",
+    "@google/generative-ai": "^0.24.0",
     "@prisma/client": "^6.6.0",
     "@radix-ui/react-dialog": "^1.1.11",
     "@radix-ui/react-label": "^2.1.4",
@@ -23,10 +24,13 @@
     "@supabase/supabase-js": "^2.49.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "compress-base64": "^7.0.10",
     "framer-motion": "^12.7.4",
+    "langchain": "^0.3.24",
     "lucide-react": "^0.501.0",
     "motion": "^12.7.4",
     "next": "15.3.1",
+    "pdfjs-dist": "^3.11.174",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-fast-marquee": "^1.6.5",
@@ -38,7 +42,9 @@
     "slick-carousel": "^1.8.1",
     "tailwind-merge": "^3.2.0",
     "tailwind-scrollbar": "^4.0.2",
-    "tw-animate-css": "^1.2.5"
+    "tesseract.js": "4.0",
+    "tw-animate-css": "^1.2.5",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
