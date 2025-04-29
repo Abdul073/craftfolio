@@ -8,9 +8,8 @@ import {
 import { fadeInScale, pulseAnimation, staggerContainer } from '@/lib/animations';
 import { useState, useEffect } from 'react';
 import toast from "react-hot-toast";
-import compress from 'compress-base64';
 
-const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreationMethod, creationMethod, handleCreatePortfolio }: { isModalOpen: boolean, isCreating: boolean, setIsModalOpen: (isOpen: boolean) => void, setCreationMethod: (creationMethod: string) => void, creationMethod: string, handleCreatePortfolio: () => void }) => {
+const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreationMethod, creationMethod, handleCreatePortfolio }: { isModalOpen: boolean, isCreating: boolean, setIsModalOpen: (isOpen: boolean) => void, setCreationMethod: (creationMethod: string) => void, creationMethod: string, handleCreatePortfolio: (customBodyResume: any) => void }) => {
     const [showResumeImport, setShowResumeImport] = useState(false);
     const [resumeUploaded, setResumeUploaded] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
@@ -18,6 +17,7 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
     const [base64Data, setBase64Data] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [processingResume, setProcessingResume] = useState(false);
+    const [customBodyResume, setCustomBodyResume] = useState<any>(null);
     
     const handleResumeUpload = async(e : any) => {
         const file = e.target.files[0];
@@ -48,20 +48,6 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
             setUploadingResume(false);
         }
     }
-    
-    const processPdfData = async (data: string) => {
-        if (!data) return;
-        
-        setProcessingResume(true);
-        toast.loading("Analyzing your resume...");
-        
-        setTimeout(() => {
-            setProcessingResume(false);
-            setShowPreview(true);
-            toast.dismiss();
-            toast.success("Portfolio generated successfully!");
-        }, 3000);
-    };
 
     const handleMethodSelect = (method : string) => {
         setCreationMethod(method);
@@ -70,7 +56,7 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
     const handleButtonClick = () => {
         if (creationMethod === 'scratch') {
             toast.loading("Creating your portfolio...");
-            handleCreatePortfolio();
+            handleCreatePortfolio("");
         } else if (creationMethod === 'import') {
             setShowResumeImport(true);
         }
@@ -111,7 +97,8 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
         
             if (response.ok) {
                 const reportText = await response.text();
-                console.log(reportText);
+                console.log("This is from report text",reportText)
+                setCustomBodyResume(reportText)
                 toast.dismiss();
                 toast.success("Portfolio created successfully!");
                 // Auto show preview after successful extraction
@@ -128,7 +115,6 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
         }
     }
 
-    // Clean up toasts when modal closes
     useEffect(() => {
         if (!isModalOpen) {
             toast.dismiss();
@@ -149,6 +135,8 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
         textSecondary: '#d1d5db',
         textMuted: '#9ca3af'
     };
+
+    console.log(customBodyResume)
 
     return (
         <Dialog open={isModalOpen} onOpenChange={(open) => {
@@ -452,7 +440,7 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                                                                     whileHover={{ 
                                                                         boxShadow: `0 6px 14px ${ColorTheme.primaryGlow}`
                                                                     }}
-                                                                    onClick={handleCreatePortfolio}
+                                                                    onClick={()=>handleCreatePortfolio(customBodyResume)}
                                                                 >
                                                                     View Portfolio
                                                                 </motion.button>

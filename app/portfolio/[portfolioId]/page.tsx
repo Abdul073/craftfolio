@@ -23,7 +23,6 @@ const Page = () => {
       return null;
     }
     const SectionComponent = Template.sections[sectionType];
-    console.log(sectionType)
     return SectionComponent ? <SectionComponent key={`${sectionType}`} /> : null;
   };
 

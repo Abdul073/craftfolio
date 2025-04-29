@@ -91,7 +91,6 @@ const Projects: NextPage = () => {
       },
     },
   };
-  console.log(projectsData)
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-64">Loading...</div>;

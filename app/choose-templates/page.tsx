@@ -65,7 +65,7 @@ const PortfolioThemePage = () => {
     setIsModalOpen(true);
   };
   
-  const handleCreatePortfolio = async () => {
+  const handleCreatePortfolio = async (customBodyResume : any) => {
     if (selectedTheme && user && creationMethod) {
       setIsCreating(true);
       try {
@@ -74,7 +74,8 @@ const PortfolioThemePage = () => {
           toast.error("Invalid template");
           return;
         }
-        const result = await createPortfolio(user.id, themeName, creationMethod);
+        console.log(customBodyResume)
+        const result = await createPortfolio(user.id, themeName, creationMethod,customBodyResume);
         
         if (result.success) {
           toast.success('Portfolio created successfully');
@@ -96,6 +97,7 @@ const PortfolioThemePage = () => {
       }
     }
   };
+
   interface Style {
     [key: string]: string;
   }
@@ -289,9 +291,13 @@ const PortfolioThemePage = () => {
         </motion.div>
       </div>
    
-      <CreateMethodModal  isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} isCreating={isCreating} setCreationMethod={setCreationMethod} handleCreatePortfolio={handleCreatePortfolio} creationMethod={creationMethod} />
-
-
+      <CreateMethodModal
+       isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        isCreating={isCreating}
+        setCreationMethod={setCreationMethod}
+        handleCreatePortfolio={handleCreatePortfolio}
+        creationMethod={creationMethod} />
     </div>
   );
 };

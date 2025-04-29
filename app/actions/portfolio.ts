@@ -4,9 +4,8 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { templates } from "@/lib/templateContent";
 
-export async function createPortfolio(userId: string, templateName: string, creationMethod: string) {
+export async function createPortfolio(userId: string, templateName: string, creationMethod: string,customBodyResume : string) {
   try {
-    console.log({templateName,userId});
     const template = await prisma.template.findFirst({
       where: {
         name: templateName,
@@ -18,11 +17,13 @@ export async function createPortfolio(userId: string, templateName: string, crea
       return { success: false, error: "Template not found" }
     }
 
+    const content = creationMethod === "import" && customBodyResume ? JSON.parse(customBodyResume) : template.defaultContent;
+    console.log(content,creationMethod,customBodyResume)
     const newTemplate = await prisma.portfolio.create({
       data: {
         isTemplate: false,
         userId: userId,
-        content: template?.defaultContent,
+        content : content,
         isPublished: false,
         templateName: templateName,
       },
