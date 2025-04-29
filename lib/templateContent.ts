@@ -15,7 +15,7 @@ export const templates: any = {
           name: "Alex Morgan",
           titlePrefix: "Aspiring Software",
           titleSuffixOptions: ["Engineer", "Developer"],
-          subtitle:
+          summary:
             "Craving to build innovative solutions that make an impact.\nEnthusiastic problem solver, always curious about new technologies.\nCommitted to continuous learning and growth.",
           badge: {
             texts: [

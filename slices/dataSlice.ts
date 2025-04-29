@@ -2,9 +2,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface PortfolioState {
   portfolioData: any;
+  themeName: string;
 }
 const initialState: PortfolioState = {
   portfolioData: null,
+  themeName : "",
 };
 
 export const dataSlice = createSlice({
@@ -13,6 +15,9 @@ export const dataSlice = createSlice({
   reducers: {
     setPortfolioData: (state, action) => {
       state.portfolioData = action.payload;
+    },
+    setThemeName : (state, action) => {
+      state.themeName = action.payload;
     },
 
     updatePortfolioData: (
@@ -27,5 +32,5 @@ export const dataSlice = createSlice({
   },
 });
 
-export const { setPortfolioData,updatePortfolioData } = dataSlice.actions;
+export const { setPortfolioData, setThemeName, updatePortfolioData } = dataSlice.actions;
 export default dataSlice.reducer;

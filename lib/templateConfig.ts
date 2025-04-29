@@ -10,7 +10,8 @@ export const templatesConfig : any= {
         experience : dynamic(()=>import("@/components/NeoSpark/ProfessionalJourney")),
         technologies : dynamic(()=>import("@/components/NeoSpark/Technologies")),
         contact : dynamic(()=>import("@/components/NeoSpark/Contact")),
-        }
+        },
+        hero : ["name","summary","titlePrefix","titleSuffixOptions","badge","actions"]
     },
     SimpleWhite:{
         sections:{
@@ -18,6 +19,7 @@ export const templatesConfig : any= {
             projects : dynamic(()=>import("@/components/SimpleWhite/Projects")),
             skills : dynamic(()=>import("@/components/SimpleWhite/Skills")),
             experience : dynamic(()=>import("@/components/SimpleWhite/Experience")),
-        }
+        },
+        hero : ["name","title","summary"]
     }
 }

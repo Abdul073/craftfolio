@@ -137,7 +137,7 @@ const Hero = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.4 }}
         className="text-center mt-6 text-xl font-medium max-w-2xl"
-        dangerouslySetInnerHTML={{ __html: heroData.subtitle }}
+        dangerouslySetInnerHTML={{ __html: heroData.summary }}
       >
         
       </motion.p>

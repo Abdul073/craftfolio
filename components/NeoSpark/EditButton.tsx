@@ -26,7 +26,7 @@ const EditButton = ({sectionName} : {sectionName : string}) => {
     <div className="absolute right-24 -top-12">
     <Button
       onClick={handleSectionEdit} 
-      className="bg-transparent -tracking-wider text-white hover:bg-transparent border border-dashed border-gray-300 shadow transition-all px-4 py-2 text-sm"
+      className="bg-transparent tracking-wider text-white hover:bg-transparent border border-dashed border-gray-300 shadow transition-all px-4 py-2 text-sm"
     >
       {currentlyEditing === sectionName ? "Cancel" : (
         <>

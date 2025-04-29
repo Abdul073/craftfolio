@@ -365,7 +365,7 @@ function convertToPortfolioFormat(resumeData : any, titleInfo : any, summaryInfo
         name: name,
         titlePrefix: titlePrefix,
         titleSuffixOptions: titleSuffixOptions,
-        subtitle: summaryLines,
+        summary: summaryLines,
         badge: {
           texts: [
             "Open to work",

@@ -4,28 +4,26 @@ import { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
 import { fetchContent, getThemeNameApi } from "@/app/actions/portfolio";
 import { useParams } from "next/navigation";
-import { setPortfolioData } from "@/slices/dataSlice";
-import { Spotlight } from "../components/Spotlight";
+import { setPortfolioData, setThemeName } from "@/slices/dataSlice";
 import { templatesConfig } from "@/lib/templateConfig";
 import Sidebar from "../Sidebar";
+import { Spotlight } from "@/components/NeoSpark/Spotlight";
 
 const Page = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const portfolioId = params.portfolioId as string;
-  const { portfolioData } = useSelector((state: RootState) => state.data);
+  const { portfolioData,themeName: currentTheme } = useSelector((state: RootState) => state.data);
   const allSections = portfolioData?.map((item: any) => item.type);
   
-  const [currentTheme, setCurrentTheme] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const Template = currentTheme ? templatesConfig[currentTheme] : null;
 
   const getComponentForSection = (sectionType: string) => {
     if (!Template || !Template.sections || !Template.sections[sectionType]) {
       return null;
     }
     const SectionComponent = Template.sections[sectionType];
+    console.log(sectionType)
     return SectionComponent ? <SectionComponent key={`${sectionType}`} /> : null;
   };
 
@@ -36,12 +34,11 @@ const Page = () => {
       try {
         const themeResult: any = await getThemeNameApi({ portfolioId });
         if (themeResult.success) {
-          setCurrentTheme(themeResult.data.templateName);
+          dispatch(setThemeName(themeResult.data.templateName));
         }
         
         const contentResult: any = await fetchContent({ portfolioId });
         if (contentResult.success) {
-          console.log({portfolioData,contentResult})
           dispatch(setPortfolioData(contentResult.data.sections));
         }
       } catch (error) {
@@ -54,6 +51,7 @@ const Page = () => {
     initializePortfolio();
   }, [portfolioId, dispatch]);
 
+  const Template = currentTheme ? templatesConfig[currentTheme] : null;
   if (!Template || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -64,8 +62,6 @@ const Page = () => {
 
   const NavbarComponent = Template.navbar;
   const SpotlightComponent = Template.spotlight;
-
-  console.log(portfolioData)
 
   return (
     <div className="min-h-screen flex flex-col">
