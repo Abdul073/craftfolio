@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import {ReactNode} from "react";
+import { ReactNode } from "react";
 
 const buttonVariants = {
   rest: { scale: 1 },
@@ -17,34 +17,56 @@ const newTextVariants = {
   hover: { y: 0, opacity: 1 },
 };
 
-
-
-interface inputProps{
-  text:string,
-  icon: ReactNode,
-  link:string
+interface AnimatedButtonProps {
+  text: string;
+  icon: ReactNode;
+  link?: string;
+  onClick?: () => void;
 }
 
+export default function AnimatedButton({ text = "Button", icon, link, onClick }: AnimatedButtonProps) {
+  const ButtonComponent = ({ children }: { children: ReactNode }) => {
+    if (link) {
+      return (
+        <motion.a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group relative cursor-pointer inline-flex bg-black hover:text-black hover:border-black items-center justify-center px-8 py-4 overflow-hidden font-semibold text-white hover:bg-white border hover:border-primary-900 hover:text-primary-900 bg-primary-900 transition-all duration-300"
+          variants={buttonVariants}
+          initial="rest"
+          whileHover="hover"
+          whileTap="tap"
+        >
+          {children}
+        </motion.a>
+      );
+    } else {
+      return (
+        <motion.button
+          onClick={onClick}
+          className="group relative cursor-pointer inline-flex bg-black hover:text-black hover:border-black items-center justify-center px-8 py-4 overflow-hidden font-semibold text-white hover:bg-white border hover:border-primary-900 hover:text-primary-900 bg-primary-900 transition-all duration-300"
+          variants={buttonVariants}
+          initial="rest"
+          whileHover="hover"
+          whileTap="tap"
+        >
+          {children}
+        </motion.button>
+      );
+    }
+  };
 
-export default function AnimatedButton({text="Button", icon, link}: inputProps) {
   return (
     <div className="mt-12">
-      <motion.a
-        href={link}
-        target={'_blank'}
-        className="group relative inline-flex bg-black hover:text-black hover:border-black items-center justify-center px-8 py-4 overflow-hidden font-semibold text-white hover:bg-white border hover:border-primary-900 hover:text-primary-900 bg-primary-900 transition-all duration-300"
-        variants={buttonVariants}
-        initial="rest"
-        whileHover="hover"
-        whileTap="tap"
-      >
+      <ButtonComponent>
         <motion.span className="relative hover:text-black hover:border-black font-title flex items-center overflow-hidden">
           <motion.span
             className="flex items-center justify-center"
             variants={textVariants}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-              {text}
+            {text}
             <motion.span
               className="ml-2"
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -57,17 +79,16 @@ export default function AnimatedButton({text="Button", icon, link}: inputProps) 
             variants={newTextVariants}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-              {text}
+            {text}
             <motion.span
               className="ml-2"
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-
               {icon}
             </motion.span>
           </motion.span>
         </motion.span>
-      </motion.a>
+      </ButtonComponent>
     </div>
   );
 }

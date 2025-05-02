@@ -17,6 +17,7 @@ const Page = () => {
   const allSections = portfolioData?.map((item: any) => item.type);
   
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  console.log(portfolioData,allSections)
 
   const getComponentForSection = (sectionType: string) => {
     if (!Template || !Template.sections || !Template.sections[sectionType]) {
@@ -38,6 +39,7 @@ const Page = () => {
         
         const contentResult: any = await fetchContent({ portfolioId });
         if (contentResult.success) {
+          console.log(contentResult.data.sections)
           dispatch(setPortfolioData(contentResult.data.sections));
         }
       } catch (error) {

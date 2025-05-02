@@ -19,6 +19,7 @@ export const templatesConfig : any= {
             projects : dynamic(()=>import("@/components/SimpleWhite/Projects")),
             skills : dynamic(()=>import("@/components/SimpleWhite/Skills")),
             experience : dynamic(()=>import("@/components/SimpleWhite/Experience")),
+            technologies : dynamic(()=>import("@/components/SimpleWhite/Skills")),
         },
         hero : ["name","title","summary"]
     }

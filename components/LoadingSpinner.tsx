@@ -36,7 +36,7 @@ export default function LoadingSpinner() {
   const { text, icon: Icon } = loadingMessages[currentMessageIndex];
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-transparent">
+    <div className="fixed inset-0 main-bg-noise flex items-center justify-center ">
       <div className="bg-transparent p-8 rounded-lg flex flex-col items-center">
         <div className="relative mb-4">
           {/* Main spinner */}

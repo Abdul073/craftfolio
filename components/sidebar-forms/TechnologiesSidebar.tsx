@@ -30,7 +30,6 @@ const TechnologiesSidebar: React.FC = () => {
   const portfolioId = params.portfolioId as string;
   const { portfolioData } = useSelector((state: RootState) => state.data);
 
-  // Load existing data when component mounts
   useEffect(() => {
     if (portfolioData) {
       const techSectionData = portfolioData.find((section: any) => section.type === "technologies")?.data;
@@ -136,10 +135,10 @@ const TechnologiesSidebar: React.FC = () => {
               <div className='mb-6'>
                 <h3 className='text-sm font-medium mb-2'>Suggestions</h3>
                 <div>
-                  {suggestions.map((item: Technology) => (
+                  {suggestions.map((item: Technology, index : number) => (
                     <div 
                       onClick={() => addSuggestion(item)}
-                      key={item.name}
+                      key={index}
                       className='flex bg-stone-700/25 border border-white/15 px-4 mt-2 rounded-lg items-center justify-between gap-4 py-2 cursor-pointer hover:bg-stone-700/40 transition-colors'
                     >
                       <span className='text-sm'>{item.name}</span>
@@ -161,9 +160,9 @@ const TechnologiesSidebar: React.FC = () => {
               <div>
                 <h3 className='text-sm font-medium mb-2'>Selected Technologies</h3>
                 <div>
-                  {selected.map((item: Technology) => (
+                  {selected.map((item: Technology,index : number) => (
                     <div 
-                      key={item.name}
+                      key={index}
                       className='flex bg-stone-700/25 border border-white/15 px-4 mt-2 rounded-lg items-center justify-between py-2'
                     >
                       <div className='flex items-center gap-4'>

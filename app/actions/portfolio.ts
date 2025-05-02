@@ -4,26 +4,59 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { templates } from "@/lib/templateContent";
 
-export async function createPortfolio(userId: string, templateName: string, creationMethod: string,customBodyResume : string) {
+export async function createPortfolio(userId: string, templateName: string, creationMethod: string, customBodyResume: string) {
   try {
     const template = await prisma.template.findFirst({
       where: {
         name: templateName,
       },
       select: { defaultContent: true }
-    })
+    });
 
-    if(!template || !template.defaultContent) {
-      return { success: false, error: "Template not found" }
+    if (!template || !template.defaultContent) {
+      return { success: false, error: "Template not found" };
     }
 
-    const content = creationMethod === "import" && customBodyResume ? JSON.parse(customBodyResume) : template.defaultContent;
-    console.log(content,creationMethod,customBodyResume)
+    let content : any;
+
+    if (creationMethod === "import" && customBodyResume) {
+      // Parse both template and custom resume content
+      const templateContent : any = typeof template.defaultContent === 'string' 
+        ? JSON.parse(template.defaultContent) 
+        : template.defaultContent;
+      
+      const customContent : any = JSON.parse(customBodyResume);
+      
+      // Create a map of custom sections by type for easy lookup
+      const customSectionMap : any = {};
+      if (customContent.sections && Array.isArray(customContent.sections)) {
+        customContent.sections.forEach((section : any) => {
+          if (section.type) {
+            customSectionMap[section.type] = section;
+          }
+        });
+      }
+      
+      // Create a new template content object with the same structure but replaced sections
+      const newContent = {
+        ...templateContent,
+        sections: templateContent.sections.map((section : any) => {
+          // If this section type exists in the custom content, use that instead
+          return customSectionMap[section.type] || section;
+        })
+      };
+      
+      content = newContent;
+    } else {
+      // If not import method or no custom resume, use template content as is
+      content = template.defaultContent;
+    }
+
     const newTemplate = await prisma.portfolio.create({
       data: {
         isTemplate: false,
         userId: userId,
-        content : content,
+        content: content,
         isPublished: false,
         templateName: templateName,
       },
@@ -252,7 +285,6 @@ export async function updateSection({
 export async function fetchThemesApi(){
   try {
     const themes = await prisma.template.findMany();
-    console.log(themes)
     return { success: true, data: themes };
   }catch(error){
     return { success: false, error: error };
@@ -274,14 +306,12 @@ export async function getThemeNameApi({portfolioId} : {portfolioId: string}){
 
 export async function fetchContent({ portfolioId }: { portfolioId: string }) {
   try {
-    console.log(portfolioId);
     const hero = await prisma.portfolio.findUnique({
       where: { id: portfolioId },
     });
     if (!hero || !hero.content) {
       return { success: false, error: "Portfolio not found" };
     }
-
     return { success: true, data: hero.content };
   } catch (error) {
     return { success: false, error: error };

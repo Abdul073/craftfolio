@@ -24,7 +24,6 @@ interface ProjectType {
 const Projects: NextPage = () => {
   const params = useParams();
   const portfolioId = params.portfolioId as string;
-  const dispatch = useDispatch();
   
   const { portfolioData } = useSelector((state: RootState) => state.data);
   
@@ -97,6 +96,7 @@ const Projects: NextPage = () => {
   }
 
 
+
   return (
     <section
       id="projects"
@@ -148,13 +148,13 @@ const Projects: NextPage = () => {
                     </p>
 
                     <div className="flex flex-wrap gap-3">
-                      {project.techStack.map((tag, tagIndex) => (
+                      {project.techStack.map((tech, tagIndex) => (
                         <span
                           key={tagIndex}
                           className="px-4 py-2 text-sm font-medium bg-teal-300/50 text-primary-700 rounded-lg"
                         >
-                          {tag.name}
-                        </span>
+                          <img  src={tech.logo} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
+                          </span>
                       ))}
                     </div>
 

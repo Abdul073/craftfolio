@@ -1,16 +1,64 @@
-import React from "react";
 import { motion } from "framer-motion";
+import type { NextPage } from 'next';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { useParams } from 'next/navigation';
+import { supabase } from '@/lib/supabase-client';
+import EditButton from './EditButton';
 
-const Skills: React.FC = () => {
+interface TechnologyType {
+  name: string;
+  logo: string;
+}
 
-    const skills = [
-      { name: "HTML", icon: "https://img.icons8.com/color/48/000000/html-5.png" },
-      { name: "CSS", icon: "https://img.icons8.com/color/48/000000/css3.png" },
-      { name: "JavaScript", icon: "https://img.icons8.com/color/48/000000/javascript.png" },
-      { name: "TypeScript", icon: "https://img.icons8.com/color/48/000000/typescript.png" },
-      { name: "React", icon: "https://img.icons8.com/color/48/000000/react.png" },
-      { name: "Next.js", icon: "https://img.icons8.com/color/48/000000/nextjs.png" },
-    ]
+const Skills: NextPage = () => {
+  const params = useParams();
+  const portfolioId = params.portfolioId as string;
+  const dispatch = useDispatch();
+  
+  const { portfolioData } = useSelector((state: RootState) => state.data);
+  
+  const [isLoading, setIsLoading] = useState(true);
+  const [technologiesData, setTechnologiesData] = useState<TechnologyType[]>([]);
+  
+  useEffect(() => {
+    if (portfolioData) {
+      const technologiesSectionData = portfolioData?.find((section: any) => section.type === "technologies")?.data;
+
+      if (technologiesSectionData) {
+        setTechnologiesData(technologiesSectionData);
+      } else {
+        setTechnologiesData([]);
+      }
+      setIsLoading(false);
+    }
+  }, [portfolioData]);
+  
+  useEffect(() => {
+    if (!portfolioId || isLoading) return;
+
+    const subscription = supabase
+      .channel(`portfolio-${portfolioId}-technologies`)
+      .on('postgres_changes', 
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'Portfolio', 
+          filter: `id=eq.${portfolioId}` 
+        }, 
+        (payload) => {
+          console.log('Technologies update detected!', payload);
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Supabase subscription status for technologies: ${status}`);
+      });
+      
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [portfolioId, isLoading]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -40,56 +88,47 @@ const Skills: React.FC = () => {
     },
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  console.log(portfolioData)
+
   return (
-    <section
-      id="skills"
-      className="min-h-screen flex items-center justify-center bg-[white] text-black relative overflow-hidden py-20"
-    >
-      <div className="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-title font-semibold text-primary-800 mb-12 text-center">
+    <section id="skills" className="py-20 bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16 relative">
+        <EditButton styles="right-48 -top-6" sectionName="technologies" />
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">
             Technical Skills
           </h2>
-          <p className="font-sans text-lg text-primary-600 tracking-medium leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             A comprehensive list of technologies and tools I work with
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+        <motion.div 
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-5xl mx-auto"
           variants={containerVariants}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          animate="visible"
         >
-          {skills.map((skill) => (
-            <motion.div
-              key={skill.name}
+          {technologiesData.map((technology, index) => (
+            <motion.div 
+              key={index}
+              className="flex flex-col cursor-pointer items-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
               variants={skillVariants}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="group cursor-pointer"
             >
-              <div
-                className="bg-white/50 backdrop-blur-sm border border-gray-300 rounded-full p-3 shadow-sm 
-                           hover:shadow-md hover:border-primary-400 transition-all duration-300 
-                           hover:bg-white/80"
-              >
-                <div className="text-center">
-                  <h3
-                    className="text-base md:text-lg text-primary-800 group-hover:text-primary-900
-                             transition-colors duration-300 px-2"
-                  >
-                    {skill.name}
-                  </h3>
-                </div>
+              <div className="w-16 h-16 mb-3 flex items-center justify-center">
+                <img 
+                  src={technology.logo} 
+                  alt={technology.name} 
+                  className="max-w-full max-h-full"
+                />
               </div>
+              <h3 className="text-gray-800 dark:text-gray-200 font-medium text-center">
+                {technology.name}
+              </h3>
             </motion.div>
           ))}
         </motion.div>

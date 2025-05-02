@@ -18,8 +18,37 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
     const [isLoading, setIsLoading] = useState(false);
     const [processingResume, setProcessingResume] = useState(false);
     const [customBodyResume, setCustomBodyResume] = useState<any>(null);
-    
-    const handleResumeUpload = async(e : any) => {
+    const [progressValue, setProgressValue] = useState(0);
+    const [currentFact, setCurrentFact] = useState(0);
+    const [currentMessage, setCurrentMessage] = useState(0);
+
+    const portfolioFacts = [
+        "Recruiters spend an average of just 6 seconds scanning a resume, but up to 2 minutes on a portfolio website.",
+        "Having a portfolio website makes you 65% more likely to be contacted by recruiters.",
+        "82% of hiring managers view personal portfolios as important when evaluating candidates.",
+        "Portfolios with case studies or detailed project breakdowns receive 3x more engagement.",
+        "Professionals with visual portfolios earn up to 30% more than those without.",
+        "93% of hiring managers check candidates' online presence before making a decision.",
+        "A well-designed portfolio can set you apart from 90% of other applicants.",
+        "Adding testimonials to your portfolio increases credibility by 70%.",
+        "Portfolios containing video content receive 40% more engagement.",
+        "Updating your portfolio regularly can increase your visibility by 50%."
+    ];
+
+    const loadingMessages = [
+        "Analyzing your resume...",
+        "Extracting your skills and experiences...",
+        "Building your portfolio framework...",
+        "Organizing your professional journey...",
+        "Crafting your digital presence...",
+        "Adding the finishing touches...",
+        "Polishing your professional narrative...",
+        "Almost there! Just a few more seconds...",
+        "Your impressive portfolio is coming together...",
+        "Final optimizations in progress..."
+    ];
+
+    const handleResumeUpload = async (e: any) => {
         const file = e.target.files[0];
         if (file?.type === "application/pdf") {
             await handleFile(file);
@@ -28,20 +57,20 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
         }
     };
 
-    const handleFile = async(file: File): Promise<void> => {
-        if(!file) return;
+    const handleFile = async (file: File): Promise<void> => {
+        if (!file) return;
         setUploadingResume(true);
         try {
-           const reader = new FileReader();
-           reader.onloadend = () => {
-               setTimeout(() => {
-                const base64String = reader.result as string;
-                setBase64Data(base64String);
-                setResumeUploaded(true);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setTimeout(() => {
+                    const base64String = reader.result as string;
+                    setBase64Data(base64String);
+                    setResumeUploaded(true);
                 }, 2000);
                 // processPdfData(base64String);
-           }
-           reader.readAsDataURL(file);
+            }
+            reader.readAsDataURL(file);
         } catch (error) {
             toast.dismiss();
             toast.error("Error processing PDF");
@@ -49,10 +78,10 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
         }
     }
 
-    const handleMethodSelect = (method : string) => {
+    const handleMethodSelect = (method: string) => {
         setCreationMethod(method);
     };
-    
+
     const handleButtonClick = () => {
         if (creationMethod === 'scratch') {
             toast.loading("Creating your portfolio...");
@@ -61,65 +90,130 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
             setShowResumeImport(true);
         }
     };
-    
+
     const handleBackButton = () => {
         if (processingResume) {
             toast.dismiss();
             toast.error("Cannot go back while processing");
             return;
         }
-        
+
         setShowResumeImport(false);
         setResumeUploaded(false);
         setShowPreview(false);
         setBase64Data("");
+        setProgressValue(0);
+        setCurrentFact(0);
+        setCurrentMessage(0);
     };
 
-    async function extractDetails(): Promise<void> {
-        if (!base64Data) {
-            toast.error("Please upload a resume first");
-            return;
-        }
-        
-        setIsLoading(true);
-        toast.loading("Creating your portfolio...");
+async function extractDetails(): Promise<void> {
+    if (!base64Data) {
+        toast.error("Please upload a resume first");
+        return;
+    }
     
-        try {
-            const response = await fetch("api/extractreportgemini", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    base64: base64Data,
-                }),
-            });
+    setIsLoading(true);
+    toast.dismiss(); // Dismiss any existing toasts
+    // Initialize the progress bar
+    setProgressValue(0);
+    setCurrentFact(0);
+    setCurrentMessage(0);
+    
+    // Improved progress simulation with separate message and fact intervals
+    const progressInterval = setInterval(() => {
+        setProgressValue(prev => {
+            // Slower initial progress that speeds up later
+            const increment = prev < 70 ? (Math.random() * 1.5) + 0.8 : (Math.random() * 3) + 1.5;
+            return prev + increment < 95 ? prev + increment : 95; // Cap at 95% until complete
+        });
+    }, 1000);
+    
+    // Separate interval for facts to make them change at a more readable pace
+    const factInterval = setInterval(() => {
+        setCurrentFact(prev => (prev + 1) % portfolioFacts.length);
+    }, 5000);
+    
+    // Separate interval for messages to make them change less frequently
+    const messageInterval = setInterval(() => {
+        setCurrentMessage(prev => {
+            const newIndex = Math.min(
+                Math.floor((progressValue / 100) * loadingMessages.length),
+                loadingMessages.length - 1
+            );
+            // Only update if it's a new message
+            return newIndex !== prev ? newIndex : prev;
+        });
+    }, 3000);
+
+        let response;
+    try {
+        response = await fetch("api/extractreportgemini", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                base64: base64Data,
+            }),
+        });
+    
+        // Don't clear intervals yet - let the animation complete
         
-            if (response.ok) {
-                const reportText = await response.text();
-                console.log("This is from report text",reportText)
-                setCustomBodyResume(reportText)
-                toast.dismiss();
-                toast.success("Portfolio created successfully!");
-                // Auto show preview after successful extraction
-                setShowPreview(true);
-            } else {
-                toast.dismiss();
-                toast.error("Failed to process resume");
-            }
-        } catch (error) {
-            toast.dismiss();
-            toast.error("Error connecting to server");
-        } finally {
+        if (response.ok) {
+            const reportText = await response.text();
+            console.log("This is from report text", reportText);
+            setCustomBodyResume(reportText);
+            
+            // Animate to 100% smoothly over 2 seconds
+            clearInterval(progressInterval);
+            clearInterval(factInterval);
+            clearInterval(messageInterval);
+            
+            // Smooth completion animation
+            const completionAnimation = () => {
+                setProgressValue(prev => {
+                    const newValue = prev + 2;
+                    if (newValue >= 100) {
+                        clearInterval(completionInterval);
+                        // Delay showing success message
+                        setTimeout(() => {
+                            toast.success("Portfolio created successfully!");
+                            setShowPreview(true);
+                            setIsLoading(false); // This was missing - need to set loading to false
+                        }, 800);
+                        return 100;
+                    }
+                    return newValue;
+                });
+            };
+            
+            const completionInterval = setInterval(completionAnimation, 50);
+        } else {
+            clearInterval(progressInterval);
+            clearInterval(factInterval);
+            clearInterval(messageInterval);
+            toast.error("Failed to process resume");
+        }
+    } catch (error) {
+        clearInterval(progressInterval);
+        clearInterval(factInterval);
+        clearInterval(messageInterval);
+        toast.error("Error connecting to server");
+    } finally {
+        // If there's an error, make sure to set loading to false
+        // In success case, this will be handled by the completion animation
+        if (!response || !response.ok) {
             setIsLoading(false);
         }
     }
+}
 
     useEffect(() => {
         if (!isModalOpen) {
             toast.dismiss();
         }
-        
+
         return () => {
             toast.dismiss();
         };
@@ -136,7 +230,7 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
         textMuted: '#9ca3af'
     };
 
-    console.log(customBodyResume)
+    console.log(customBodyResume);
 
     return (
         <Dialog open={isModalOpen} onOpenChange={(open) => {
@@ -201,7 +295,7 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                                 </div>
                                 <h3 className="text-xl font-semibold" style={{ color: '#f3f4f6' }}>Edit a Pre-filled Template</h3>
                                 <p className='text-gray-400'>
-                                Start with a pre-filled template featuring dummy data that you can easily edit. Perfect for building your portfolio step by step while maintaining full control over the content                                    </p>
+                                    Start with a pre-filled template featuring dummy data that you can easily edit. Perfect for building your portfolio step by step while maintaining full control over the content                                    </p>
                             </motion.div>
 
                             {/* Import from resume option */}
@@ -282,19 +376,19 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            disabled={processingResume}
+                            disabled={processingResume || isLoading}
                             style={{
-                                cursor: processingResume ? 'not-allowed' : 'pointer',
-                                opacity: processingResume ? 0.5 : 1,
+                                cursor: (processingResume || isLoading) ? 'not-allowed' : 'pointer',
+                                opacity: (processingResume || isLoading) ? 0.5 : 1,
                             }}
                         >
                             <ArrowLeft className="h-5 w-5 mr-2" />
                             Back to options
                         </motion.button>
-                        
+
                         {/* Background decoration */}
-                        <motion.div 
-                            className="absolute bottom-0 right-0 w-1/2 h-1/2 rounded-full opacity-10 -z-10" 
+                        <motion.div
+                            className="absolute bottom-0 right-0 w-1/2 h-1/2 rounded-full opacity-10 -z-10"
                             style={{ background: `radial-gradient(circle, ${ColorTheme.primary}, transparent 70%)` }}
                             animate={{
                                 scale: [1, 1.1, 1],
@@ -306,32 +400,32 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                                 repeatType: "reverse"
                             }}
                         />
-                        
+
                         <div className="mt-10">
-                            <motion.div 
+                            <motion.div
                                 className="text-center mb-12"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5 }}
                             >
-                                <motion.span 
+                                <motion.span
                                     className="inline-block px-4 py-1.5 rounded-full text-sm font-medium mb-4"
-                                    style={{ 
+                                    style={{
                                         color: ColorTheme.primary,
                                         backgroundColor: ColorTheme.primaryGlow,
                                     }}
                                 >
                                     Revolutionary Feature
                                 </motion.span>
-                                
+
                                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                                    The <span style={{ 
+                                    The <span style={{
                                         background: `linear-gradient(to right, ${ColorTheme.primary}, ${ColorTheme.primaryDark})`,
                                         WebkitBackgroundClip: "text",
                                         WebkitTextFillColor: "transparent"
                                     }}>Magic</span> of Resume Import
                                 </h2>
-                                <p 
+                                <p
                                     className=" max-w-3xl mx-auto"
                                     style={{ color: ColorTheme.textSecondary }}
                                 >
@@ -339,53 +433,49 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                                 </p>
                             </motion.div>
 
-                            <motion.div 
+                            <motion.div
                                 className="max-w-lg mx-auto"
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.6, delay: 0.2 }}
                             >
                                 {/* Import Demo */}
-                                <motion.div 
+                                <motion.div
                                     className="rounded-xl overflow-hidden p-8"
-                                    style={{ 
+                                    style={{
                                         backgroundColor: ColorTheme.bgCard,
                                         borderColor: ColorTheme.borderLight,
                                         backdropFilter: 'blur(16px)',
                                         boxShadow: `0 10px 30px rgba(0,0,0,0.3), 0 6px 12px ${ColorTheme.primaryGlow}`
                                     }}
-                                    whileHover={{ 
-                                        boxShadow: `0 15px 40px rgba(0,0,0,0.4), 0 8px 20px ${ColorTheme.primaryGlow}`,
-                                        // y: -5
+                                    whileHover={{
+                                        boxShadow: `0 15px 40px rgba(0,0,0,0.4), 0 8px 20px ${ColorTheme.primaryGlow}`
                                     }}
                                 >
                                     <div className="text-center mb-4">
-                                        {/* <h3 className="text-2xl font-semibold mb-4">Upload Your Resume</h3> */}
-                                        {/* <p style={{ color: ColorTheme.textSecondary }} className="mb-6">Your portfolio will be automatically created from your resume</p> */}
-                                        
                                         <div className="relative">
                                             {!resumeUploaded ? (
-                                                <motion.div 
+                                                <motion.div
                                                     className="border-2 border-dashed rounded-lg p-8 transition-colors cursor-pointer"
-                                                    style={{ 
+                                                    style={{
                                                         borderColor: ColorTheme.borderLight,
                                                         pointerEvents: uploadingResume ? 'none' : 'auto',
                                                         opacity: uploadingResume ? 0.7 : 1
                                                     }}
-                                                    whileHover={{ 
+                                                    whileHover={{
                                                         borderColor: uploadingResume ? ColorTheme.borderLight : ColorTheme.primary,
                                                         backgroundColor: uploadingResume ? 'transparent' : 'rgba(16, 185, 129, 0.05)'
                                                     }}
                                                     animate={uploadingResume ? {} : pulseAnimation}
                                                 >
-                                                    <input 
-                                                        type="file" 
-                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                                                    <input
+                                                        type="file"
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                                         onChange={handleResumeUpload}
                                                         disabled={uploadingResume}
                                                     />
                                                     {uploadingResume ? (
-                                                        <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{ 
+                                                        <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-4" style={{
                                                             borderColor: ColorTheme.primary,
                                                             borderTopColor: 'transparent'
                                                         }}></div>
@@ -401,18 +491,67 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                                                 </motion.div>
                                             ) : (
                                                 <div className="rounded-lg p-6" style={{ backgroundColor: 'rgba(28, 28, 30, 0.9)' }}>
-                                                    {processingResume ? (
+                                                    {isLoading ? (
                                                         <div className="text-center">
-                                                            <div className="w-16 h-16 border-4 rounded-full animate-spin mx-auto mb-4" style={{ 
-                                                                borderColor: ColorTheme.primary,
-                                                                borderTopColor: 'transparent'
-                                                            }}></div>
-                                                            <p style={{ color: ColorTheme.textSecondary }}>Analyzing your resume...</p>
-                                                            <p style={{ color: ColorTheme.textMuted }} className="text-sm mt-2">This will just take a moment</p>
+                                                            {/* Progress Bar Section */}
+                                                            <div className="w-full h-5 bg-gray-800 rounded-full overflow-hidden mb-6 p-0.5">
+                                                                <motion.div
+                                                                    className="h-full rounded-full"
+                                                                    style={{
+                                                                        background: `linear-gradient(to right, ${ColorTheme.primaryDark}, ${ColorTheme.primary})`,
+                                                                        boxShadow: `0 0 8px ${ColorTheme.primary}80`,
+                                                                        width: `${progressValue}%`,
+                                                                    }}
+                                                                    initial={{ width: '0%' }}
+                                                                    animate={{ width: `${progressValue}%` }}
+                                                                    transition={{ duration: 0.5 }}
+                                                                />
+                                                            </div>
+
+                                                            {/* Loading Message */}
+                                                            <motion.div
+                                                                key={loadingMessages[currentMessage]}
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                exit={{ opacity: 0, y: -10 }}
+                                                                transition={{ duration: 0.5 }}
+                                                                className="min-h-12 flex items-center justify-center"
+                                                            >
+                                                                <p
+                                                                    style={{ color: ColorTheme.primary }}
+                                                                    className="text-lg font-medium mb-4"
+                                                                >
+                                                                    {loadingMessages[currentMessage]}
+                                                                </p>
+                                                            </motion.div>
+
+                                                            {/* Progress Percentage */}
+                                                            <p className="text-xs mb-6" style={{ color: ColorTheme.textMuted }}>
+                                                                <span className="font-medium" style={{ color: ColorTheme.primary }}>
+                                                                    {Math.round(progressValue)}%
+                                                                </span> complete
+                                                            </p>
+
+                                                            {/* Portfolio Fact */}
+                                                            <motion.div
+                                                                className="bg-gray-800/50 backdrop-blur-sm p-4 rounded-lg mt-4 border border-gray-700"
+                                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                                animate={{ opacity: 1, scale: 1 }}
+                                                                exit={{ opacity: 0, scale: 0.95 }}
+                                                                key={portfolioFacts[currentFact]}
+                                                                transition={{ duration: 0.5 }}
+                                                            >
+                                                                <p className="text-sm" style={{ color: ColorTheme.textSecondary }}>
+                                                                    <span className="block font-semibold mb-2 text-xs" style={{ color: ColorTheme.primary }}>
+                                                                        DID YOU KNOW?
+                                                                    </span>
+                                                                    {portfolioFacts[currentFact]}
+                                                                </p>
+                                                            </motion.div>
                                                         </div>
                                                     ) : showPreview ? (
                                                         <div className="text-center">
-                                                            <motion.div 
+                                                            <motion.div
                                                                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
                                                                 style={{ backgroundColor: `${ColorTheme.primary}20` }}
                                                                 initial={{ scale: 0 }}
@@ -424,23 +563,23 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                                                                 </svg>
                                                             </motion.div>
                                                             <p style={{ color: ColorTheme.textSecondary }} className="mb-4">Your portfolio is ready!</p>
-                                                            <motion.div 
+                                                            <motion.div
                                                                 className="flex justify-center gap-4"
                                                                 initial={{ y: 20, opacity: 0 }}
                                                                 animate={{ y: 0, opacity: 1 }}
                                                                 transition={{ delay: 0.4 }}
                                                             >
-                                                                <motion.button 
+                                                                <motion.button
                                                                     className="px-4 py-2 cursor-pointer rounded-lg"
-                                                                    style={{ 
+                                                                    style={{
                                                                         backgroundColor: ColorTheme.primary,
                                                                         color: '#000',
                                                                         boxShadow: `0 4px 10px ${ColorTheme.primaryGlow}`
                                                                     }}
-                                                                    whileHover={{ 
+                                                                    whileHover={{
                                                                         boxShadow: `0 6px 14px ${ColorTheme.primaryGlow}`
                                                                     }}
-                                                                    onClick={()=>handleCreatePortfolio(customBodyResume)}
+                                                                    onClick={() => handleCreatePortfolio(customBodyResume)}
                                                                 >
                                                                     View Portfolio
                                                                 </motion.button>
@@ -448,7 +587,7 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                                                         </div>
                                                     ) : (
                                                         <div className="text-center">
-                                                            <motion.div 
+                                                            <motion.div
                                                                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
                                                                 style={{ backgroundColor: `${ColorTheme.primary}20` }}
                                                             >
@@ -458,15 +597,15 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                                                             </motion.div>
                                                             <p style={{ color: ColorTheme.textSecondary }}>Resume uploaded successfully!</p>
                                                             <p style={{ color: ColorTheme.textMuted }} className="text-sm mt-2 mb-4">Click the button below to create your portfolio</p>
-                                                            
-                                                            <motion.button 
+
+                                                            <motion.button
                                                                 className="px-4 py-2 cursor-pointer rounded-lg"
-                                                                style={{ 
+                                                                style={{
                                                                     backgroundColor: ColorTheme.primary,
                                                                     color: '#000',
                                                                     boxShadow: `0 4px 10px ${ColorTheme.primaryGlow}`
                                                                 }}
-                                                                whileHover={{ 
+                                                                whileHover={{
                                                                     boxShadow: `0 6px 14px ${ColorTheme.primaryGlow}`
                                                                 }}
                                                                 onClick={extractDetails}
@@ -489,25 +628,25 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                                         </div>
                                     </div>
                                 </motion.div>
-                                
+
                                 {/* Create Portfolio Button */}
                                 {!resumeUploaded && !uploadingResume && (
-                                    <motion.div 
+                                    <motion.div
                                         className="mt-8 flex justify-center"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         transition={{ delay: 0.4 }}
                                     >
-                                        <motion.button 
+                                        <motion.button
                                             className="inline-flex items-center cursor-pointer group gap-2 px-6 py-3 rounded-lg font-medium transition-all"
-                                            style={{ 
+                                            style={{
                                                 background: `linear-gradient(to right, ${ColorTheme.primary}, ${ColorTheme.primaryDark})`,
                                                 color: '#000',
                                                 boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`,
                                                 opacity: isLoading ? 0.7 : 1,
                                                 cursor: isLoading ? 'not-allowed' : 'pointer'
                                             }}
-                                            whileHover={{ 
+                                            whileHover={{
                                                 boxShadow: isLoading ? `0 4px 14px ${ColorTheme.primaryGlow}` : `0 6px 20px ${ColorTheme.primaryGlow}`
                                             }}
                                             onClick={() => {
