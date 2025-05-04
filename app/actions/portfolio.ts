@@ -288,6 +288,7 @@ export async function fetchThemesApi(){
     const themes = await prisma.template.findMany();
     return { success: true, data: themes };
   }catch(error){
+    console.error("Error fetching themes:", error);
     return { success: false, error: error };
 
   }
@@ -300,6 +301,7 @@ export async function getThemeNameApi({portfolioId} : {portfolioId: string}){
     });
     return { success: true, data: theme };
   }catch(error){
+    console.error("Error fetching themes:", error);
     return { success: false, error: error };
 
   }
@@ -315,6 +317,7 @@ export async function fetchContent({ portfolioId }: { portfolioId: string }) {
     }
     return { success: true, data: hero.content };
   } catch (error) {
+    console.error("Error fetching content:", error);
     return { success: false, error: error };
   }
 }
