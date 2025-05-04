@@ -3,6 +3,8 @@ import { Raleway } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "@/Providers";
 
+export const runtime = 'nodejs';
+
 const montserrat = Raleway({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
