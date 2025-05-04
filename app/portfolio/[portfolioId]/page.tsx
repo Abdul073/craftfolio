@@ -13,10 +13,21 @@ const Page = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const portfolioId = params.portfolioId as string;
-  const { portfolioData,themeName: currentTheme } = useSelector((state: RootState) => state.data);
+  const { portfolioData, themeName: currentTheme } = useSelector((state: RootState) => state.data);
   const allSections = portfolioData?.map((item: any) => item.type);
   
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Create a safe type for template config
+  type TemplateType = {
+    navbar: React.ComponentType;
+    spotlight?: boolean;
+    sections: {
+      [key: string]: React.ComponentType;
+    };
+  };
+
+  const Template = currentTheme ? (templatesConfig[currentTheme as keyof typeof templatesConfig] as TemplateType) : null;
 
   const getComponentForSection = (sectionType: string) => {
     if (!Template || !Template.sections || !Template.sections[sectionType]) {
@@ -31,14 +42,14 @@ const Page = () => {
       setIsLoading(true);
       
       try {
-        const themeResult: any = await getThemeNameApi({ portfolioId });
+        const themeResult = await getThemeNameApi({ portfolioId });
         if (themeResult.success) {
-          dispatch(setThemeName(themeResult.data.templateName));
+          dispatch(setThemeName(themeResult?.data?.templateName));
         }
         
-        const contentResult: any = await fetchContent({ portfolioId });
+        const contentResult : any = await fetchContent({ portfolioId });
         if (contentResult.success) {
-          dispatch(setPortfolioData(contentResult.data.sections));
+          dispatch(setPortfolioData(contentResult?.data?.sections));
         }
       } catch (error) {
         console.log("Error initializing portfolio:", error);
@@ -50,7 +61,6 @@ const Page = () => {
     initializePortfolio();
   }, [portfolioId, dispatch]);
 
-  const Template = currentTheme ? templatesConfig[currentTheme] : null;
   if (!Template || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -60,12 +70,11 @@ const Page = () => {
   }
 
   const NavbarComponent = Template.navbar;
-  const SpotlightComponent = Template.spotlight;
-
+  const hasSpotlight = Template.spotlight;
 
   return (
     <div className="min-h-screen flex flex-col">
-      {SpotlightComponent && (
+      {hasSpotlight && (
         <div className="absolute inset-0">
           <Spotlight
             className="-top-40 left-0 md:-top-80 md:left-5"
@@ -76,10 +85,10 @@ const Page = () => {
 
       <div className="custom-bg min-h-screen">
         {NavbarComponent && <NavbarComponent />}
-       <Sidebar />
+        <Sidebar />
         
         {allSections && allSections.length > 0 ? (
-          allSections.map((section: any) => getComponentForSection(section))
+          allSections.map((section: string) => getComponentForSection(section))
         ) : (
           <div className="flex items-center justify-center h-screen">
             <p className="text-xl">Portfolio content not found</p>

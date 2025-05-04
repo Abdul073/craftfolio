@@ -1,4 +1,4 @@
-export const templates: any = {
+export const templates = {
   NeoSpark: {
     sections: [
       {
