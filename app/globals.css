@@ -169,6 +169,9 @@
     @apply overflow-y-auto scrollbar-thin scrollbar-thumb-stone-600 scrollbar-track-transparent;
   }
 }
+html{
+  scroll-behavior: smooth;
+}
 .custom-bg {
   position: relative;
 }

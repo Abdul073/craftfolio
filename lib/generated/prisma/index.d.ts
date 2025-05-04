@@ -2004,7 +2004,6 @@ export namespace Prisma {
     id: string | null
     name: string | null
     description: string | null
-    previewImageUrl: string | null
     createdAt: Date | null
   }
 
@@ -2012,7 +2011,6 @@ export namespace Prisma {
     id: string | null
     name: string | null
     description: string | null
-    previewImageUrl: string | null
     createdAt: Date | null
   }
 
@@ -2032,7 +2030,6 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
-    previewImageUrl?: true
     createdAt?: true
   }
 
@@ -2040,7 +2037,6 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
-    previewImageUrl?: true
     createdAt?: true
   }
 
@@ -2132,7 +2128,7 @@ export namespace Prisma {
     name: string
     description: string
     features: string[]
-    previewImageUrl: string
+    previewImageUrl: string[]
     defaultContent: JsonValue
     createdAt: Date
     _count: TemplateCountAggregateOutputType | null
@@ -2204,7 +2200,7 @@ export namespace Prisma {
       name: string
       description: string
       features: string[]
-      previewImageUrl: string
+      previewImageUrl: string[]
       defaultContent: Prisma.JsonValue
       createdAt: Date
     }, ExtArgs["result"]["template"]>
@@ -2634,7 +2630,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Template", 'String'>
     readonly description: FieldRef<"Template", 'String'>
     readonly features: FieldRef<"Template", 'String[]'>
-    readonly previewImageUrl: FieldRef<"Template", 'String'>
+    readonly previewImageUrl: FieldRef<"Template", 'String[]'>
     readonly defaultContent: FieldRef<"Template", 'Json'>
     readonly createdAt: FieldRef<"Template", 'DateTime'>
   }
@@ -3222,7 +3218,7 @@ export namespace Prisma {
     name?: StringFilter<"Template"> | string
     description?: StringFilter<"Template"> | string
     features?: StringNullableListFilter<"Template">
-    previewImageUrl?: StringFilter<"Template"> | string
+    previewImageUrl?: StringNullableListFilter<"Template">
     defaultContent?: JsonFilter<"Template">
     createdAt?: DateTimeFilter<"Template"> | Date | string
   }
@@ -3245,7 +3241,7 @@ export namespace Prisma {
     name?: StringFilter<"Template"> | string
     description?: StringFilter<"Template"> | string
     features?: StringNullableListFilter<"Template">
-    previewImageUrl?: StringFilter<"Template"> | string
+    previewImageUrl?: StringNullableListFilter<"Template">
     defaultContent?: JsonFilter<"Template">
     createdAt?: DateTimeFilter<"Template"> | Date | string
   }, "id">
@@ -3271,7 +3267,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Template"> | string
     description?: StringWithAggregatesFilter<"Template"> | string
     features?: StringNullableListFilter<"Template">
-    previewImageUrl?: StringWithAggregatesFilter<"Template"> | string
+    previewImageUrl?: StringNullableListFilter<"Template">
     defaultContent?: JsonWithAggregatesFilter<"Template">
     createdAt?: DateTimeWithAggregatesFilter<"Template"> | Date | string
   }
@@ -3358,7 +3354,7 @@ export namespace Prisma {
     name: string
     description: string
     features?: TemplateCreatefeaturesInput | string[]
-    previewImageUrl: string
+    previewImageUrl?: TemplateCreatepreviewImageUrlInput | string[]
     defaultContent: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
@@ -3368,7 +3364,7 @@ export namespace Prisma {
     name: string
     description: string
     features?: TemplateCreatefeaturesInput | string[]
-    previewImageUrl: string
+    previewImageUrl?: TemplateCreatepreviewImageUrlInput | string[]
     defaultContent: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
@@ -3378,7 +3374,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     features?: TemplateUpdatefeaturesInput | string[]
-    previewImageUrl?: StringFieldUpdateOperationsInput | string
+    previewImageUrl?: TemplateUpdatepreviewImageUrlInput | string[]
     defaultContent?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3388,7 +3384,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     features?: TemplateUpdatefeaturesInput | string[]
-    previewImageUrl?: StringFieldUpdateOperationsInput | string
+    previewImageUrl?: TemplateUpdatepreviewImageUrlInput | string[]
     defaultContent?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3398,7 +3394,7 @@ export namespace Prisma {
     name: string
     description: string
     features?: TemplateCreatefeaturesInput | string[]
-    previewImageUrl: string
+    previewImageUrl?: TemplateCreatepreviewImageUrlInput | string[]
     defaultContent: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
@@ -3408,7 +3404,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     features?: TemplateUpdatefeaturesInput | string[]
-    previewImageUrl?: StringFieldUpdateOperationsInput | string
+    previewImageUrl?: TemplateUpdatepreviewImageUrlInput | string[]
     defaultContent?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3418,7 +3414,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     features?: TemplateUpdatefeaturesInput | string[]
-    previewImageUrl?: StringFieldUpdateOperationsInput | string
+    previewImageUrl?: TemplateUpdatepreviewImageUrlInput | string[]
     defaultContent?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3596,7 +3592,6 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
-    previewImageUrl?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -3604,7 +3599,6 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
-    previewImageUrl?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -3624,7 +3618,16 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type TemplateCreatepreviewImageUrlInput = {
+    set: string[]
+  }
+
   export type TemplateUpdatefeaturesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type TemplateUpdatepreviewImageUrlInput = {
     set?: string[]
     push?: string | string[]
   }

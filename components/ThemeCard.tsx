@@ -15,7 +15,7 @@ interface ThemeCardProps {
     name: string;
     category: string;
     description: string;
-    previewImageUrl: string;
+    previewImageUrl: string[]; // Changed to string array
     features: string[];
   };
   handleSelectTheme: (id: number) => void;
@@ -54,11 +54,11 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
   // State to track current slide index
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   
-  const [images] = useState([
-    theme.previewImageUrl,
-    theme.previewImageUrl, // Using the same URL for demo purposes
-    theme.previewImageUrl  // Using the same URL for demo purposes
-  ]);
+  // Use the actual preview images from the theme object
+  // If previewImageUrl is empty, provide a fallback
+  const previewImages = theme.previewImageUrl.length > 0 
+    ? theme.previewImageUrl 
+    : ['/placeholder-image.jpg'];
 
   const sliderSettings = {
     dots: true,
@@ -105,12 +105,12 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
       {/* Image Section with Slider */}
       <div className="h-64 relative overflow-hidden group">
         <Slider {...sliderSettings} className="h-full">
-          {images.map((image, index) => (
+          {previewImages.map((image, index) => (
             <div key={index} className="h-64">
               <img
                 src={image}
                 alt={`${theme.name} theme preview ${index + 1}`}
-                className="max-w-full mx-auto h-full object-fill  transition-transform duration-500"
+                className="max-w-full mx-auto h-full object-fill transition-transform duration-500"
               />
             </div>
           ))}

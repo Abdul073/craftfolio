@@ -64,6 +64,8 @@ const Page = () => {
   const NavbarComponent = Template.navbar;
   const SpotlightComponent = Template.spotlight;
 
+  console.log(allSections)
+
   return (
     <div className="min-h-screen flex flex-col">
       {SpotlightComponent && (
