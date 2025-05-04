@@ -264,7 +264,7 @@ const PortfolioThemePage = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={staggerContainer}
+          // variants={staggerContainer}
         >
           {themes?.map((theme : any) => (
 
