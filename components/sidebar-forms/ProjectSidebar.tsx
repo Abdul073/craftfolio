@@ -100,7 +100,7 @@ const ProjectSidebar = () => {
     if (techSearchValue.trim() !== "") {
       const customTech: Technology = {
         name: techSearchValue,
-        logo: "https://cdn-icons-png.flaticon.com/512/6062/6062643.png"
+        logo: `https://placehold.co/100x100?text=${techSearchValue}&font=montserrat&fontsize=18`
       }
       addTechToProject(customTech)
     }

@@ -9,18 +9,19 @@ export const templatesConfig : any= {
             projects : dynamic(()=>import("@/components/NeoSpark/Projects")),
             experience : dynamic(()=>import("@/components/NeoSpark/ProfessionalJourney")),
             technologies : dynamic(()=>import("@/components/NeoSpark/Technologies")),
-            contact : dynamic(()=>import("@/components/NeoSpark/Contact")),
+            userInfo : dynamic(()=>import("@/components/NeoSpark/Contact")),
         },
         hero : ["name","summary","titlePrefix","titleSuffixOptions","badge","actions"]
     },
     SimpleWhite:{
+        navbar : dynamic(()=>import("@/components/SimpleWhite/Navbar")),
         sections:{
             hero : dynamic(()=>import("@/components/SimpleWhite/Hero")),
             projects : dynamic(()=>import("@/components/SimpleWhite/Projects")),
             skills : dynamic(()=>import("@/components/SimpleWhite/Skills")),
             experience : dynamic(()=>import("@/components/SimpleWhite/Experience")),
             technologies : dynamic(()=>import("@/components/SimpleWhite/Skills")),
-            contact : dynamic(()=>import("@/components/SimpleWhite/Contact")),
+            userInfo : dynamic(()=>import("@/components/SimpleWhite/Contact")),
         },
         hero : ["name","title","summary"]
     }

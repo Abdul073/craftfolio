@@ -14,7 +14,8 @@ const parsingTemplate = PromptTemplate.fromTemplate(`
 You are a professional resume parser. Given an image of a resume, extract the relevant information into a structured JSON format.
 Pay attention to all sections: personal information, summary, experience, education, skills, projects, and certifications.
 For dates, use MM/YYYY format when possible.
-For tech stack item refer to the provided tech list. This list contains most of the possible tech stacks. 
+
+For tech stack item refer to the provided tech list. ${techList} This list contains most of the possible tech stacks. 
 If the project uses any of these tech stacks then use the same name and image present in this array else use name present in resume. 
 Handle slightly different names like a resume may contain React and the array may contain React.js so use what is there in the array with its image.
 If image not present use any dummy image.
@@ -262,38 +263,92 @@ function cleanJsonOutput(text: string): string {
 }
 
 // fix tech stack logos
-function mapTechStackWithTechList(resumeData : any) {
+
+function mapTechStackWithTechList(resumeData: any) {
   // Create a map of techList items for quick lookup
   const techMap = new Map();
-  techList.forEach(tech => {
-    // Store in lowercase for case-insensitive matching
-    techMap.set(tech.name.toLowerCase(), tech);
+  
+  console.log(resumeData.projects)
+  
+  // Normalize tech names for better matching
+  techList.forEach((tech : any) => {
+    // Store with normalized name (lowercase, remove punctuation)
+    const normalizedName = normalizeString(tech.name);
+    techMap.set(normalizedName, tech);
   });
   
+  // Helper function to normalize strings for better matching
+  function normalizeString(str: string): string {
+    return str.toLowerCase()
+      .replace(/[.\s-]/g, '') // Remove dots, spaces, hyphens
+      .replace(/\.js$/, '')   // Remove .js suffix
+      .replace(/^(react|vue|angular)$/, '$1js'); // Add js to common frameworks if missing
+  }
+  
+  // Helper function to find the best match from techList
+  function findBestMatch(techName: string) {
+    const normalized = normalizeString(techName);
+    
+    // Exact match
+    if (techMap.has(normalized)) {
+      return techMap.get(normalized);
+    }
+    
+    // Partial match - find the tech where normalized names include each other
+    for (const [key, tech] of techMap.entries()) {
+      if (key.includes(normalized) || normalized.includes(key)) {
+        return tech;
+      }
+    }
+    
+    // Special case matches (common abbreviations or alternative names)
+    const specialCases: Record<string, string> = {
+      'js': 'javascript',
+      'ts': 'typescript',
+      'reactjs': 'react',
+      'nextjs': 'next.js',
+      'expressjs': 'express.js',
+      'nodejs': 'node.js',
+      'tailwind': 'tailwindcss',
+      'postgres': 'postgresql',
+      'openai': 'openai',
+      'gemini': 'google gemini',
+      'langchainjs': 'langchain',
+      'langchain js': 'langchain',
+      'shadcnui': 'shadcn ui'
+    };
+    
+    const specialMatch = specialCases[normalized];
+    if (specialMatch && techMap.has(normalizeString(specialMatch))) {
+      return techMap.get(normalizeString(specialMatch));
+    }
+    
+    return null;
+  }
+  
   // Helper function to update tech stack items
-  const updateTechStack = (techItems) => {
+  const updateTechStack = (techItems: any[]) => {
     if (!techItems || !Array.isArray(techItems)) return [];
     
-    return techItems.map(tech => {
-      const techName = tech.name;
-      if (!techName) return tech;
-      
-      // Check if this tech exists in our techList (case insensitive)
-      const matchedTech = techMap.get(techName.toLowerCase()) || 
-                          Array.from(techMap.values()).find(t => 
-                            t.name.toLowerCase().includes(techName.toLowerCase()) || 
-                            techName.toLowerCase().includes(t.name.toLowerCase())
-                          );
-      
-      if (matchedTech) {
-        return {
-          name: matchedTech.name, // Use the standardized name
-          logo: matchedTech.logo  // Use the logo from techList
-        };
-      }
-      
-      return tech; // Keep original if no match found
-    });
+    // Filter out items that don't have matches in techList
+    return techItems
+      .map(tech => {
+        if (!tech.name) return null;
+        
+        const techName = tech.name;
+        const matchedTech = findBestMatch(techName);
+        
+        if (matchedTech) {
+          return {
+            name: techName, // Keep original name to preserve user's naming preference
+            logo: matchedTech.logo
+          };
+        }
+        
+        // Return null for items without matches
+        return null;
+      })
+      .filter(item => item !== null); // Remove null entries
   };
   
   // Update skills
@@ -303,8 +358,8 @@ function mapTechStackWithTechList(resumeData : any) {
   
   // Update experience tech stacks
   if (resumeData.experience && Array.isArray(resumeData.experience)) {
-    resumeData.experience.forEach(exp => {
-      if (exp.techStack) {
+    resumeData.experience.forEach((exp : any) => {
+      if (exp.techStack && Array.isArray(exp.techStack)) {
         exp.techStack = updateTechStack(exp.techStack);
       }
     });
@@ -312,8 +367,8 @@ function mapTechStackWithTechList(resumeData : any) {
   
   // Update project tech stacks
   if (resumeData.projects && Array.isArray(resumeData.projects)) {
-    resumeData.projects.forEach(project => {
-      if (project.techStack) {
+    resumeData.projects.forEach((project : any) => {
+      if (project.techStack && Array.isArray(project.techStack)) {
         project.techStack = updateTechStack(project.techStack);
       }
     });
@@ -326,14 +381,16 @@ function mapTechStackWithTechList(resumeData : any) {
 function convertToPortfolioFormat(resumeData : any, titleInfo : any, summaryInfo : any) {
   const sections = [];
   
-  // User Info Section
   if (resumeData.personalInfo) {
     sections.push({
       type: "userInfo",
       data: {
-        github: resumeData.personalInfo.github || "",
-        linkedin: resumeData.personalInfo.linkedin || "",
-        email: resumeData.personalInfo.email || "",
+        github: resumeData.personalInfo.github || "alexmorgan",
+        linkedin: resumeData.personalInfo.linkedin || "alexmorgan",
+        email: resumeData.personalInfo.email || "alexmorgan@gmail.com",
+        location: resumeData.personalInfo.location || "San Fransisco, CA",
+        resumeLink: resumeData.personalInfo.resumeLink || "",
+        shortSummary: resumeData.personalInfo.shortSummary || "I build exceptional and accessible digital experiences for the web.",
       },
     });
   }
@@ -350,7 +407,7 @@ function convertToPortfolioFormat(resumeData : any, titleInfo : any, summaryInfo
       summaryLines = resumeData.summary.split(". ").slice(0, 3).join(".\n");
     } else {
       // Generate fallback summary based on skills
-      const skillNames = resumeData.skills ? resumeData.skills.map(s => s.name).slice(0, 3) : [];
+      const skillNames = resumeData.skills ? resumeData.skills.map((s : any) => s.name).slice(0, 3) : [];
       const primarySkill = skillNames[0] || "Software";
       summaryLines = `Passionate ${primarySkill} developer.\nEnthusiastic about creating innovative solutions.\nDedicated to continuous learning and growth.`;
     }
@@ -395,13 +452,13 @@ function convertToPortfolioFormat(resumeData : any, titleInfo : any, summaryInfo
   
   // Projects Section
   if (resumeData.projects && resumeData.projects.length > 0) {
-    const formattedProjects = resumeData.projects.map(project => ({
+    const formattedProjects = resumeData.projects.map((project : any) => ({
       projectName: project.projectName,
       projectTitle: project.projectTitle || `${project.projectName.split(" ").slice(0, 3).join(" ")}`,
       projectDescription: project.projectDescription,
       githubLink: project.githubLink || "https://github.com/user/project",
       liveLink: project.liveLink || "https://project-demo.vercel.app",
-      projectImage: "https://user-images.githubusercontent.com/106135144/196727097-50c0ae49-b92f-4aa9-bdcb-30d978a44125.png", // Default placeholder
+      projectImage: "https://placehold.co/600x400?text=Project+Image", 
       techStack: project.techStack || [],
     }));
     
@@ -413,7 +470,7 @@ function convertToPortfolioFormat(resumeData : any, titleInfo : any, summaryInfo
   
   // Experience Section
   if (resumeData.experience && resumeData.experience.length > 0) {
-    const formattedExperience = resumeData.experience.map(exp => ({
+    const formattedExperience = resumeData.experience.map((exp : any) => ({
       role: exp.role,
       companyName: exp.companyName,
       location: exp.location || "Remote",
@@ -446,14 +503,6 @@ function convertToPortfolioFormat(resumeData : any, titleInfo : any, summaryInfo
       data: resumeData.education
     });
   }
-  
-  // Certifications Section (if available)
-  if (resumeData.certifications && resumeData.certifications.length > 0) {
-    sections.push({
-      type: "certifications",
-      data: resumeData.certifications
-    });
-  }
-  
+
   return { sections };
 }

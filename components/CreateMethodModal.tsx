@@ -8,6 +8,7 @@ import {
 import { fadeInScale, pulseAnimation, staggerContainer } from '@/lib/animations';
 import { useState, useEffect } from 'react';
 import toast from "react-hot-toast";
+import Confetti from 'react-confetti';
 
 const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreationMethod, creationMethod, handleCreatePortfolio }: { isModalOpen: boolean, isCreating: boolean, setIsModalOpen: (isOpen: boolean) => void, setCreationMethod: (creationMethod: string) => void, creationMethod: string, handleCreatePortfolio: (customBodyResume: any) => void }) => {
     const [showResumeImport, setShowResumeImport] = useState(false);
@@ -21,6 +22,8 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
     const [progressValue, setProgressValue] = useState(0);
     const [currentFact, setCurrentFact] = useState(0);
     const [currentMessage, setCurrentMessage] = useState(0);
+    const [confettiActive, setConfettiActive] = useState(false);
+    const [confettiOpacity, setConfettiOpacity] = useState(1);
 
     const portfolioFacts = [
         "Recruiters spend an average of just 6 seconds scanning a resume, but up to 2 minutes on a portfolio website.",
@@ -107,107 +110,136 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
         setCurrentMessage(0);
     };
 
-async function extractDetails(): Promise<void> {
-    if (!base64Data) {
-        toast.error("Please upload a resume first");
-        return;
-    }
-    
-    setIsLoading(true);
-    toast.dismiss(); // Dismiss any existing toasts
-    // Initialize the progress bar
-    setProgressValue(0);
-    setCurrentFact(0);
-    setCurrentMessage(0);
-    
-    // Improved progress simulation with separate message and fact intervals
-    const progressInterval = setInterval(() => {
-        setProgressValue(prev => {
-            // Slower initial progress that speeds up later
-            const increment = prev < 70 ? (Math.random() * 1.5) + 0.8 : (Math.random() * 3) + 1.5;
-            return prev + increment < 95 ? prev + increment : 95; // Cap at 95% until complete
-        });
-    }, 1000);
-    
-    // Separate interval for facts to make them change at a more readable pace
-    const factInterval = setInterval(() => {
-        setCurrentFact(prev => (prev + 1) % portfolioFacts.length);
-    }, 5000);
-    
-    // Separate interval for messages to make them change less frequently
-    const messageInterval = setInterval(() => {
-        setCurrentMessage(prev => {
-            const newIndex = Math.min(
-                Math.floor((progressValue / 100) * loadingMessages.length),
-                loadingMessages.length - 1
-            );
-            // Only update if it's a new message
-            return newIndex !== prev ? newIndex : prev;
-        });
-    }, 3000);
-
-        let response;
-    try {
-        response = await fetch("api/extractreportgemini", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                base64: base64Data,
-            }),
-        });
-    
-        // Don't clear intervals yet - let the animation complete
+    async function extractDetails(): Promise<void> {
+        if (!base64Data) {
+            toast.error("Please upload a resume first");
+            return;
+        }
         
-        if (response.ok) {
-            const reportText = await response.text();
-            console.log("This is from report text", reportText);
-            setCustomBodyResume(reportText);
+        setIsLoading(true);
+        toast.dismiss(); // Dismiss any existing toasts
+        // Initialize the progress bar
+        setProgressValue(0);
+        setCurrentFact(0);
+        setCurrentMessage(0);
+        
+        // Improved progress simulation with separate message and fact intervals
+        const progressInterval = setInterval(() => {
+            setProgressValue(prev => {
+                // Slower initial progress that speeds up later
+                const increment = prev < 70 ? (Math.random() * 1.5) + 0.8 : (Math.random() * 3) + 1.5;
+                return prev + increment < 95 ? prev + increment : 95; // Cap at 95% until complete
+            });
+        }, 1000);
+        
+        // Separate interval for facts to make them change at a more readable pace
+        const factInterval = setInterval(() => {
+            setCurrentFact(prev => (prev + 1) % portfolioFacts.length);
+        }, 5000);
+        
+        // Separate interval for messages to make them change less frequently
+        const messageInterval = setInterval(() => {
+            setCurrentMessage(prev => {
+                const newIndex = Math.min(
+                    Math.floor((progressValue / 100) * loadingMessages.length),
+                    loadingMessages.length - 1
+                );
+                // Only update if it's a new message
+                return newIndex !== prev ? newIndex : prev;
+            });
+        }, 3000);
+    
+        let response;
+        try {
+            response = await fetch("api/extractreportgemini", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    base64: base64Data,
+                }),
+            });
+        
+            // Don't clear intervals yet - let the animation complete
             
-            // Animate to 100% smoothly over 2 seconds
+            if (response.ok) {
+                const reportText = await response.text();
+                setCustomBodyResume(reportText);
+                
+                // Animate to 100% smoothly over 2 seconds
+                clearInterval(progressInterval);
+                clearInterval(factInterval);
+                clearInterval(messageInterval);
+                
+                // Smooth completion animation
+                const completionAnimation = () => {
+                    setProgressValue(prev => {
+                        const newValue = prev + 2;
+                        if(newValue >= 80){
+                            setConfettiActive(true);
+                        }
+                        if (newValue >= 100) {
+                            clearInterval(completionInterval);
+                            setTimeout(() => {
+                                // Show ONLY ONE success toast when animation completes
+                                // Explicitly remove any existing toasts first
+                                toast.dismiss();
+                                toast.success("Portfolio Created Successfully", {
+                                    id: "portfolio-success" // Use consistent ID to prevent duplicates
+                                });
+                                
+                                // Activate confetti immediately
+                                
+                                // Gradually fade out confetti over time (we'll handle this in the component)
+                                setTimeout(() => {
+                                    setConfettiOpacity(0.8); // Start fading
+                                    
+                                    // Continue fading out
+                                    const fadeInterval = setInterval(() => {
+                                        setConfettiOpacity(prev => {
+                                            if (prev <= 0.1) {
+                                                clearInterval(fadeInterval);
+                                                // Only completely remove at the end of fade
+                                                setTimeout(() => setConfettiActive(false), 300);
+                                                return 0;
+                                            }
+                                            return prev - 0.1;
+                                        });
+                                    }, 400);
+                                }, 3000);
+                                
+                                setShowPreview(true);
+                                setIsLoading(false);
+                            }, 800);
+                            return 100;
+                        }
+                        return newValue;
+                    });
+                };
+                
+                const completionInterval = setInterval(completionAnimation, 50);
+            } else {
+                clearInterval(progressInterval);
+                clearInterval(factInterval);
+                clearInterval(messageInterval);
+                toast.error("Failed to process resume");
+                setIsLoading(false);
+            }
+        } catch (error) {
             clearInterval(progressInterval);
             clearInterval(factInterval);
             clearInterval(messageInterval);
-            
-            // Smooth completion animation
-            const completionAnimation = () => {
-                setProgressValue(prev => {
-                    const newValue = prev + 2;
-                    if (newValue >= 100) {
-                        clearInterval(completionInterval);
-                        // Delay showing success message
-                        setTimeout(() => {
-                            toast.success("Portfolio created successfully!");
-                            setShowPreview(true);
-                            setIsLoading(false); // This was missing - need to set loading to false
-                        }, 800);
-                        return 100;
-                    }
-                    return newValue;
-                });
-            };
-            
-            const completionInterval = setInterval(completionAnimation, 50);
-        } else {
-            clearInterval(progressInterval);
-            clearInterval(factInterval);
-            clearInterval(messageInterval);
-            toast.error("Failed to process resume");
-        }
-    } catch (error) {
-        clearInterval(progressInterval);
-        clearInterval(factInterval);
-        clearInterval(messageInterval);
-        toast.error("Error connecting to server");
-    } finally {
-        // If there's an error, make sure to set loading to false
-        // In success case, this will be handled by the completion animation
-        if (!response || !response.ok) {
+            toast.error("Error connecting to server");
             setIsLoading(false);
+        } finally {
+            // If there's an error, make sure to set loading to false
+            // In success case, this will be handled by the completion animation
+            if (!response || !response.ok) {
+                setIsLoading(false);
+            }
         }
     }
-}
 
     useEffect(() => {
         if (!isModalOpen) {
@@ -230,16 +262,20 @@ async function extractDetails(): Promise<void> {
         textMuted: '#9ca3af'
     };
 
-    console.log(customBodyResume);
 
     return (
-        <Dialog open={isModalOpen} onOpenChange={(open) => {
+<div>
+
+
+<Dialog open={isModalOpen} onOpenChange={(open) => {
             if (!open && (processingResume || isLoading)) {
                 toast.error("Please wait until the process completes");
                 return;
             }
             setIsModalOpen(open);
         }}>
+         
+
             <DialogContent
                 className="backdrop-blur-xl rounded-xl overflow-hidden"
                 style={{
@@ -251,6 +287,32 @@ async function extractDetails(): Promise<void> {
                     padding: '48px',
                 }}
             >
+                   {confettiActive && (
+  <div 
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      zIndex: 999999, // High z-index to appear over everything
+      pointerEvents: 'none', // Allows clicking through confetti
+      opacity: confettiOpacity, // Controlled fade out
+      transition: 'opacity 0.5s ease' // Smooth transition for fade effect
+    }}
+  >
+    <Confetti 
+      width={window.innerWidth}
+      height={window.innerHeight}
+      recycle={false}
+      numberOfPieces={800}
+      gravity={0.15} // Slower falling
+      tweenDuration={10000} // Longer animation duration
+      initialVelocityY={10} // Higher initial velocity
+      colors={['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', '#8BC34A', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722']}
+    />
+  </div>
+)}
                 {!showResumeImport ? (
                     <>
                         <DialogHeader className="mb-4">
@@ -677,6 +739,7 @@ async function extractDetails(): Promise<void> {
                 )}
             </DialogContent>
         </Dialog>
+</div>
     )
 }
 

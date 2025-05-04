@@ -17,7 +17,7 @@ interface Experience {
   role: string;
   startDate: string;
   endDate: string;
-  responsibilities: string[];
+  description: string;
   techStack?: Technology[];
 }
 
@@ -106,9 +106,6 @@ const Experience: React.FC = () => {
     }
   }, [portfolioId]);
 
-  const handleSectionEdit = () => {
-    dispatch(setCurrentEdit("experience"));
-  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -141,7 +138,7 @@ const Experience: React.FC = () => {
     return (
       <section
         id="experience"
-        className="min-h-screen flex items-center justify-center bg-white text-black relative overflow-hidden py-20"
+        className="min-h-screen flex items-center justify-center text-black relative overflow-hidden py-20"
       >
         <div className="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-64">Loading...</div>
@@ -172,7 +169,7 @@ const Experience: React.FC = () => {
             My journey in the industry
           </p>
           <div className="mt-6">
-            <EditButton sectionName="experience" />
+          <EditButton styles="right-48 -top-6" sectionName="experience" />
           </div>
         </motion.div>
 
@@ -193,7 +190,7 @@ const Experience: React.FC = () => {
             {experienceData.map((exp, index) => (
               <motion.div
                 key={index}
-                variants={itemVariants}
+                // variants={itemVariants}
                 className={`relative bg-white/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 mb-12 border border-gray-300
                         shadow-sm hover:shadow-md transition-all duration-300 hover:border-gray-400
                         md:w-[calc(50%-2rem)] ${
@@ -227,23 +224,20 @@ const Experience: React.FC = () => {
                 </motion.div>
 
                 <ul className="space-y-4">
-                  {exp?.responsibilities?.map((responsibility, respIndex) => (
                     <motion.li
-                      key={respIndex}
-                      variants={itemVariants}
+                      // variants={itemVariants}
                       className="flex items-start group"
                     >
                       <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-500 mt-2.5 mr-3 flex-shrink-0" />
                       <p className="font-sans text-base text-gray-700 leading-relaxed font-normal">
-                        {responsibility}
+                        {exp.description}
                       </p>
                     </motion.li>
-                  ))}
                 </ul>
 
                 {exp.techStack && exp.techStack.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-6">
-                    {exp.techStack.map((tech, techIndex) => (
+                    {exp.techStack.slice(0,5).map((tech, techIndex) => (
                       <span 
                         key={techIndex}
                         className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm border border-gray-200"

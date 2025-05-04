@@ -74,11 +74,8 @@ const PortfolioThemePage = () => {
           toast.error("Invalid template");
           return;
         }
-        console.log(customBodyResume)
         const result = await createPortfolio(user.id, themeName, creationMethod,customBodyResume);
-        
         if (result.success) {
-          toast.success('Portfolio created successfully');
           if (creationMethod === 'import') {
             router.push(`/portfolio/${result?.data?.id}`);
           } else {

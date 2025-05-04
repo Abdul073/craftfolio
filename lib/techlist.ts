@@ -77,7 +77,7 @@ export const techList: any = [
   },
   {
     name: "AWS",
-    logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original.svg",
+    logo :"https://logos-world.net/wp-content/uploads/2021/08/Amazon-Web-Services-AWS-Emblem.png",
   },
   {
     name: "Vercel",
@@ -157,7 +157,7 @@ export const techList: any = [
   },
   {
     name: "Framer Motion",
-    logo: "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/framermotion.svg",
+    logo: "https://seeklogo.com/images/F/framer-motion-logo-DA1E33CAA1-seeklogo.com.png",
   },
   {
     name: "Zustand",
@@ -169,7 +169,7 @@ export const techList: any = [
   },
   {
     name: "LangChain",
-    logo: "https://avatars.githubusercontent.com/u/139895814?s=200&v=4",
+    logo : "https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/logos/langchain-ipuhh4qo1jz5ssl4x0g2a.png/langchain-dp1uxj2zn3752pntqnpfu2.png?_a=DATAdtAAZAA0",
   },
   {
     name: "OpenAI",
@@ -177,6 +177,6 @@ export const techList: any = [
   },
   {
     name: "Google Gemini",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Google_Gemini_logo.svg/512px-Google_Gemini_logo.svg.png",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuy9ucswKvd8dPqg9CvrmJiEH5ngED9xLgrQ&s",
   },
 ];

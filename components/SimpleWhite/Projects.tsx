@@ -148,7 +148,7 @@ const Projects: NextPage = () => {
                     </p>
 
                     <div className="flex flex-wrap gap-3">
-                      {project.techStack.map((tech, tagIndex) => (
+                      {project.techStack.slice(0,5).map((tech, tagIndex) => (
                         <span
                           key={tagIndex}
                           className="px-4 py-2 text-sm font-medium bg-teal-300/50 text-primary-700 rounded-lg"

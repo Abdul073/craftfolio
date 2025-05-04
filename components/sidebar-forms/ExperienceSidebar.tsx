@@ -88,7 +88,7 @@ const ExperienceSidebar = () => {
     if (techInput.trim() !== "") {
       const customTech: Technology = {
         name: techInput.trim(),
-        logo: "https://cdn-icons-png.flaticon.com/512/6062/6062643.png"
+        logo: `https://placehold.co/100x100?text=${techInput.trim()}&font=montserrat&fontsize=18`
       };
       addTechItem(customTech);
     }

@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { templates } from "@/lib/templateContent";
 
 export async function createPortfolio(userId: string, templateName: string, creationMethod: string, customBodyResume: string) {
   try {
@@ -45,6 +44,7 @@ export async function createPortfolio(userId: string, templateName: string, crea
           return customSectionMap[section.type] || section;
         })
       };
+
       
       content = newContent;
     } else {
@@ -52,6 +52,7 @@ export async function createPortfolio(userId: string, templateName: string, crea
       content = template.defaultContent;
     }
 
+      console.log(content)
     const newTemplate = await prisma.portfolio.create({
       data: {
         isTemplate: false,

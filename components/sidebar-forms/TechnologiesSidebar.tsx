@@ -75,7 +75,7 @@ const TechnologiesSidebar: React.FC = () => {
     if (searchValue.trim() !== "") {
       const customTech: Technology = {
         name: searchValue,
-        logo: "https://cdn-icons-png.flaticon.com/512/6062/6062643.png"
+        logo: `https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18`
       }
       addSuggestion(customTech)
     }
