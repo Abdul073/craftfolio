@@ -40,7 +40,7 @@ const HeroSidebar = () => {
     ]
   };
 
-  const fields = templatesConfig[themeName].hero;
+  const fields = templatesConfig[themeName as keyof typeof templatesConfig].hero!;
 
   const [content, setContent] = useState(emptyContent);
   const [isLoading, setIsLoading] = useState(false);

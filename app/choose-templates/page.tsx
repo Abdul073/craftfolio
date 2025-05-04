@@ -55,10 +55,13 @@ const PortfolioThemePage = () => {
       if(response.success){
         setThemes(response.data)
       }
+      console.log("hii",response)
     } catch (error) {
       console.error('Error fetching themes:', error);
     }
   };
+
+  console.log(themes)
 
   const handleSelectTheme = (id : number) => {
     setSelectedTheme(id);
@@ -110,6 +113,7 @@ const PortfolioThemePage = () => {
   if (themes.length === 0 && redirectLoading) {
     return <LoadingSpinner />;
   }
+
   
 
   return (

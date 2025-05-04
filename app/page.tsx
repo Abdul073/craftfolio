@@ -26,7 +26,7 @@ const ColorTheme = {
   borderDark: 'var(--border-dark)',
 }
 
-export default function Home() {
+export default function Page() {
   const [isOpen, setIsOpen] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [resumeUploaded, setResumeUploaded] = useState(false);
@@ -66,7 +66,7 @@ export default function Home() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
       </svg>,
       title: "Drag & Drop Builder",
-      description: "Our intuitive drag-and-drop editor makes it easy to build stunning portfolio pages without any technical knowledge."
+      description: "Our intuitive drag-and-drop editor makes it easy to build stunning portfolio pages without unknown technical knowledge."
     },
     {
       id: 3,
@@ -82,7 +82,7 @@ export default function Home() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
       </svg>,
       title: "Mobile Responsive",
-      description: "All portfolio templates are fully responsive, ensuring your work looks amazing on any device or screen size."
+      description: "All portfolio templates are fully responsive, ensuring your work looks amazing on unknown device or screen size."
     },
     {
       id: 5,
@@ -165,6 +165,10 @@ export default function Home() {
     }
   ];
 
+  interface Styles {
+    [key: string]: string;
+  }
+
   return (
     <div
       className="relative min-h-screen scrollbar main-bg-noise  custom-scrollbar"
@@ -187,7 +191,7 @@ export default function Home() {
 
         "--border-light": "rgba(75, 85, 99, 0.3)", // Gray-600 with opacity
         "--border-dark": "rgba(55, 65, 81, 0.5)", // Gray-700 with opacity
-      }}
+      } as Styles}
     >
       {/* Animated background shapes */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
