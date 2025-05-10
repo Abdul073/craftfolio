@@ -9,7 +9,7 @@ import { Button } from '../ui/button'
 import { Plus, X, Edit, Trash, Upload, Cloud, Check } from 'lucide-react'
 import { updatePortfolioData } from '@/slices/dataSlice'
 import { useParams } from 'next/navigation'
-import { updateProjects } from '@/app/actions/portfolio'
+import { updateSection } from '@/app/actions/portfolio'
 import toast from 'react-hot-toast'
 import { techList } from '@/lib/techlist'
 
@@ -119,13 +119,13 @@ const ProjectSidebar = () => {
       const updatedProjects = [...projects];
       updatedProjects[editingIndex] = currentProject;
       dispatch(updatePortfolioData({ sectionType: "projects", newData: updatedProjects }));
-      await updateProjects({ portfolioId: portfolioId, projects: updatedProjects });
+      await updateSection({ portfolioId: portfolioId, sectionName : "projects",sectionContent: updatedProjects });
       setProjects(updatedProjects);
       setEditingIndex(null);
     } else {
       const updatedProjects = [...projects, currentProject];
       dispatch(updatePortfolioData({ sectionType: "projects", newData: updatedProjects }));
-      await updateProjects({ portfolioId: portfolioId, projects: updatedProjects });
+      await updateSection({ portfolioId: portfolioId, sectionName : "projects",sectionContent: updatedProjects });
       setProjects(updatedProjects);
     }
     setCurrentProject(emptyProject);
@@ -144,7 +144,7 @@ const ProjectSidebar = () => {
     const updatedProjects = [...projects];
     updatedProjects.splice(index, 1);
     dispatch(updatePortfolioData({ sectionType: "projects", newData: updatedProjects }));
-    await updateProjects({ portfolioId: portfolioId, projects: updatedProjects });
+    await updateSection({ portfolioId: portfolioId,sectionName : "projects", sectionContent: updatedProjects });
     setProjects(updatedProjects);
   }
 

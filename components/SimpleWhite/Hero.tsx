@@ -49,7 +49,7 @@ const Hero: NextPage = () => {
     if (!portfolioId || isLoading) return;
 
     const subscription = supabase
-      .channel(`portfolio-${portfolioId}`)
+      .channel(`portfolio-hero-${portfolioId}`)
       .on('postgres_changes',
         {
           event: 'UPDATE',

@@ -6,7 +6,6 @@ const isPublicRoute = createRouteMatcher(['/','/sign-in(.*)'])
 const customMiddleware = clerkMiddleware(async (auth, req) => {
   const hostname = req.headers.get('host') || ''
   const domain = 'jupiters.in'
-  console.log('Middleware received request with hostname:', hostname)
 
   // Fix subdomain extraction logic
   let subdomain = null;
@@ -21,8 +20,6 @@ const customMiddleware = clerkMiddleware(async (auth, req) => {
       subdomain = parts[0];
     }
   }
-  
-  console.log('Extracted subdomain:', subdomain);
 
   // Optional: prevent routing changes for root domain
   const isRootDomain = hostname === domain || hostname === `www.${domain}`

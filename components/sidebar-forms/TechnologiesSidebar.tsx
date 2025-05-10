@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import { updatePortfolioData } from '@/slices/dataSlice'
 import { useParams } from 'next/navigation'
-import { updateTechnologies } from '@/app/actions/portfolio'
+import { updateSection } from '@/app/actions/portfolio'
 import toast from 'react-hot-toast'
 
 interface Technology {
@@ -85,7 +85,7 @@ const TechnologiesSidebar: React.FC = () => {
     try {
       setIsLoading(true);
       dispatch(updatePortfolioData({ sectionType: "technologies", newData: selected }));
-      await updateTechnologies({ portfolioId: portfolioId, selectedTech: selected });
+      await updateSection({ portfolioId: portfolioId,sectionName: "technologies", sectionContent: selected });
       setOriginalSelected(JSON.parse(JSON.stringify(selected)));
       setHasChanges(false);
       toast.success("Technologies updated successfully");

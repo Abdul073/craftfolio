@@ -8,6 +8,8 @@ import { setPortfolioData, setThemeName } from "@/slices/dataSlice";
 import { templatesConfig } from "@/lib/templateConfig";
 import Sidebar from "../Sidebar";
 import { Spotlight } from "@/components/NeoSpark/Spotlight";
+import Chatbot from "@/components/Chatbot/Chatbot";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -15,8 +17,8 @@ const Page = () => {
   const portfolioId = params.portfolioId as string;
   const { portfolioData, themeName: currentTheme } = useSelector((state: RootState) => state.data);
   const allSections = portfolioData?.map((item: any) => item.type);
-  
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Create a safe type for template config
   type TemplateType = {
@@ -44,7 +46,7 @@ const Page = () => {
       try {
         const themeResult = await getThemeNameApi({ portfolioId });
         if (themeResult.success) {
-          dispatch(setThemeName(themeResult?.data?.templateName));
+          dispatch(setThemeName(themeResult?.data?.templateName || 'default'));
         }
         
         const contentResult : any = await fetchContent({ portfolioId });
@@ -83,7 +85,14 @@ const Page = () => {
         </div>
       )}
 
-      <div className="custom-bg min-h-screen">
+      <motion.div 
+        className="custom-bg min-h-screen w-[80%]"
+        animate={{
+          width: isChatOpen ? '80%' : '100%',
+          marginRight: isChatOpen ? '20%' : '0',
+        }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+      >
         {NavbarComponent && <NavbarComponent />}
         <Sidebar />
         
@@ -94,7 +103,8 @@ const Page = () => {
             <p className="text-xl">Portfolio content not found</p>
           </div>
         )}
-      </div>
+      </motion.div>
+      <Chatbot portfolioData={portfolioData} portfolioId={portfolioId} onOpenChange={setIsChatOpen}/>
     </div>
   );
 };

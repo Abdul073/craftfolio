@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useEffect, useState } from 'react';
-import { updateHero } from '@/app/actions/portfolio';
+import { updateSection } from '@/app/actions/portfolio';
 import { redirect, useParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -80,7 +80,7 @@ const HeroSidebar = () => {
     try {
       setIsLoading(true);
       dispatch(updatePortfolioData({ sectionType: "hero", newData: content }));
-      const result = await updateHero({ portfolioId: portfolioId, content: content });
+      const result = await updateSection({ portfolioId: portfolioId,sectionName : "hero", sectionContent: content });
       setOriginalContent(content);
       setHasChanges(false);
       toast.success("Hero section updated successfully");

@@ -9,7 +9,7 @@ import { Button } from '../ui/button'
 import { Plus, X, Edit, Trash, Check } from 'lucide-react'
 import { updatePortfolioData } from '@/slices/dataSlice'
 import { useParams } from 'next/navigation'
-import { updateExperience } from '@/app/actions/portfolio'
+import {  updateSection } from '@/app/actions/portfolio'
 import toast from 'react-hot-toast'
 import { techList } from '@/lib/techlist'
 
@@ -108,13 +108,13 @@ const ExperienceSidebar = () => {
       const updatedExperiences = [...experiences];
       updatedExperiences[editingIndex] = currentExperience;
       dispatch(updatePortfolioData({ sectionType: "experience", newData: updatedExperiences }));
-      await updateExperience({ portfolioId: portfolioId, experiences: updatedExperiences });
+      await updateSection({ portfolioId: portfolioId,sectionName : "experience", sectionContent: updatedExperiences });
       setExperiences(updatedExperiences);
       setEditingIndex(null);
     } else {
       const updatedExperiences = [...experiences, currentExperience];
       dispatch(updatePortfolioData({ sectionType: "experience", newData: updatedExperiences }));
-      await updateExperience({ portfolioId: portfolioId, experiences: updatedExperiences });
+      await updateSection({ portfolioId: portfolioId, sectionName : "experience", sectionContent: updatedExperiences  });
       setExperiences(updatedExperiences);
     }
     setCurrentExperience(emptyExperience);
@@ -131,7 +131,7 @@ const ExperienceSidebar = () => {
     const updatedExperiences = [...experiences];
     updatedExperiences.splice(index, 1);
     dispatch(updatePortfolioData({ sectionType: "experience", newData: updatedExperiences }));
-    await updateExperience({ portfolioId: portfolioId, experiences: updatedExperiences });
+    await updateSection({ portfolioId: portfolioId, sectionName : "experience", sectionContent: updatedExperiences  });
     setExperiences(updatedExperiences);
     toast.success('Experience deleted!');
   }
