@@ -68,7 +68,7 @@ const menuItems = [
   return (
     <>
       {/* Mobile Menu Button */}
-      <motion.button
+      {/* <motion.button
         onClick={toggleSidebar}
         className="fixed top-4 right-4 bg-black cursor-pointer z-[99999] p-2 bg-primary-900 rounded-full shadow drop-shadow-lg
         hover:drop-shadow-xl hover:scale-110 group
@@ -92,7 +92,7 @@ const menuItems = [
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </motion.div>
         </AnimatePresence>
-      </motion.button>
+      </motion.button> */}
 
       {/* Backdrop */}
       <AnimatePresence>

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { StructuredOutputParser } from "langchain/output_parsers";
 import { z } from "zod";
+import { techList } from "@/lib/techlist";
 
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
@@ -30,6 +31,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
       This is the input: {input_value} 
       
       This is the data: {portfolioData}
+
+      Make sure to scan the data properly since the field can be present in multiple sections for eg name can be in both hero and userInfo so make sure to consider that.
       
       {format_instructions}
     `);
@@ -42,10 +45,38 @@ export async function POST(req: NextRequest, res: NextResponse) {
     
     const parsedResponse = await model.generateContent(finalIntention);
     const parsedText = parsedResponse.response.text();
-    console.log(parsedText);
     
     const parsedOutput = await outputParser.parse(parsedText);
     
+    // Generate user response template
+    const userResponseTemplate = PromptTemplate.fromTemplate(`
+      You are a helpful portfolio assistant responding to a user request.
+      
+      User request: {input_value}
+      
+      Your task is to generate a friendly, concise response confirming what you've updated in their portfolio.
+      
+      Intent details:
+      - Intent: {intent}
+      - Section: {sectionName}
+      - Value: {value}
+      
+      Write a brief, conversational response (2-3 sentences max) confirming what you've updated.
+      Be specific about what was changed and in which section.
+      Sound helpful and positive.
+      
+      Response:
+    `);
+
+    const userResponsePrompt = await userResponseTemplate.format({
+      input_value: inputValue,
+      intent: parsedOutput.intent,
+      sectionName: parsedOutput.sectionName,
+      value: parsedOutput.value
+    });
+    
+    const userResponseResult = await model.generateContent(userResponsePrompt);
+    const userResponse = userResponseResult.response.text();
     
     const updatePortfolioTemplate = PromptTemplate.fromTemplate(`
       You are a portfolio data updater.
@@ -64,13 +95,17 @@ export async function POST(req: NextRequest, res: NextResponse) {
       3. Update the appropriate field based on the intent and section
       4. Return ONLY the updated portfolio data as a valid JSON array
       5. Do not add any explanation, just return the JSON
+      6. When adding new projects or experience give proper descriptionns to them. for projects use this image {image_link}
+      7. When adding tech stack anywhere search in this list and only include tech stack that are present in this list {tech_list}
     `);
 
     const updatePrompt = await updatePortfolioTemplate.format({
       portfolioData: JSON.stringify(portfolioData),
       intent: parsedOutput.intent,
       sectionName: parsedOutput.sectionName,
-      value: parsedOutput.value
+      value: parsedOutput.value,
+      image_link: "https://placehold.co/600x400?text=Project+Image",
+      tech_list: JSON.stringify(techList)
     });
     
     const updatedResponse = await model.generateContent(updatePrompt);
@@ -101,13 +136,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
         intent: parsedOutput.intent,
         section: parsedOutput.sectionName,
         value: parsedOutput.value
-      }
+      },
+      userReply: userResponse
     });
   } catch (error) {
     console.log(error);
     return NextResponse.json({
       error: "An error occurred during portfolio customization",
-      details: error instanceof Error ? error.message : String(error)
+      details: error instanceof Error ? error.message : String(error),
+      userReply: "I'm sorry, but I encountered an error while trying to update your portfolio. Please try again or provide more specific instructions."
     }, { status: 500 });
   }
 }

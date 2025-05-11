@@ -252,7 +252,7 @@ const ExperienceSidebar = () => {
                       className="flex bg-stone-700/25 border border-white/15 px-3 py-2 mt-1 rounded-lg items-center justify-between gap-2 cursor-pointer hover:bg-stone-700/40 transition-colors"
                     >
                       <span className="text-sm">{tech.name}</span>
-                      <img src={tech.logo} alt={tech.name} width={20} height={20} />
+                      <img src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} width={20} height={20} />
                     </div>
                   ))}
                 </div>
@@ -273,7 +273,7 @@ const ExperienceSidebar = () => {
                     {currentExperience.techStack.map((tech, index) => (
                       <div key={index} className="flex items-center justify-between bg-gray-700 rounded-md px-3 py-2">
                         <div className="flex items-center gap-2">
-                          <img src={tech.logo} alt={tech.name} className="w-5 h-5" />
+                          <img src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} className="w-5 h-5" />
                           <span className="text-sm text-white">{tech.name}</span>
                         </div>
                         <Button 

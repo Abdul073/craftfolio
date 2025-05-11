@@ -163,7 +163,7 @@ const ProfessionalJourney = () => {
                           key={techIndex}
                           className="bg-green-900/20 text-green-400 px-3 py-1 rounded-full text-sm border border-green-700/30"
                         >
-                          <img  src={tech.logo} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
+                          <img  src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
                           </span>
                       ))}
                     </div>

@@ -265,7 +265,7 @@ const Projects: React.FC = () => {
                             whileHover={{ scale: 1.05 }}
                             className="px-3 py-1 bg-gray-800 rounded-full text-sm font-medium text-white cursor-pointer hover:border-green-400 border border-gray-700 transition-all duration-300"
                           >
-                          <img  src={tech.logo} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
+                          <img  src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
                           </motion.span>
                         ))}
                       </div>

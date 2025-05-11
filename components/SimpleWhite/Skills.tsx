@@ -96,7 +96,7 @@ const Skills: NextPage = () => {
     <section id="skills" className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 relative">
-        <EditButton styles="right-48 -top-6" sectionName="technologies" />
+        <EditButton styles="right-64 -top-6" sectionName="technologies" />
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">
             Technical Skills
           </h2>

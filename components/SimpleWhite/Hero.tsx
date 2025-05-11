@@ -114,7 +114,7 @@ const Hero: NextPage = () => {
                   delay: 0.1
                 }}
               >
-                {heroData?.name || "John Doe"}
+                {userInfo?.name || "John Doe"}
               </motion.h1>
 
               <motion.h2

@@ -242,7 +242,7 @@ const Experience: React.FC = () => {
                         key={techIndex}
                         className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm border border-gray-200"
                       >
-                        {tech.logo && <img src={tech.logo} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>} {tech.name}
+                        {tech.logo && <img src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>} {tech.name}
                       </span>
                     ))}
                   </div>

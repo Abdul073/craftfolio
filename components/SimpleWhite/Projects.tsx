@@ -47,7 +47,7 @@ const Projects: NextPage = () => {
     if (!portfolioId || isLoading) return;
 
     const subscription = supabase
-      .channel(`portfolio-${portfolioId}-projects`)
+      .channel(`portfolio-${portfolioId}-projects-simplewhite`)
       .on('postgres_changes', 
         { 
           event: 'UPDATE', 
@@ -123,7 +123,7 @@ const Projects: NextPage = () => {
             {projectsData.map((project, index) => (
               <motion.div
                 key={project.id || index}
-                variants={projectVariants}
+                // variants={projectVariants}
                 className="group relative border-b-2 border-primary-200 pb-12 last:border-none"
               >
                 <div className="flex flex-col lg:flex-row gap-8 items-center">
@@ -153,7 +153,7 @@ const Projects: NextPage = () => {
                           key={tagIndex}
                           className="px-4 py-2 text-sm font-medium bg-teal-300/50 text-primary-700 rounded-lg"
                         >
-                          <img  src={tech.logo} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
+                          <img  src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
                           </span>
                       ))}
                     </div>

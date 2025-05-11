@@ -113,7 +113,7 @@ const Technologies = () => {
                        hover:border-green-400 flex flex-col items-center
                         justify-center transition-all duration-300 ease-in shadow${index+1}
                         shadow-lg shadow-green-500/10 hover:shadow-xl hover:shadow-green-500/20">
-                  <img src={tech.logo} alt={tech.name} className="w-12 h-12" />
+                  <img src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} className="w-12 h-12" />
                 </div>
                 <p className="font-medium text-center mt-2 text-white peer-hover:font-semibold peer-hover:text-green-400">{tech.name}</p>
               </div>

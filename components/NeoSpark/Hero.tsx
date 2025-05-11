@@ -92,10 +92,6 @@ const Hero = () => {
     };
   }, [portfolioId, heroData, isLoading, badgeScope, titleScope, animateBadge, animateTitle]);
 
-  const handleSectionEdit = () => {
-    dispatch(setCurrentEdit("hero"));
-  };
-
   if (isLoading || !heroData) {
     return <div className="flex items-center justify-center h-64">Loading...</div>;
   }
@@ -103,6 +99,7 @@ const Hero = () => {
   const badgeTexts = heroData.badge?.texts || [];
   const titleTexts = heroData.titleSuffixOptions || [];
 
+  console.log(heroData?.badge?.color)
 
   return (
     <div className="relative flex-1 flex flex-col items-center mt-12 px-4 md:px-8">
