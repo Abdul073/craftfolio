@@ -24,6 +24,10 @@ interface ChatbotProps {
   setCurrentFont: (font: string) => void;
 }
 
+interface MessageMemory {
+  text: string;
+  timestamp: Date;
+}
 
 const THEME_OPTIONS = [
   { name: 'Light', value: 'light' },
@@ -31,7 +35,6 @@ const THEME_OPTIONS = [
   { name: 'Blue', value: 'blue' },
   { name: 'Green', value: 'green' }
 ];
-
 
 const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFont} : ChatbotProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,6 +46,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
   const [showFontOptions, setShowFontOptions] = useState(false);
   const [selectedFont, setSelectedFont] = useState<string>('');
   const [selectedTheme, setSelectedTheme] = useState<string>('');
+  const [messageMemory, setMessageMemory] = useState<MessageMemory[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useDispatch();
@@ -71,6 +75,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
       const response = await axios.post('/api/updateDataWithChatbot', {
         portfolioData, 
         inputValue,
+        messageMemory: messageMemory.slice(-3)
       });
       console.log(response.data);
       return response.data;
@@ -90,6 +95,12 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, userMessage]);
+    
+    setMessageMemory(prev => [...prev, {
+      text: messageText,
+      timestamp: new Date()
+    }].slice(-3));
+    
     setInputValue('');
     setIsProcessing(true);
 

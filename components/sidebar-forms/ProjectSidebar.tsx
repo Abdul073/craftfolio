@@ -190,10 +190,10 @@ const ProjectSidebar = () => {
 
   return (
     <div className="custom-scrollbar">
-      <Card>
+      <Card className="bg-gray-900 border-gray-700">
         <CardHeader>
-          <CardTitle>Projects</CardTitle>
-          <CardDescription>Manage your portfolio projects</CardDescription>
+          <CardTitle className="text-gray-100">Projects</CardTitle>
+          <CardDescription className="text-gray-400">Manage your portfolio projects</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-5">
@@ -204,7 +204,7 @@ const ProjectSidebar = () => {
                 value={currentProject.projectName || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, projectName: e.target.value})} 
                 placeholder="Enter project name" 
-                className="bg-gray-800 border-gray-700 text-white" 
+                className="bg-gray-800 border-gray-700 text-gray-100" 
               />
             </div>
             
@@ -215,7 +215,7 @@ const ProjectSidebar = () => {
                 value={currentProject.projectTitle || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, projectTitle: e.target.value})} 
                 placeholder="Project title" 
-                className="bg-gray-800 border-gray-700 text-white" 
+                className="bg-gray-800 border-gray-700 text-gray-100" 
               />
             </div>
             
@@ -226,7 +226,7 @@ const ProjectSidebar = () => {
                 value={currentProject.projectDescription || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, projectDescription: e.target.value})} 
                 placeholder="Enter project description" 
-                className="resize-none h-32 bg-gray-800 border-gray-700 text-white" 
+                className="resize-none h-32 bg-gray-800 border-gray-700 text-gray-100" 
               />
             </div>
 
@@ -246,14 +246,14 @@ const ProjectSidebar = () => {
                       variant="ghost"
                       size="sm"
                       onClick={removeImage}
-                      className="absolute top-2 right-2 h-8 w-8 p-0 bg-gray-800 bg-opacity-70 text-white hover:bg-gray-700 rounded-full"
+                      className="absolute top-2 right-2 h-8 w-8 p-0 bg-gray-800 bg-opacity-70 text-gray-100 hover:bg-gray-700 rounded-full"
                     >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
                 ) : (
                   <label className="w-full cursor-pointer">
-                    <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 flex flex-col items-center justify-center h-48 hover:border-gray-400 transition-colors">
+                    <div className="border-2 border-dashed border-gray-700 rounded-lg p-6 flex flex-col items-center justify-center h-48 hover:border-gray-600 transition-colors">
                       <Cloud className="h-12 w-12 text-gray-400" />
                       <p className="mt-2 text-sm text-gray-400">Upload project image</p>
                       <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
@@ -278,7 +278,7 @@ const ProjectSidebar = () => {
                     value={currentProject.projectImage || ""} 
                     onChange={(e) => setCurrentProject({...currentProject, projectImage: e.target.value})} 
                     placeholder="Enter image URL" 
-                    className="bg-gray-800 border-gray-700 text-white mt-1" 
+                    className="bg-gray-800 border-gray-700 text-gray-100 mt-1" 
                   />
                 </div>
               )}
@@ -292,7 +292,7 @@ const ProjectSidebar = () => {
                   value={techSearchValue}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTechSearch(e.target.value)}
                   placeholder='Search Technologies...'
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-gray-800 border-gray-700 text-gray-100"
                   onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                     if (e.key === 'Enter' && techSuggestions.length > 0) {
                       addTechToProject(techSuggestions[0])
@@ -370,7 +370,7 @@ const ProjectSidebar = () => {
                 value={currentProject.githubLink || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, githubLink: e.target.value})} 
                 placeholder="Enter GitHub URL" 
-                className="bg-gray-800 border-gray-700 text-white" 
+                className="bg-gray-800 border-gray-700 text-gray-100" 
               />
             </div>
 
@@ -381,7 +381,7 @@ const ProjectSidebar = () => {
                 value={currentProject.liveLink || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, liveLink: e.target.value})} 
                 placeholder="Enter live project URL" 
-                className="bg-gray-800 border-gray-700 text-white" 
+                className="bg-gray-800 border-gray-700 text-gray-100" 
               />
             </div>
 
@@ -392,14 +392,14 @@ const ProjectSidebar = () => {
                 value={currentProject.year || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, year: e.target.value})} 
                 placeholder="Year completed" 
-                className="bg-gray-800 border-gray-700 text-white" 
+                className="bg-gray-800 border-gray-700 text-gray-100" 
               />
             </div>
 
             <Button 
               type="button" 
               onClick={handleSaveProject}
-              className="w-full"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
               {editingIndex !== null ? 'Update Project' : 'Add Project'}
             </Button>

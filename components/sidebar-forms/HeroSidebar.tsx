@@ -196,23 +196,23 @@ const HeroSidebar = () => {
 
   return (
     <div className="flex-1 custom-scrollbar">
-      <Card>
+      <Card className="bg-gray-900 border-gray-700">
         <CardHeader>
-          <CardTitle>Hero Section</CardTitle>
-          <CardDescription>Manage your hero section.</CardDescription>
+          <CardTitle className="text-gray-100">Hero Section</CardTitle>
+          <CardDescription className="text-gray-400">Manage your hero section.</CardDescription>
         </CardHeader>
 
         <CardContent>
           <Tabs defaultValue={defaultTab} className="mt-4">
             <TabsList className="bg-gray-800 border-gray-700">
               {showBasicTab && (
-                <TabsTrigger value="basic" className="data-[state=active]:bg-gray-700 cursor-pointer">Basic Info</TabsTrigger>
+                <TabsTrigger value="basic" className="data-[state=active]:bg-gray-700 text-gray-300 cursor-pointer">Basic Info</TabsTrigger>
               )}
               {showBadgeTab && (
-                <TabsTrigger value="badge" className="data-[state=active]:bg-gray-700 cursor-pointer">Badge</TabsTrigger>
+                <TabsTrigger value="badge" className="data-[state=active]:bg-gray-700 text-gray-300 cursor-pointer">Badge</TabsTrigger>
               )}
               {showActionsTab && (
-                <TabsTrigger value="actions" className="data-[state=active]:bg-gray-700 cursor-pointer">Actions</TabsTrigger>
+                <TabsTrigger value="actions" className="data-[state=active]:bg-gray-700 text-gray-300 cursor-pointer">Actions</TabsTrigger>
               )}
             </TabsList>
 
@@ -227,7 +227,7 @@ const HeroSidebar = () => {
                         value={content.name}
                         onChange={(e) => setContent({ ...content, name: e.target.value })}
                         placeholder="Enter your name"
-                        className="bg-gray-800 border-gray-700 text-white"
+                        className="bg-gray-800 border-gray-700 text-gray-100"
                       />
                     </div>
                   )}
@@ -240,12 +240,12 @@ const HeroSidebar = () => {
                         value={content.titlePrefix}
                         onChange={(e) => setContent({ ...content, titlePrefix: e.target.value })}
                         placeholder="e.g. Aspiring Software"
-                        className="bg-gray-800 border-gray-700 text-white"
+                        className="bg-gray-800 border-gray-700 text-gray-100"
                       />
                     </div>
                   )}
 
-                {fields.includes("title") && (
+                  {fields.includes("title") && (
                     <div className="space-y-2">
                       <Label htmlFor="title" className="text-sm font-medium text-gray-300">Title</Label>
                       <Input
@@ -253,11 +253,10 @@ const HeroSidebar = () => {
                         value={content.title}
                         onChange={(e) => setContent({ ...content, title: e.target.value })}
                         placeholder="e.g. Full Stack Developer"
-                        className="bg-gray-800 border-gray-700 text-white"
+                        className="bg-gray-800 border-gray-700 text-gray-100"
                       />
                     </div>
                   )}
-
 
                   {fields.includes("titleSuffixOptions") && (
                     <div className="space-y-2">
@@ -268,20 +267,20 @@ const HeroSidebar = () => {
                           variant="outline"
                           size="sm"
                           onClick={addTitleSuffix}
-                          className="h-7 bg-gray-800 border-gray-600 hover:bg-gray-700 text-gray-300"
+                          className="h-7 bg-gray-800 border-gray-700 hover:bg-gray-700 text-gray-300"
                         >
                           <Plus className="h-3.5 w-3.5 mr-1" /> Add
                         </Button>
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         {content.titleSuffixOptions.map((suffix, index) => (
                           <div key={index} className="flex items-center gap-2">
                             <Input
                               value={suffix}
                               onChange={(e) => updateTitleSuffix(index, e.target.value)}
                               placeholder={`Title suffix ${index + 1}`}
-                              className="bg-gray-800 border-gray-700 text-white"
+                              className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                             {content.titleSuffixOptions.length > 1 && (
                               <Button
@@ -289,7 +288,7 @@ const HeroSidebar = () => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => removeTitleSuffix(index)}
-                                className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-gray-700"
+                                className="h-8 w-8 p-0 text-gray-400 hover:text-gray-100 hover:bg-gray-700"
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -308,13 +307,13 @@ const HeroSidebar = () => {
                         value={content.summary}
                         onChange={(e) => setContent({ ...content, summary: e.target.value })}
                         placeholder="Enter a brief description about yourself"
-                        className="resize-none custom-scrollbar h-32 bg-gray-800 border-gray-700 text-white"
+                        className="resize-none custom-scrollbar h-32 bg-gray-800 border-gray-700 text-gray-100"
                       />
                       <p className="text-xs text-gray-400">Use new lines to create multiple paragraphs</p>
                     </div>
                   )}
 
-              {fields.includes("shortSummary") && (
+                  {fields.includes("shortSummary") && (
                     <div className="space-y-2">
                       <Label htmlFor="shortSummary" className="text-sm font-medium text-gray-300">Short Summary</Label>
                       <Textarea
@@ -322,7 +321,7 @@ const HeroSidebar = () => {
                         value={content.shortSummary}
                         onChange={(e) => setContent({ ...content, shortSummary: e.target.value })}
                         placeholder="Enter a short summary about yourself"
-                        className="resize-none custom-scrollbar h-32 bg-gray-800 border-gray-700 text-white"
+                        className="resize-none custom-scrollbar h-32 bg-gray-800 border-gray-700 text-gray-100"
                       />
                       <p className="text-xs text-gray-400">Use new lines to create multiple paragraphs</p>
                     </div>
@@ -355,20 +354,20 @@ const HeroSidebar = () => {
                         variant="outline"
                         size="sm"
                         onClick={addBadgeText}
-                        className="h-7 bg-gray-800 border-gray-600 hover:bg-gray-700 text-gray-300"
+                        className="h-7 bg-gray-800 border-gray-700 hover:bg-gray-700 text-gray-300"
                       >
                         <Plus className="h-3.5 w-3.5 mr-1" /> Add
                       </Button>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {content.badge.texts.map((text, index) => (
                         <div key={index} className="flex items-center gap-2">
                           <Input
                             value={text}
                             onChange={(e) => updateBadgeText(index, e.target.value)}
                             placeholder={`Badge text ${index + 1}`}
-                            className="bg-gray-800 border-gray-700 text-white"
+                            className="bg-gray-800 border-gray-700 text-gray-100"
                           />
                           {content.badge.texts.length > 1 && (
                             <Button
@@ -376,7 +375,7 @@ const HeroSidebar = () => {
                               variant="ghost"
                               size="icon"
                               onClick={() => removeBadgeText(index)}
-                              className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-gray-700"
+                              className="h-8 w-8 p-0 text-gray-400 hover:text-gray-100 hover:bg-gray-700"
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -384,7 +383,6 @@ const HeroSidebar = () => {
                         </div>
                       ))}
                     </div>
-                    <p className="text-xs text-gray-400">The badge texts will rotate automatically</p>
                   </div>
                 </CardContent>
               </TabsContent>
@@ -400,7 +398,7 @@ const HeroSidebar = () => {
                       variant="outline"
                       size="sm"
                       onClick={addAction}
-                      className="h-7 bg-gray-800 border-gray-600 hover:bg-gray-700 text-gray-300"
+                      className="h-7 bg-gray-800 border-gray-700 hover:bg-gray-700 text-gray-300"
                     >
                       <Plus className="h-3.5 w-3.5 mr-1" /> Add
                     </Button>
@@ -410,21 +408,21 @@ const HeroSidebar = () => {
                     {content.actions.map((action, index) => (
                       <div key={index} className="space-y-3 pt-3 border-t border-gray-700">
                         <div className="flex justify-between items-center">
-                          <h4 className="text-sm font-medium text-gray-200">Button {index + 1}</h4>
+                          <h4 className="text-sm font-medium text-gray-300">Button {index + 1}</h4>
                           {content.actions.length > 1 && (
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
                               onClick={() => removeAction(index)}
-                              className="h-7 text-gray-400 hover:text-white hover:bg-gray-700"
+                              className="h-7 text-gray-400 hover:text-gray-100 hover:bg-gray-700"
                             >
                               <Minus className="h-3.5 w-3.5 mr-1" /> Remove
                             </Button>
                           )}
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-3">
                           <div className="space-y-2">
                             <Label htmlFor={`action-label-${index}`} className="text-xs font-medium text-gray-400">Label</Label>
                             <Input
@@ -432,7 +430,7 @@ const HeroSidebar = () => {
                               value={action.label}
                               onChange={(e) => updateAction(index, 'label', e.target.value)}
                               placeholder="e.g. View Projects"
-                              className="bg-gray-800 border-gray-700 text-white"
+                              className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                           </div>
 
@@ -443,25 +441,25 @@ const HeroSidebar = () => {
                               value={action.url}
                               onChange={(e) => updateAction(index, 'url', e.target.value)}
                               placeholder="e.g. #projects"
-                              className="bg-gray-800 border-gray-700 text-white"
+                              className="bg-gray-800 border-gray-700 text-gray-100"
                             />
                           </div>
-                        </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor={`action-style-${index}`} className="text-xs font-medium text-gray-400">Style</Label>
-                          <select
-                            id={`action-style-${index}`}
-                            value={action.style}
-                            onChange={(e) => updateAction(index, 'style', e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 text-white rounded-md py-2 px-3"
-                          >
-                            {styleOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
+                          <div className="space-y-2">
+                            <Label htmlFor={`action-style-${index}`} className="text-xs font-medium text-gray-400">Style</Label>
+                            <select
+                              id={`action-style-${index}`}
+                              value={action.style}
+                              onChange={(e) => updateAction(index, 'style', e.target.value)}
+                              className="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-md py-2 px-3"
+                            >
+                              {styleOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -474,7 +472,7 @@ const HeroSidebar = () => {
 
         <CardFooter className='pt-4 pb-6'>
           <Button
-            className='w-full'
+            className='w-full bg-blue-600 hover:bg-blue-700 text-white'
             onClick={handleSubmit}
             disabled={isLoading || !hasChanges}
           >

@@ -22,7 +22,7 @@ const Sidebar = () => {
   if (!currentlyEditing) return null; 
 
   return (
-    <div className={`fixed left-0 top-0 h-screen z-[99999] transition-all duration-300 ease-in-out ${isExpanded ? 'w-80' : 'w-0'} bg-[#1b0808] border-r border-gray-800 overflow-hidden`}>
+    <div className={`fixed left-0 top-0 h-screen z-[99999] transition-all duration-300 ease-in-out ${isExpanded ? 'w-80' : 'w-0'} bg-gray-900 border-r border-gray-700 overflow-hidden`}>
       
 
       <div className="flex flex-col h-full">

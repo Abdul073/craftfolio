@@ -113,10 +113,10 @@ const ContactSidebar = () => {
 
   return (
     <div className="flex-1 custom-scrollbar h-full">
-      <Card className=''>
+      <Card className="bg-gray-900 border-gray-700">
         <CardHeader>
-          <CardTitle>Contact Information</CardTitle>
-          <CardDescription>Manage your contact information.</CardDescription>
+          <CardTitle className="text-gray-100">Contact Information</CardTitle>
+          <CardDescription className="text-gray-400">Manage your contact information.</CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-5">
@@ -128,7 +128,7 @@ const ContactSidebar = () => {
               value={content.email}
               onChange={(e) => setContent({ ...content, email: e.target.value })}
               placeholder="Enter your email address"
-              className="bg-gray-800 border-gray-700 text-white"
+              className="bg-gray-800 border-gray-700 text-gray-100"
             />
           </div>
 
@@ -139,7 +139,7 @@ const ContactSidebar = () => {
               value={content.linkedin}
               onChange={(e) => setContent({ ...content, linkedin: e.target.value })}
               placeholder="Enter your LinkedIn URL"
-              className="bg-gray-800 border-gray-700 text-white"
+              className="bg-gray-800 border-gray-700 text-gray-100"
             />
             <p className="text-xs text-gray-400">e.g. https://linkedin.com/in/username</p>
           </div>
@@ -151,7 +151,7 @@ const ContactSidebar = () => {
               value={content.github}
               onChange={(e) => setContent({ ...content, github: e.target.value })}
               placeholder="Enter your GitHub URL"
-              className="bg-gray-800 border-gray-700 text-white"
+              className="bg-gray-800 border-gray-700 text-gray-100"
             />
             <p className="text-xs text-gray-400">e.g. https://github.com/username</p>
           </div>
@@ -163,7 +163,7 @@ const ContactSidebar = () => {
               value={content.location}
               onChange={(e) => setContent({ ...content, location: e.target.value })}
               placeholder="Enter your location"
-              className="bg-gray-800 border-gray-700 text-white"
+              className="bg-gray-800 border-gray-700 text-gray-100"
             />
             <p className="text-xs text-gray-400">e.g. New York, USA </p>
           </div>
@@ -175,7 +175,7 @@ const ContactSidebar = () => {
               value={content.shortSummary}
               onChange={(e) => setContent({ ...content, shortSummary: e.target.value })}
               placeholder="Enter a short summary about yourself"
-              className="resize-none custom-scrollbar h-32 bg-gray-800 border-gray-700 text-white"
+              className="resize-none custom-scrollbar h-32 bg-gray-800 border-gray-700 text-gray-100"
             />
             <p className="text-xs text-gray-400">Use new lines to create multiple paragraphs</p>
           </div>
@@ -235,12 +235,10 @@ const ContactSidebar = () => {
                   value={content.resumeLink}
                   onChange={(e) => setContent({ ...content, resumeLink: e.target.value })}
                   placeholder="Enter your resume link"
-                  className="bg-gray-800 border-gray-700 text-white mt-2"
+                  className="bg-gray-800 border-gray-700 text-gray-100 mt-2"
                 />
                 <p className="text-xs text-gray-400 mt-2">Link to your resume (PDF recommended)</p>
               </div>
-          
-
             )}
           </div>
         </CardContent>
@@ -248,7 +246,7 @@ const ContactSidebar = () => {
         <CardFooter className="pt-4 pb-6">
           <div className="flex w-full space-x-2">
             <Button
-              className="w-full"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
               onClick={handleSubmit}
               disabled={isLoading}
             >

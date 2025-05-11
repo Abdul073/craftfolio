@@ -138,35 +138,46 @@ const ExperienceSidebar = () => {
 
   return (
     <div className="custom-scrollbar">
-      <Card>
+      <Card className="bg-gray-900 border-gray-700">
         <CardHeader>
-          <CardTitle>Experience</CardTitle>
-          <CardDescription>Manage your work experience</CardDescription>
+          <CardTitle className="text-gray-100">Experience</CardTitle>
+          <CardDescription className="text-gray-400">Manage your work experience.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="role" className="text-sm font-medium text-gray-300">Role</Label>
+              <Label htmlFor="company" className="text-sm font-medium text-gray-300">Company</Label>
               <Input 
-                id="role" 
-                value={currentExperience.role || ""} 
-                onChange={(e) => setCurrentExperience({...currentExperience, role: e.target.value})} 
-                placeholder="Enter your job title" 
-                className="bg-gray-800 border-gray-700 text-white" 
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="companyName" className="text-sm font-medium text-gray-300">Company Name</Label>
-              <Input 
-                id="companyName" 
+                id="company" 
                 value={currentExperience.companyName || ""} 
                 onChange={(e) => setCurrentExperience({...currentExperience, companyName: e.target.value})} 
                 placeholder="Enter company name" 
-                className="bg-gray-800 border-gray-700 text-white" 
+                className="bg-gray-800 border-gray-700 text-gray-100" 
               />
             </div>
-            
+
+            <div className="space-y-2">
+              <Label htmlFor="position" className="text-sm font-medium text-gray-300">Position</Label>
+              <Input 
+                id="position" 
+                value={currentExperience.role || ""} 
+                onChange={(e) => setCurrentExperience({...currentExperience, role: e.target.value})} 
+                placeholder="Enter your position" 
+                className="bg-gray-800 border-gray-700 text-gray-100" 
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-sm font-medium text-gray-300">Description</Label>
+              <Textarea 
+                id="description" 
+                value={currentExperience.description || ""} 
+                onChange={(e) => setCurrentExperience({...currentExperience, description: e.target.value})} 
+                placeholder="Enter job description" 
+                className="resize-none h-32 bg-gray-800 border-gray-700 text-gray-100" 
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="location" className="text-sm font-medium text-gray-300">Location</Label>
               <Input 
@@ -174,7 +185,7 @@ const ExperienceSidebar = () => {
                 value={currentExperience.location || ""} 
                 onChange={(e) => setCurrentExperience({...currentExperience, location: e.target.value})} 
                 placeholder="City, Country or Remote" 
-                className="bg-gray-800 border-gray-700 text-white" 
+                className="bg-gray-800 border-gray-700 text-gray-100" 
               />
             </div>
 
@@ -186,7 +197,7 @@ const ExperienceSidebar = () => {
                   value={currentExperience.startDate || ""} 
                   onChange={(e) => setCurrentExperience({...currentExperience, startDate: e.target.value})} 
                   placeholder="MM/YYYY" 
-                  className="bg-gray-800 border-gray-700 text-white" 
+                  className="bg-gray-800 border-gray-700 text-gray-100" 
                 />
               </div>
               
@@ -197,20 +208,9 @@ const ExperienceSidebar = () => {
                   value={currentExperience.endDate || ""} 
                   onChange={(e) => setCurrentExperience({...currentExperience, endDate: e.target.value})} 
                   placeholder="MM/YYYY or Present" 
-                  className="bg-gray-800 border-gray-700 text-white" 
+                  className="bg-gray-800 border-gray-700 text-gray-100" 
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-sm font-medium text-gray-300">Description</Label>
-              <Textarea 
-                id="description" 
-                value={currentExperience.description || ""} 
-                onChange={(e) => setCurrentExperience({...currentExperience, description: e.target.value})} 
-                placeholder="Describe your responsibilities and achievements" 
-                className="resize-none h-32 bg-gray-800 border-gray-700 text-white" 
-              />
             </div>
 
             <div className="space-y-2">
@@ -221,7 +221,7 @@ const ExperienceSidebar = () => {
                     value={techInput} 
                     onChange={(e) => handleTechInputChange(e.target.value)} 
                     placeholder="Search technologies..." 
-                    className="bg-gray-800 border-gray-700 text-white flex-1" 
+                    className="bg-gray-800 border-gray-700 text-gray-100 flex-1" 
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && suggestions.length > 0) {
                         addTechItem(suggestions[0]);
@@ -295,7 +295,7 @@ const ExperienceSidebar = () => {
             <Button 
               type="button" 
               onClick={handleSaveExperience}
-              className="w-full"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
               {editingIndex !== null ? 'Update Experience' : 'Add Experience'}
             </Button>

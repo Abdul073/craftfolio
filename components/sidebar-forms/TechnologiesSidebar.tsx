@@ -10,6 +10,7 @@ import { updatePortfolioData } from '@/slices/dataSlice'
 import { useParams } from 'next/navigation'
 import { updateSection } from '@/app/actions/portfolio'
 import toast from 'react-hot-toast'
+import { Label } from '../ui/label'
 
 interface Technology {
   name: string;
@@ -104,90 +105,80 @@ const TechnologiesSidebar: React.FC = () => {
   };
 
   return (
-    <div className='custom-scrollbar'>
-      <Card className=''>
+    <div className="custom-scrollbar">
+      <Card className="bg-gray-900 border-gray-700">
         <CardHeader>
-          <CardTitle>Technologies</CardTitle>
-          <CardDescription>Search and add technologies to your stack</CardDescription>
+          <CardTitle className="text-gray-100">Technologies</CardTitle>
+          <CardDescription className="text-gray-400">Manage your skills and technologies.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div>
-            <div className='flex items-center justify-between gap-4 mb-4'>
-              <Input 
-                type='text'
-                value={searchValue}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e.target.value)}
-                placeholder='Search Technologies...'
-                className="bg-gray-800 border-gray-700 text-white"
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (e.key === 'Enter' && suggestions.length > 0) {
-                    addSuggestion(suggestions[0])
-                  } else if (e.key === 'Enter' && searchValue.trim() !== "") {
-                    handleAddCustomTech();
-                  }
-                }}
-              />
-              <Button onClick={handleAddCustomTech}>Add</Button>
-            </div>
-            
-            {/* Suggestions Section */}
-            {suggestions.length > 0 ? (
-              <div className='mb-6'>
-                <h3 className='text-sm font-medium mb-2'>Suggestions</h3>
-                <div>
-                  {suggestions.map((item: Technology, index : number) => (
-                    <div 
-                      onClick={() => addSuggestion(item)}
-                      key={index}
-                      className='flex bg-stone-700/25 border border-white/15 px-4 mt-2 rounded-lg items-center justify-between gap-4 py-2 cursor-pointer hover:bg-stone-700/40 transition-colors'
-                    >
-                      <span className='text-sm'>{item.name}</span>
-                      <img src={item.logo} alt={item.name} width={25} height={25} />
-                    </div>
-                  ))}
-                </div>
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="techSearch" className="text-sm font-medium text-gray-300">Add Technology</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="techSearch"
+                  value={searchValue}
+                  onChange={(e) => handleChange(e.target.value)}
+                  placeholder="Search technologies..."
+                  className="bg-gray-800 border-gray-700 text-gray-100 flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && suggestions.length > 0) {
+                      addSuggestion(suggestions[0]);
+                    } else if (e.key === 'Enter' && searchValue.trim() !== "") {
+                      handleAddCustomTech();
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  onClick={() => handleAddCustomTech()}
+                  disabled={!searchValue.trim()}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Add
+                </Button>
               </div>
-            ) : (
-              hasSearched && (
-                <div className='bg-stone-700/25 border border-white/15 rounded-lg p-4 text-center mb-6'>
-                  <p className='text-sm text-gray-400'>No technologies found matching "{searchValue}"</p>
-                  <p className='text-xs mt-1 text-gray-500'>Use the Add button to add it as a custom technology</p>
-                </div>
-              )
-            )}
-            
-            {selected.length > 0 ? (
-              <div>
-                <h3 className='text-sm font-medium mb-2'>Selected Technologies</h3>
-                <div>
-                  {selected.map((item: Technology,index : number) => (
-                    <div 
+              {suggestions.length > 0 && (
+                <div className="mt-2 bg-gray-800 border border-gray-700 rounded-md overflow-hidden">
+                  {suggestions.map((tech, index) => (
+                    <div
                       key={index}
-                      className='flex bg-stone-700/25 border border-white/15 px-4 mt-2 rounded-lg items-center justify-between py-2'
+                      className="px-3 py-2 hover:bg-gray-700 cursor-pointer text-gray-100"
+                      onClick={() => addSuggestion(tech)}
                     >
-                      <div className='flex items-center gap-4'>
-                        <img src={item.logo} alt={item.name} width={25} height={25} />
-                        <span className='text-sm'>{item.name}</span>
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm">{tech.name}</span>
+                        <img src={tech.logo} alt={tech.name} width={20} height={20} />
                       </div>
-                      <Button 
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeTech(item)}
-                        className='p-1 h-auto hover:bg-red-500/20'
-                      >
-                        <X size={16} className='text-red-400' />
-                      </Button>
                     </div>
                   ))}
                 </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-300">Your Technologies</Label>
+              <div className="flex flex-wrap gap-2">
+                {selected.map((tech, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-1 bg-gray-800 border border-gray-700 rounded-md px-2 py-1"
+                  >
+                    <span className="text-gray-100">{tech.name}</span>
+                    <button
+                      onClick={() => removeTech(tech)}
+                      className="text-gray-400 hover:text-gray-100"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
-            ) : (
-              <div className='bg-stone-700/25 border border-white/15 rounded-lg p-4 text-center'>
-                <p className='text-sm text-gray-400'>No technologies selected</p>
-              </div>
-            )}
+            </div>
           </div>
         </CardContent>
+
         <CardFooter className='pt-4 pb-6'>
           <div className="flex w-full space-x-2">
             {hasChanges && (
@@ -200,7 +191,7 @@ const TechnologiesSidebar: React.FC = () => {
               </Button>
             )}
             <Button 
-              className={hasChanges ? "flex-1" : "w-full"}
+              className={`${hasChanges ? "flex-1" : "w-full"} bg-blue-600 hover:bg-blue-700 text-white`}
               onClick={handleSaveChanges}
               disabled={isLoading || !hasChanges}
             >
@@ -210,7 +201,7 @@ const TechnologiesSidebar: React.FC = () => {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
 
 export default TechnologiesSidebar
