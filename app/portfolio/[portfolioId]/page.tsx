@@ -10,6 +10,8 @@ import Sidebar from "../Sidebar";
 import { Spotlight } from "@/components/NeoSpark/Spotlight";
 import Chatbot from "@/components/Chatbot/Chatbot";
 import { motion, AnimatePresence } from "framer-motion";
+import { fontClassMap } from "@/lib/font";
+import { cn } from "@/lib/utils";
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -19,8 +21,8 @@ const Page = () => {
   const allSections = portfolioData?.map((item: any) => item.type);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [currentFont, setCurrentFont] = useState("Raleway");
 
-  // Create a safe type for template config
   type TemplateType = {
     navbar: React.ComponentType;
     spotlight?: boolean;
@@ -74,6 +76,8 @@ const Page = () => {
   const NavbarComponent = Template.navbar;
   const hasSpotlight = Template.spotlight;
 
+  const selectedFontClass = fontClassMap[currentFont] || fontClassMap["raleway"];
+
   return (
     <div className="min-h-screen flex flex-col">
       {hasSpotlight && (
@@ -86,7 +90,7 @@ const Page = () => {
       )}
 
       <motion.div 
-        className="custom-bg min-h-screen w-[80%]"
+        className={cn("custom-bg min-h-screen w-[80%]",selectedFontClass)}
         animate={{
           width: isChatOpen ? '80%' : '100%',
           marginRight: isChatOpen ? '20%' : '0',
@@ -99,12 +103,12 @@ const Page = () => {
         {allSections && allSections.length > 0 ? (
           allSections.map((section: string) => getComponentForSection(section))
         ) : (
-          <div className="flex items-center justify-center h-screen">
+          <div className={cn("flex items-center justify-center h-screen")}>
             <p className="text-xl">Portfolio content not found</p>
           </div>
         )}
       </motion.div>
-      <Chatbot portfolioData={portfolioData} portfolioId={portfolioId} onOpenChange={setIsChatOpen}/>
+      <Chatbot portfolioData={portfolioData} setCurrentFont={setCurrentFont} portfolioId={portfolioId} onOpenChange={setIsChatOpen}/>
     </div>
   );
 };

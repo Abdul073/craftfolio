@@ -92,6 +92,8 @@ const Hero: NextPage = () => {
   //   );
   // }
 
+  console.log(userInfo)
+
   return (
     <div id='about' className="min-h-screen relative bg-white simple-white">
       <Navbar />
@@ -184,7 +186,7 @@ const Hero: NextPage = () => {
 
             {/* Right Column - About */}
             <div className="lg:col-span-2 relative">
-              <EditButton styles='right-0 -top-16' sectionName="contact" />
+              <EditButton styles='right-72 -top-16' sectionName="contact" />
 
               <motion.div
                 className="relative bg-gradient-to-br from-white to-primary-100 p-6 rounded-lg shadow-lg border-2 border-primary-100 hover:border-black/20 border-transparent transition-all duration-300"
@@ -270,6 +272,7 @@ const Hero: NextPage = () => {
                   onClick={handleResumeDownload}
                 />
               </motion.div>
+
             </div>
           </main>
 

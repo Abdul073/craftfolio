@@ -110,7 +110,7 @@ const Projects: NextPage = () => {
           variants={containerVariants}
         >
           <div className="relative">
-            <EditButton styles="right-0 -top-6" sectionName="projects" />
+            <EditButton styles="right-60 -top-18" sectionName="projects" />
             <motion.h2
               variants={projectVariants}
               className="text-4xl md:text-5xl font-title font-semibold text-primary-800 mb-12 text-center"

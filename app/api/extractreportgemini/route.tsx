@@ -390,6 +390,7 @@ function convertToPortfolioFormat(resumeData : any, titleInfo : any, summaryInfo
         email: resumeData.personalInfo.email || "alexmorgan@gmail.com",
         location: resumeData.personalInfo.location || "San Fransisco, CA",
         resumeLink: resumeData.personalInfo.resumeLink || "",
+        name: resumeData.personalInfo.name || "Alex Morgan",
         shortSummary: resumeData.personalInfo.shortSummary || "I build exceptional and accessible digital experiences for the web.",
       },
     });

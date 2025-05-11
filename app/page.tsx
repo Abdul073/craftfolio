@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { fadeIn, fadeInScale, pulseAnimation, revealUpload, staggerContainer } from '@/lib/animations';
 import { useRouter } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 
 const ColorTheme = {
   primary: 'var(--primary)',
@@ -33,6 +34,8 @@ export default function Page() {
 
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
+  const {user} = useUser();
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -325,6 +328,9 @@ export default function Page() {
               >
                 Testimonials
               </motion.a>
+
+
+             {user ? <>
               <motion.a
                 href="#"
                 className="px-6 py-2 rounded-md text-lg transition-all"
@@ -354,6 +360,12 @@ export default function Page() {
               >
                 Sign Up Free
               </motion.a>
+              
+             </>
+              : <div>Loading...</div>}
+
+
+
             </div>
 
             {/* Mobile menu button */}

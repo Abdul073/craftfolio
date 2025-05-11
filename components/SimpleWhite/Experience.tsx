@@ -19,6 +19,7 @@ interface Experience {
   endDate: string;
   description: string;
   techStack?: Technology[];
+  location ?: string
 }
 
 const Experience: React.FC = () => {
@@ -148,6 +149,7 @@ const Experience: React.FC = () => {
   }
 
 
+  console.log(experienceData)
 
   return (
     <section
@@ -169,7 +171,7 @@ const Experience: React.FC = () => {
             My journey in the industry
           </p>
           <div className="mt-6">
-          <EditButton styles="right-48 -top-6" sectionName="experience" />
+          <EditButton styles="right-64 -top-18" sectionName="experience" />
           </div>
         </motion.div>
 
@@ -219,8 +221,9 @@ const Experience: React.FC = () => {
                     {exp.company}
                   </p>
                   <p className="font-sans text-sm uppercase tracking-wider font-medium text-gray-500">
-                    {exp.startDate} - {exp.endDate}
+                    {exp.startDate} - {exp.endDate}  
                   </p>
+                  <span className="text-black capitalize">{exp.location}</span>
                 </motion.div>
 
                 <ul className="space-y-4">

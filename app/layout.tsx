@@ -5,10 +5,10 @@ import ClientLayout from "@/Providers";
 
 export const runtime = 'nodejs';
 
-const montserrat = Raleway({
+const raleway = Raleway({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-montserrat",
+  variable: "--font-raleway",
 });
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
       <html lang="en">
         <body
-          className={`${montserrat.className} antialiased`}
+          className={`${raleway.className} antialiased`}
         >
           <ClientLayout>{children}</ClientLayout>
         </body>
