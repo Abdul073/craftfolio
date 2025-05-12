@@ -32,8 +32,8 @@ interface MessageMemory {
 const THEME_OPTIONS = [
   { name: 'Light', value: 'light' },
   { name: 'Dark', value: 'dark' },
-  { name: 'Blue', value: 'blue' },
-  { name: 'Green', value: 'green' }
+  { name: 'Emerald', value: 'emerald' },
+  { name: 'Blue', value: 'blue' }
 ];
 
 const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFont} : ChatbotProps) => {
@@ -296,16 +296,16 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="bg-gray-900 text-gray-100 border-l border-gray-700 h-full w-full flex flex-col"
+            className="bg-[#121212] text-gray-100 border-l border-gray-700 h-full w-full flex flex-col"
           >
-            <div className="p-4 flex rounded-t-lg justify-between items-center bg-gray-800">
+            <div className="p-4 flex rounded-t-lg justify-between items-center bg-[#1c1c1e]">
               <div className="flex items-center gap-2">
                 <motion.button
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
                   onClick={() => handleOpenChange(false)}
-                  className="p-1 hover:bg-gray-700 rounded-full transition-colors"
+                  className="p-1 hover:bg-[#2c2c2e] rounded-full transition-colors"
                 >
                   <X size={20} className="text-gray-200 cursor-pointer" />
                 </motion.button>
@@ -320,7 +320,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
               </div>
             </div>
             
-            <div className="flex-1 p-4 overflow-y-auto rounded-lg bg-gray-900 relative">
+            <div className="flex-1 p-4 overflow-y-auto rounded-lg bg-[#121212] relative">
               <AnimatePresence>
                 {(showThemeOptions || showFontOptions || showHelpPanel) ? (
                   <motion.div
@@ -329,7 +329,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="absolute top-0 left-0 right-0 bottom-0 z-10 bg-gray-900 p-4 overflow-y-auto"
+                    className="absolute top-0 left-0 right-0 bottom-0 z-10 bg-[#121212] p-4 overflow-y-auto"
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <h4 className="font-bold text-lg text-gray-100">
@@ -346,7 +346,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                           setShowFontOptions(false);
                           setShowHelpPanel(false);
                         }}
-                        className="ml-auto p-1 hover:bg-gray-700 rounded-full transition-colors"
+                        className="ml-auto p-1 hover:bg-[#2c2c2e] rounded-full transition-colors"
                       >
                         <X size={18} className="text-gray-200 cursor-pointer" />
                       </motion.button>
@@ -354,8 +354,8 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
 
                     {showHelpPanel && (
                       <div className="space-y-6">
-                        <div className="bg-gray-800 rounded-lg p-4">
-                          <h5 className="text-blue-400 font-semibold mb-2">About Me</h5>
+                        <div className="bg-[#1c1c1e] rounded-lg p-4">
+                          <h5 className="text-emerald-400 font-semibold mb-2">About Me</h5>
                           <p className="text-gray-300 text-sm">
                             I'm your AI portfolio assistant. I can help you customize your portfolio's content, 
                             layout, and appearance. Just type your request in natural language, and I'll help you make the changes.
@@ -368,9 +368,9 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 * index }}
-                            className="bg-gray-800 rounded-lg p-4"
+                            className="bg-[#1c1c1e] rounded-lg p-4"
                           >
-                            <h5 className="text-blue-400 font-semibold mb-3">{section.category}</h5>
+                            <h5 className="text-emerald-400 font-semibold mb-3">{section.category}</h5>
                             <div className="space-y-2">
                               {section.examples.map((example, idx) => (
                                 <motion.div
@@ -378,7 +378,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                                   initial={{ opacity: 0, x: -10 }}
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ delay: 0.1 * (index + idx) }}
-                                  className="bg-gray-700 rounded-lg p-3 cursor-pointer hover:bg-gray-600 transition-colors"
+                                  className="bg-[#2c2c2e] rounded-lg p-3 cursor-pointer hover:bg-[#3c3c3e] transition-colors"
                                   onClick={() => {
                                     setInputValue(example);
                                     setShowHelpPanel(false);
@@ -391,8 +391,8 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                           </motion.div>
                         ))}
 
-                        <div className="bg-gray-800 rounded-lg p-4">
-                          <h5 className="text-blue-400 font-semibold mb-2">Tips</h5>
+                        <div className="bg-[#1c1c1e] rounded-lg p-4">
+                          <h5 className="text-emerald-400 font-semibold mb-2">Tips</h5>
                           <ul className="text-gray-300 text-sm space-y-2">
                             <li>• Be specific in your requests for better results</li>
                             <li>• You can combine multiple changes in one request</li>
@@ -412,14 +412,14 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 * index }}
                             onClick={() => handleThemeSelect(theme.name)}
-                            className={`p-4 rounded-lg border cursor-pointer transition-all bg-gray-800 hover:border-blue-500 text-center relative ${
+                            className={`p-4 rounded-lg border cursor-pointer transition-all bg-[#1c1c1e] hover:border-emerald-500 text-center relative ${
                               selectedTheme === theme.name 
-                                ? 'border-blue-500 bg-gray-700 ring ring-blue-500 ring-opacity-50' 
+                                ? 'border-emerald-500 bg-[#2c2c2e] ring ring-emerald-500 ring-opacity-50' 
                                 : 'border-gray-700'
                             }`}
                           >
                             {selectedTheme === theme.name && (
-                              <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                              <div className="absolute top-2 right-2 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
                                 <svg 
                                   className="w-3 h-3 text-white" 
                                   fill="none" 
@@ -437,8 +437,8 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                             )}
                             <div className={`w-full h-12 rounded-md mb-2 ${
                               theme.value === 'light' ? 'bg-gray-100' :
-                              theme.value === 'dark' ? 'bg-gray-800 border border-gray-700' :
-                              theme.value === 'blue' ? 'bg-blue-600' : 'bg-green-600'
+                              theme.value === 'dark' ? 'bg-[#1c1c1e] border border-gray-700' :
+                              theme.value === 'emerald' ? 'bg-emerald-600' : 'bg-blue-600'
                             }`}></div>
                             <p className="font-medium text-gray-100">{theme.name}</p>
                           </motion.div>
@@ -455,14 +455,14 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 * index }}
                             onClick={() => handleFontSelect(font)}
-                            className={`p-4 rounded-lg border cursor-pointer transition-all bg-gray-800 hover:border-blue-500 text-center relative ${
+                            className={`p-4 rounded-lg border cursor-pointer transition-all bg-[#1c1c1e] hover:border-emerald-500 text-center relative ${
                               selectedFont === font 
-                                ? 'border-blue-500 bg-gray-700 ring ring-blue-500 ring-opacity-50' 
+                                ? 'border-emerald-500 bg-[#2c2c2e] ring ring-emerald-500 ring-opacity-50' 
                                 : 'border-gray-700'
                             }`}
                           >
                             {selectedFont === font && (
-                              <div className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                              <div className="absolute top-2 right-2 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
                                 <svg 
                                   className="w-3 h-3 text-white" 
                                   fill="none" 
@@ -506,7 +506,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                               initial={{ scale: 0.9, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
                               transition={{ duration: 0.2 }}
-                              className="bg-blue-900 text-blue-100 text-xs py-1 px-3 rounded-full max-w-[80%]"
+                              className="bg-emerald-900 text-emerald-100 text-xs py-1 px-3 rounded-full max-w-[80%]"
                             >
                               {message.text}
                             </motion.div>
@@ -517,8 +517,8 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                               transition={{ duration: 0.2 }}
                               className={`max-w-[80%] p-3 rounded-lg ${
                                 message.isUser
-                                  ? 'bg-blue-600 text-white rounded-br-none'
-                                  : 'bg-gray-800 text-gray-100 rounded-bl-none'
+                                  ? 'bg-emerald-600 text-white rounded-br-none'
+                                  : 'bg-[#1c1c1e] text-gray-100 rounded-bl-none'
                               }`}
                             >
                               <p className="text-sm whitespace-pre-line">{message.text}</p>
@@ -536,11 +536,11 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                           animate="visible"
                           className="flex justify-start"
                         >
-                          <div className="bg-gray-800 text-gray-100 rounded-lg rounded-bl-none p-3 max-w-[80%]">
+                          <div className="bg-[#1c1c1e] text-gray-100 rounded-lg rounded-bl-none p-3 max-w-[80%]">
                             <div className="flex space-x-2">
-                              <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0ms" }}></div>
-                              <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "150ms" }}></div>
-                              <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "300ms" }}></div>
+                              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "0ms" }}></div>
+                              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "150ms" }}></div>
+                              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "300ms" }}></div>
                             </div>
                           </div>
                         </motion.div>
@@ -556,7 +556,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="p-4 border-t border-gray-700 rounded-lg bg-gray-800"
+              className="p-4 border-t border-gray-700 rounded-lg bg-[#1c1c1e]"
             >
               <div className="flex gap-2 mb-3">
                 <motion.textarea
@@ -566,7 +566,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                   onKeyDown={handleKeyPress}
                   placeholder="Type your message..."
                   disabled={isProcessing}
-                  className="flex-1 px-3 py-2 rounded-lg outline-none bg-gray-700 text-gray-100 border border-gray-600 focus:border-blue-500 transition-all resize-none min-h-[80px]"
+                  className="flex-1 px-3 py-2 rounded-lg outline-none bg-[#2c2c2e] text-gray-100 border border-gray-600 focus:border-emerald-500 transition-all resize-none min-h-[80px]"
                   rows={3}
                 />
                 <motion.button
@@ -577,8 +577,8 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                   disabled={isProcessing || !inputValue.trim()}
                   className={`px-4 rounded-lg font-medium flex items-center justify-center ${
                     isProcessing || !inputValue.trim() 
-                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
-                      : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer transition-colors'
+                      ? 'bg-[#2c2c2e] text-gray-400 cursor-not-allowed' 
+                      : 'bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer transition-colors'
                   }`}
                 >
                   <Send size={18} />
@@ -591,7 +591,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                   whileHover="hover"
                   whileTap="tap"
                   onClick={handleShowThemeOptions}
-                  className="text-sm py-2 px-3 text-center bg-gray-700 hover:bg-gray-600 rounded-lg border border-gray-600 text-gray-200 transition-colors"
+                  className="text-sm py-2 px-3 text-center bg-[#2c2c2e] hover:bg-[#3c3c3e] rounded-lg border border-gray-600 text-gray-200 transition-colors"
                 >
                   Change Theme
                 </motion.button>
@@ -600,7 +600,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                   whileHover="hover"
                   whileTap="tap"
                   onClick={handleShowFontOptions}
-                  className="text-sm py-2 px-3 text-center bg-gray-700 hover:bg-gray-600 rounded-lg border border-gray-600 text-gray-200 transition-colors"
+                  className="text-sm py-2 px-3 text-center bg-[#2c2c2e] hover:bg-[#3c3c3e] rounded-lg border border-gray-600 text-gray-200 transition-colors"
                 >
                   Change Font
                 </motion.button>
@@ -609,7 +609,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                   whileHover="hover"
                   whileTap="tap"
                   onClick={handleShowHelp}
-                  className="text-sm py-2 px-3 text-center bg-gray-700 hover:bg-gray-600 rounded-lg border border-gray-600 text-gray-200 transition-colors"
+                  className="text-sm py-2 px-3 text-center bg-[#2c2c2e] hover:bg-[#3c3c3e] rounded-lg border border-gray-600 text-gray-200 transition-colors"
                 >
                   Help
                 </motion.button>
@@ -620,12 +620,12 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-4 border-t border-gray-700 bg-gray-800"
+                className="p-4 border-t border-gray-700 bg-[#1c1c1e]"
               >
                 <Button
                   onClick={() => selectedFont && handleApplyFont(selectedFont)}
                   disabled={!selectedFont}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:bg-[#2c2c2e] disabled:cursor-not-allowed"
                 >
                   Apply Selected Font
                 </Button>
@@ -635,12 +635,12 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-4 border-t border-gray-700 bg-gray-800"
+                className="p-4 border-t border-gray-700 bg-[#1c1c1e]"
               >
                 <Button
                   onClick={() => selectedTheme && handleApplyTheme(selectedTheme)}
                   disabled={!selectedTheme}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:bg-[#2c2c2e] disabled:cursor-not-allowed"
                 >
                   Apply Selected Theme
                 </Button>
@@ -660,7 +660,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.3 }}
           onClick={() => handleOpenChange(true)}
-          className="fixed bottom-6 right-6 bg-blue-600 text-white p-4 cursor-pointer rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+          className="fixed bottom-6 right-6 bg-emerald-600 text-white p-4 cursor-pointer rounded-full shadow-lg hover:bg-emerald-700 transition-colors"
         >
           <MessageSquare size={24} />
         </motion.button>

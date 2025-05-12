@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import toast from "react-hot-toast";
 import Confetti from 'react-confetti';
 
-const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreationMethod, creationMethod, handleCreatePortfolio }: { isModalOpen: boolean, isCreating: boolean, setIsModalOpen: (isOpen: boolean) => void, setCreationMethod: (creationMethod: string) => void, creationMethod: string, handleCreatePortfolio: (customBodyResume: any) => void }) => {
+const CreateMethodModal = ({ isModalOpen,selectedTheme,setIsModalOpen, isCreating, setCreationMethod, creationMethod, handleCreatePortfolio }: { isModalOpen: boolean, isCreating: boolean, setIsModalOpen: (isOpen: boolean) => void,selectedTheme : string, setCreationMethod: (creationMethod: string) => void, creationMethod: string, handleCreatePortfolio: (customBodyResume: any) => void }) => {
     const [showResumeImport, setShowResumeImport] = useState(false);
     const [resumeUploaded, setResumeUploaded] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
@@ -158,6 +158,7 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
                 },
                 body: JSON.stringify({
                     base64: base64Data,
+                    selectedTheme
                 }),
             });
         
@@ -165,6 +166,7 @@ const CreateMethodModal = ({ isModalOpen, setIsModalOpen, isCreating, setCreatio
             
             if (response.ok) {
                 const reportText = await response.text();
+                console.log(JSON.parse(reportText))
                 setCustomBodyResume(reportText);
                 
                 // Animate to 100% smoothly over 2 seconds

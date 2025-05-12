@@ -25,7 +25,6 @@ export async function createPortfolio(userId: string, templateName: string, crea
         : template.defaultContent;
       
       const customContent : any = JSON.parse(customBodyResume);
-      
       // Create a map of custom sections by type for easy lookup
       const customSectionMap : any = {};
       if (customContent.sections && Array.isArray(customContent.sections)) {
@@ -48,11 +47,9 @@ export async function createPortfolio(userId: string, templateName: string, crea
       
       content = newContent;
     } else {
-      // If not import method or no custom resume, use template content as is
       content = template.defaultContent;
     }
 
-      console.log(content)
     const newTemplate = await prisma.portfolio.create({
       data: {
         isTemplate: false,

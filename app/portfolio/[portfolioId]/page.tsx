@@ -12,6 +12,7 @@ import Chatbot from "@/components/Chatbot/Chatbot";
 import { motion, AnimatePresence } from "framer-motion";
 import { fontClassMap } from "@/lib/font";
 import { cn } from "@/lib/utils";
+import type { NextPage } from "next";
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,7 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [currentFont, setCurrentFont] = useState("Raleway");
+  const [currentPortTheme, setCurrentPortTheme] = useState<any>("default")
 
   type TemplateType = {
     navbar: React.ComponentType;
@@ -32,13 +34,13 @@ const Page = () => {
   };
 
   const Template = currentTheme ? (templatesConfig[currentTheme as keyof typeof templatesConfig] as TemplateType) : null;
-
   const getComponentForSection = (sectionType: string) => {
     if (!Template || !Template.sections || !Template.sections[sectionType]) {
       return null;
     }
     const SectionComponent = Template.sections[sectionType];
-    return SectionComponent ? <SectionComponent key={`${sectionType}`} /> : null;
+    const themes  = portfolioData?.find((item: any) => item.type === "themes").data;
+    return SectionComponent ? <SectionComponent currentPortTheme={currentPortTheme} key={`${sectionType}`} /> : null;
   };
 
   useEffect(() => {
@@ -75,7 +77,6 @@ const Page = () => {
 
   const NavbarComponent = Template.navbar;
   const hasSpotlight = Template.spotlight;
-
   const selectedFontClass = fontClassMap[currentFont] || fontClassMap["raleway"];
 
   return (
@@ -108,7 +109,7 @@ const Page = () => {
           </div>
         )}
       </motion.div>
-      <Chatbot portfolioData={portfolioData} setCurrentFont={setCurrentFont} portfolioId={portfolioId} onOpenChange={setIsChatOpen}/>
+      <Chatbot portfolioData={portfolioData} setCurrentFont={setCurrentFont} setCurrentPortTheme={setCurrentPortTheme} portfolioId={portfolioId} onOpenChange={setIsChatOpen}/>
     </div>
   );
 };

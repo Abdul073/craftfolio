@@ -15,7 +15,6 @@ import CreateMethodModal from '@/components/CreateMethodModal';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 
-
 const PortfolioThemePage = () => {
   const { user, isLoaded } = useUser();
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
@@ -24,6 +23,7 @@ const PortfolioThemePage = () => {
   const [creationMethod, setCreationMethod] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const [redirectLoading, setRedirectLoading] = useState(true);
+  const [selectedThemeName, setSelectedThemeName] = useState("");
   
   const router = useRouter();
   const dispatch = useDispatch();
@@ -55,20 +55,20 @@ const PortfolioThemePage = () => {
       if(response.success){
         setThemes(response.data)
       }
-      console.log("hii",response)
     } catch (error) {
       console.error('Error fetching themes:', error);
     }
   };
 
-  console.log(themes)
-
-  const handleSelectTheme = (id : number) => {
+  const handleSelectTheme = (id : number,name : string) => {
+    setSelectedThemeName(name);
     setSelectedTheme(id);
     setIsModalOpen(true);
   };
   
   const handleCreatePortfolio = async (customBodyResume : any) => {
+
+
     if (selectedTheme && user && creationMethod) {
       setIsCreating(true);
       try {
@@ -113,8 +113,6 @@ const PortfolioThemePage = () => {
   if (themes.length === 0 && redirectLoading) {
     return <LoadingSpinner />;
   }
-
-  
 
   return (
     <div 
@@ -229,7 +227,7 @@ const PortfolioThemePage = () => {
         </div>
       </header>
 
-      <div className="container mx-auto max-w-[70%] px-4 pb-24">
+      <div className="container mx-auto max-w-[75%] px-4 pb-24">
         {/* Hero section */}
         <motion.div 
           className="pt-16 text-center mb-16"
@@ -269,7 +267,7 @@ const PortfolioThemePage = () => {
           {themes?.map((theme : any) => (
 
             <div key={theme.id}>
-              <ThemeCard theme={theme} handleSelectTheme={handleSelectTheme} selectedTheme={selectedTheme} />
+              <ThemeCard theme={theme} handleSelectTheme={()=>handleSelectTheme(theme.id,theme.name)} selectedTheme={selectedTheme} />
           
             </div>
           ))}
@@ -294,7 +292,9 @@ const PortfolioThemePage = () => {
    
       <CreateMethodModal
        isModalOpen={isModalOpen}
+
         setIsModalOpen={setIsModalOpen}
+        selectedTheme={selectedThemeName}
         isCreating={isCreating}
         setCreationMethod={setCreationMethod}
         handleCreatePortfolio={handleCreatePortfolio}

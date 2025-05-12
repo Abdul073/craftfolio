@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { PromptTemplate } from "@langchain/core/prompts";
-import { StringOutputParser } from "@langchain/core/output_parsers";
 import { techList } from "@/lib/techlist";
+import { themeContent } from "@/lib/themeContent";
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -9,7 +9,6 @@ const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",
 });
 
-// main prompt.
 const parsingTemplate = PromptTemplate.fromTemplate(`
 You are a professional resume parser. Given an image of a resume, extract the relevant information into a structured JSON format.
 Pay attention to all sections: personal information, summary, experience, education, skills, projects, and certifications.
@@ -83,21 +82,12 @@ Use this exact schema:
       ]
     }}
   ],
-  "certifications": [
-    {{
-      "name": string,
-      "issuer": string (optional),
-      "date": string (optional),
-      "url": string (optional)
-    }}
-  ]
 }}
 
 Resume content:
 {resume_content}
 `);
 
-// title generator
 const titleGeneratorTemplate = PromptTemplate.fromTemplate(`
 Based on the resume data below, generate a professional title prefix and title suffix options.
 Extract the most prominent expertise area for the title prefix (e.g., "Frontend", "Full Stack", "Machine Learning").
@@ -113,7 +103,6 @@ Return ONLY valid JSON in this format without any explanations:
 }}
 `);
 
-// summary generator
 const summaryGeneratorTemplate = PromptTemplate.fromTemplate(`
 Based on the resume data below, generate 1 concise and professional summary line.
 Each line should be a separate sentence highlighting key strengths, skills, or career objectives.
@@ -133,19 +122,18 @@ Return ONLY valid JSON in this format without any explanations:
 }}
 `);
 
-// Main post function
+let finalTheme = "";
+
 export async function POST(req: Request) {
   try {
-    const { base64 } = await req.json();
+    const { base64,selectedTheme} = await req.json();
+    finalTheme = selectedTheme;
     const filePart = fileToGenerativePart(base64);
     
     // Extract text content from resume image
     const extractionPrompt = "Extract all text content from this resume image.";
     const extractedContent = await model.generateContent([extractionPrompt, filePart]);
     const resumeContent = extractedContent.response.text();
-    
-    // Parse resume data with LangChain
-    const outputParser = new StringOutputParser();
     
     // Use a direct approach with Gemini instead of template if issues persist
     const formattedPrompt = await parsingTemplate.format({
@@ -219,7 +207,7 @@ export async function POST(req: Request) {
     
     // Convert to portfolio format with enhanced data
     const portfolioData = convertToPortfolioFormat(resumeData, titleInfo, summaryInfo);
-    
+    console.log(portfolioData)
     return new Response(JSON.stringify(portfolioData), { 
       status: 200,
       headers: { 'Content-Type': 'application/json' }
@@ -236,7 +224,6 @@ export async function POST(req: Request) {
   }
 }
 
-// file split
 function fileToGenerativePart(imageData: string) {
   return {
     inlineData: {
@@ -249,7 +236,7 @@ function fileToGenerativePart(imageData: string) {
   };
 }
 
-// cleaning json
+
 function cleanJsonOutput(text: string): string {
   let cleaned = text.replace(/```json\n|\n```|```\n|\n```/g, '');
   const jsonPattern = /\{[\s\S]*\}/;
@@ -262,14 +249,8 @@ function cleanJsonOutput(text: string): string {
   return cleaned;
 }
 
-// fix tech stack logos
-
 function mapTechStackWithTechList(resumeData: any) {
-  // Create a map of techList items for quick lookup
   const techMap = new Map();
-  
-  console.log(resumeData.projects)
-  
   // Normalize tech names for better matching
   techList.forEach((tech : any) => {
     // Store with normalized name (lowercase, remove punctuation)
@@ -378,9 +359,16 @@ function mapTechStackWithTechList(resumeData: any) {
 }
 
 // convert data to proper format
+// Modified part of your code to ensure hero section is always included
 function convertToPortfolioFormat(resumeData : any, titleInfo : any, summaryInfo : any) {
   const sections = [];
-  
+
+  sections.push({
+    type : "theme",
+    data : themeContent[finalTheme]
+  })
+
+  // User Info
   if (resumeData.personalInfo) {
     sections.push({
       type: "userInfo",
@@ -396,60 +384,59 @@ function convertToPortfolioFormat(resumeData : any, titleInfo : any, summaryInfo
     });
   }
   
-  // Hero Section
-  if (resumeData.personalInfo?.name || resumeData.summary) {
-    const name = resumeData.personalInfo?.name || "";
-    
-    // Use generated summary lines or fall back to alternatives
-    let summaryLines;
-    if (summaryInfo && summaryInfo.summaryLines && summaryInfo.summaryLines.length > 0) {
-      summaryLines = summaryInfo.summaryLines.join("\n");
-    } else if (resumeData.summary) {
-      summaryLines = resumeData.summary.split(". ").slice(0, 3).join(".\n");
-    } else {
-      // Generate fallback summary based on skills
-      const skillNames = resumeData.skills ? resumeData.skills.map((s : any) => s.name).slice(0, 3) : [];
-      const primarySkill = skillNames[0] || "Software";
-      summaryLines = `Passionate ${primarySkill} developer.\nEnthusiastic about creating innovative solutions.\nDedicated to continuous learning and growth.`;
-    }
-    
-    // Use generated title info or fallback
-    const titlePrefix = titleInfo?.titlePrefix || "Software";
-    const titleSuffixOptions = titleInfo?.titleSuffixOptions || ["Engineer", "Developer"];
-    
-    sections.push({
-      type: "hero",
-      data: {
-        name: name,
-        titlePrefix: titlePrefix,
-        titleSuffixOptions: titleSuffixOptions,
-        summary: summaryLines,
-        badge: {
-          texts: [
-            "Open to work",
-            "Available for freelance",
-            "Let's Collaborate!",
-          ],
-          color: "green",
-          isVisible: true,
-        },
-        actions: [
-          {
-            type: "button",
-            label: "View Projects",
-            url: "#projects",
-            style: "primary",
-          },
-          {
-            type: "button",
-            label: "Contact Me",
-            url: "#contact",
-            style: "outline",
-          },
-        ],
-      },
-    });
+  // Hero Section - Always include, with fallbacks for all required fields
+  const name = resumeData.personalInfo?.name || "Developer";
+  
+  // Use generated summary lines or fall back to alternatives
+  let summaryLines;
+  if (summaryInfo && summaryInfo.summaryLines && summaryInfo.summaryLines.length > 0) {
+    summaryLines = summaryInfo.summaryLines.join("\n");
+  } else if (resumeData.summary) {
+    summaryLines = resumeData.summary.split(". ").slice(0, 3).join(".\n");
+  } else {
+    // Generate fallback summary based on skills
+    const skillNames = resumeData.skills ? resumeData.skills.map((s : any) => s.name).slice(0, 3) : [];
+    const primarySkill = skillNames[0] || "Software";
+    summaryLines = `Passionate ${primarySkill} developer.\nEnthusiastic about creating innovative solutions.\nDedicated to continuous learning and growth.`;
   }
+  
+  // Use generated title info or fallback
+  const titlePrefix = titleInfo?.titlePrefix || "Software";
+  const titleSuffixOptions = titleInfo?.titleSuffixOptions || ["Engineer", "Developer"];
+  
+  // Always include hero section with robust fallbacks
+  sections.push({
+    type: "hero",
+    data: {
+      name: name,
+      titlePrefix: titlePrefix,
+      titleSuffixOptions: titleSuffixOptions,
+      summary: summaryLines,
+      badge: {
+        texts: [
+          "Open to work",
+          "Available for freelance",
+          "Let's Collaborate!",
+        ],
+        color: "green",
+        isVisible: true,
+      },
+      actions: [
+        {
+          type: "button",
+          label: "View Projects",
+          url: "#projects",
+          style: "primary",
+        },
+        {
+          type: "button",
+          label: "Contact Me",
+          url: "#contact",
+          style: "outline",
+        },
+      ],
+    },
+  });
   
   // Projects Section
   if (resumeData.projects && resumeData.projects.length > 0) {
