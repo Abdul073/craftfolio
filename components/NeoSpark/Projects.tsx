@@ -99,16 +99,6 @@ const Projects: React.FC = () => {
     }
   }, [isLoading]);
 
-  const headingVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.4
-      }
-    }
-  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -169,7 +159,7 @@ const Projects: React.FC = () => {
           <p className="text-xl text-gray-300 text-center mb-16">
             A showcase of my full-stack projects, built using modern web technologies and frameworks.
           </p>
-          <EditButton sectionName="projects" />
+          <EditButton sectionName="projects" styles='mr-20' />
         </div>
         </div>
 

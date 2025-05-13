@@ -99,9 +99,10 @@ const Hero = ({currentPortTheme} : any) => {
   const badgeTexts = heroData.badge?.texts || [];
   const titleTexts = heroData.titleSuffixOptions || [];
 
-  // Use badge color from theme
+  console.log(theme)
+
   const badgeColor = theme.colors.primary;
-  const badgeTextColor = theme.colors.text.secondary;
+  const badgeTextColor = theme.colors.text.primary;
   const accentColor = theme.colors.accent;
   const titleColor = theme.colors.primary;
   const buttonBgColor = theme.colors.primary;
@@ -142,12 +143,12 @@ const Hero = ({currentPortTheme} : any) => {
         transition={{ duration: 0.7, delay: 0.2 }}
         className="text-4xl md:text-6xl lg:text-[66px] tracking-[-0.02em] font-bold text-center leading-snug md:leading-20"
       >
-        Hi, I'm {heroData.name} <br />
+        Hi, I'm {heroData?.name} <br />
         <span style={{ color: titleColor }}>
           {heroData.titlePrefix}<span ref={titleScope}> {titleTexts[titleIndex]}</span>.
         </span>
         <div className='absolute right-24 top-8'>
-          <EditButton sectionName="hero" />
+          <EditButton sectionName="hero" styles='mr-14' />
         </div>
       </motion.h1>
 

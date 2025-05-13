@@ -18,12 +18,14 @@ const Page = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const portfolioId = params.portfolioId as string;
-  const { portfolioData, themeName: currentTheme } = useSelector((state: RootState) => state.data);
+  const { portfolioData, themeName: currentTheme } = useSelector(
+    (state: RootState) => state.data
+  );
   const allSections = portfolioData?.map((item: any) => item.type);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [currentFont, setCurrentFont] = useState("Raleway");
-  const [currentPortTheme, setCurrentPortTheme] = useState<any>("default")
+  const [currentPortTheme, setCurrentPortTheme] = useState("default");
 
   type TemplateType = {
     navbar: React.ComponentType;
@@ -33,27 +35,41 @@ const Page = () => {
     };
   };
 
-  const Template = currentTheme ? (templatesConfig[currentTheme as keyof typeof templatesConfig] as TemplateType) : null;
+  const Template = currentTheme
+    ? (templatesConfig[
+        currentTheme as keyof typeof templatesConfig
+      ] as TemplateType)
+    : null;
   const getComponentForSection = (sectionType: string) => {
     if (!Template || !Template.sections || !Template.sections[sectionType]) {
       return null;
     }
     const SectionComponent = Template.sections[sectionType];
-    const themes  = portfolioData?.find((item: any) => item.type === "themes").data;
-    return SectionComponent ? <SectionComponent currentPortTheme={currentPortTheme} key={`${sectionType}`} /> : null;
+    return SectionComponent ? (
+      <SectionComponent
+        currentPortTheme={currentPortTheme}
+        key={`${sectionType}`}
+      />
+    ) : null;
   };
+
+  const themes = portfolioData?.find(
+    (item: any) => item.type === "themes"
+  )?.data;
+
+  console.log(themes)
 
   useEffect(() => {
     const initializePortfolio = async () => {
       setIsLoading(true);
-      
+
       try {
         const themeResult = await getThemeNameApi({ portfolioId });
         if (themeResult.success) {
-          dispatch(setThemeName(themeResult?.data?.templateName || 'default'));
+          dispatch(setThemeName(themeResult?.data?.templateName || "default"));
         }
-        
-        const contentResult : any = await fetchContent({ portfolioId });
+
+        const contentResult: any = await fetchContent({ portfolioId });
         if (contentResult.success) {
           dispatch(setPortfolioData(contentResult?.data?.sections));
         }
@@ -63,7 +79,7 @@ const Page = () => {
         setIsLoading(false);
       }
     };
-    
+
     initializePortfolio();
   }, [portfolioId, dispatch]);
 
@@ -75,9 +91,11 @@ const Page = () => {
     );
   }
 
+
   const NavbarComponent = Template.navbar;
   const hasSpotlight = Template.spotlight;
-  const selectedFontClass = fontClassMap[currentFont] || fontClassMap["raleway"];
+  const selectedFontClass =
+    fontClassMap[currentFont] || fontClassMap["raleway"];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -90,17 +108,17 @@ const Page = () => {
         </div>
       )}
 
-      <motion.div 
-        className={cn("custom-bg min-h-screen w-[80%]",selectedFontClass)}
+      <motion.div
+        className={cn("custom-bg min-h-screen w-[80%]", selectedFontClass)}
         animate={{
-          width: isChatOpen ? '80%' : '100%',
-          marginRight: isChatOpen ? '20%' : '0',
+          width: isChatOpen ? "80%" : "100%",
+          marginRight: isChatOpen ? "20%" : "0",
         }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        {NavbarComponent && <NavbarComponent />}
+        {NavbarComponent && <NavbarComponent currentPortTheme={currentPortTheme}/>}
         <Sidebar />
-        
+
         {allSections && allSections.length > 0 ? (
           allSections.map((section: string) => getComponentForSection(section))
         ) : (
@@ -109,7 +127,15 @@ const Page = () => {
           </div>
         )}
       </motion.div>
-      <Chatbot portfolioData={portfolioData} setCurrentFont={setCurrentFont} setCurrentPortTheme={setCurrentPortTheme} portfolioId={portfolioId} onOpenChange={setIsChatOpen}/>
+      <Chatbot
+        portfolioData={portfolioData}
+        themeOptions={themes}
+        setCurrentFont={setCurrentFont}
+        setCurrentPortTheme={setCurrentPortTheme}
+        portfolioId={portfolioId}
+        currentPortTheme={currentPortTheme}
+        onOpenChange={setIsChatOpen}
+      />
     </div>
   );
 };

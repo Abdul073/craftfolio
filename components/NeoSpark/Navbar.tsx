@@ -4,17 +4,32 @@ import { Button } from '@/components/ui/button'
 import { GithubIcon, LinkedinIcon, PaperclipIcon, Menu } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import { motion, LayoutGroup, AnimatePresence } from 'framer-motion'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/store/store'
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  
+   const [isLoading, setIsLoading] = useState(true);
+  const [heroData, setHeroData] = useState<any>(null)
+  const { portfolioData } = useSelector((state: RootState) => state.data);
+
   const navItems = [
     { name: 'About', href: '#about' },
     { name: 'Tech Stack', href: '#tech-stack' },
     { name: 'Projects', href: '#projects' },
     { name: 'Contact', href: '#contact' }
   ]
+
+   useEffect(() => {
+    if (portfolioData) {
+      const heroSectionData = portfolioData.find((section: any) => section.type === "hero")?.data;
+      if (heroSectionData) {
+        setHeroData(heroSectionData);
+        setIsLoading(false);
+      }
+    }
+  }, [portfolioData]);
 
   const spring = {
     type: "spring",
@@ -30,6 +45,10 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+   if (isLoading || !heroData) {
+    return <div className="flex items-center justify-center h-64">Loading...</div>;
+  }
 
   return (
     <motion.div 
@@ -56,7 +75,7 @@ const Navbar = () => {
               marginRight: scrolled ? 0 : '1rem'
             }}
           >
-            <h1 className="text-2xl font-semibold tracking-wide whitespace-nowrap">Alex Morgan</h1>
+            <h1 className="text-2xl font-semibold tracking-wide whitespace-nowrap">{heroData?.name}</h1>
           </motion.div>
           
           <motion.div 

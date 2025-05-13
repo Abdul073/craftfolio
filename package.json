@@ -29,6 +29,7 @@
     "compress-base64": "^7.0.10",
     "framer-motion": "^12.7.4",
     "langchain": "^0.3.24",
+    "lottie-web": "^5.12.2",
     "lucide-react": "^0.501.0",
     "motion": "^12.7.4",
     "next": "15.3.1",

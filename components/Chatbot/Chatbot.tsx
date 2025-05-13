@@ -14,14 +14,17 @@ interface Message {
   text: string;
   isUser: boolean;
   timestamp: Date;
-  isSystemNotification?: boolean;
+  isSystemNotification?: boolean; 
 }
 
 interface ChatbotProps {
   portfolioData: any;
   portfolioId: string;
+  themeOptions : any;
+  currentPortTheme : any;
   onOpenChange: (isOpen: boolean) => void;
   setCurrentFont: (font: string) => void;
+  setCurrentPortTheme :(theme : string) => void;
 }
 
 interface MessageMemory {
@@ -29,14 +32,8 @@ interface MessageMemory {
   timestamp: Date;
 }
 
-const THEME_OPTIONS = [
-  { name: 'Light', value: 'light' },
-  { name: 'Dark', value: 'dark' },
-  { name: 'Emerald', value: 'emerald' },
-  { name: 'Blue', value: 'blue' }
-];
 
-const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFont} : ChatbotProps) => {
+const PortfolioChatbot = ({portfolioData,setCurrentPortTheme,currentPortTheme, portfolioId, themeOptions,onOpenChange,setCurrentFont} : ChatbotProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -50,6 +47,9 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useDispatch();
+  console.log(currentPortTheme)
+  console.log(themeOptions)
+  const themeOptionsArray = Object.keys(themeOptions);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -158,16 +158,16 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
   };
 
   const handleThemeSelect = (theme: string) => {
+    setCurrentPortTheme(theme)
     setSelectedTheme(theme);
-    toast.success(`Theme "${theme}" selected`);
   };
 
-  const handleApplyTheme = (theme: string) => {
-    console.log('Theme applied successfully:', theme);
-    toast.success('Theme applied successfully!');
+  const handleApplySelectedTheme = () => {
+    setCurrentPortTheme(selectedTheme);
+    toast.success(`Theme "${selectedTheme}" applied!`);
     const notificationMessage: Message = {
       id: Date.now(),
-      text: `Theme changed to ${theme}.`,
+      text: `Theme changed to ${selectedTheme}.`,
       isUser: false,
       timestamp: new Date(),
     };
@@ -288,7 +288,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
   };
 
   return (
-    <div className="fixed top-0 right-0 h-screen z-50 w-full md:w-[350px] lg:w-[400px]">
+    <div className={isOpen ? "fixed top-0 right-0 h-screen z-50 w-full md:w-[350px] lg:w-[400px]" : ""}>
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -405,44 +405,56 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
 
                     {showThemeOptions && (
                       <div className="grid grid-cols-2 gap-3">
-                        {THEME_OPTIONS.map((theme, index) => (
-                          <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 * index }}
-                            onClick={() => handleThemeSelect(theme.name)}
-                            className={`p-4 rounded-lg border cursor-pointer transition-all bg-[#1c1c1e] hover:border-emerald-500 text-center relative ${
-                              selectedTheme === theme.name 
-                                ? 'border-emerald-500 bg-[#2c2c2e] ring ring-emerald-500 ring-opacity-50' 
-                                : 'border-gray-700'
-                            }`}
-                          >
-                            {selectedTheme === theme.name && (
-                              <div className="absolute top-2 right-2 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
-                                <svg 
-                                  className="w-3 h-3 text-white" 
-                                  fill="none" 
-                                  stroke="currentColor" 
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path 
-                                    strokeLinecap="round" 
-                                    strokeLinejoin="round" 
-                                    strokeWidth={3} 
-                                    d="M5 13l4 4L19 7"
-                                  />
-                                </svg>
+                        {themeOptionsArray.map((theme, index) => {
+                          const themeDetails = themeOptions[theme];
+                          const bgColor = themeDetails?.colors?.primary || '#f0f0f0'; 
+                          const textColor = themeDetails?.colors?.text?.primary || '#333333';
+
+                          return (
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.1 * index }}
+                              onClick={() => handleThemeSelect(theme)}
+                              className={`p-4 rounded-lg border cursor-pointer transition-all bg-[#1c1c1e] hover:border-emerald-500 text-center relative ${
+                                currentPortTheme === theme
+                                  ? 'border-emerald-500 bg-[#2c2c2e] ring ring-emerald-500 ring-opacity-50' 
+                                  : 'border-gray-700'
+                              }`}
+                            >
+                              {(selectedTheme === theme || currentPortTheme === theme) && (
+                                <div className="absolute top-2 right-2 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
+                                  <svg 
+                                    className="w-3 h-3 text-white" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path 
+                                      strokeLinecap="round" 
+                                      strokeLinejoin="round" 
+                                      strokeWidth={3} 
+                                      d="M5 13l4 4L19 7"
+                                    />
+                                  </svg>
+                                </div>
+                              )}
+                              {/* Visual Theme Preview */}
+                              <div
+                                className="w-full h-16 rounded-md mb-3 flex flex-col items-center justify-center p-1 shadow-inner"
+                                style={{ backgroundColor: bgColor }}
+                              >
+                                <span style={{ color: textColor }} className="text-lg font-semibold">Aa</span>
+                                <div
+                                  className="w-10 h-3 mt-1 rounded-sm"
+                                  style={{ backgroundColor: bgColor }}
+                                ></div>
                               </div>
-                            )}
-                            <div className={`w-full h-12 rounded-md mb-2 ${
-                              theme.value === 'light' ? 'bg-gray-100' :
-                              theme.value === 'dark' ? 'bg-[#1c1c1e] border border-gray-700' :
-                              theme.value === 'emerald' ? 'bg-emerald-600' : 'bg-blue-600'
-                            }`}></div>
-                            <p className="font-medium text-gray-100">{theme.name}</p>
-                          </motion.div>
-                        ))}
+                              <p className="font-medium text-gray-100 capitalize">{theme}</p>
+                            </motion.div>
+                          );
+                        })}
                       </div>
                     )}
 
@@ -638,7 +650,7 @@ const PortfolioChatbot = ({portfolioData, portfolioId, onOpenChange,setCurrentFo
                 className="p-4 border-t border-gray-700 bg-[#1c1c1e]"
               >
                 <Button
-                  onClick={() => selectedTheme && handleApplyTheme(selectedTheme)}
+                  onClick={handleApplySelectedTheme}
                   disabled={!selectedTheme}
                   className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:bg-[#2c2c2e] disabled:cursor-not-allowed"
                 >
