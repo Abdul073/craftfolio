@@ -51,7 +51,6 @@ export default function Page() {
   };
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
-  console.log(isInView)
 
   const features = [
     {
@@ -351,7 +350,7 @@ export default function Page() {
     >
       {/* Animated background shapes */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <motion.div
+        <motion.div 
           className="absolute top-0 right-0 w-1/3 h-1/3 rounded-full opacity-10"
           style={{
             background: `radial-gradient(circle, ${ColorTheme.primary}, transparent 70%)`,
@@ -409,8 +408,8 @@ export default function Page() {
         />
         <style jsx global>{`
           body {
-            background-color: var(--bg-main);
-            color: var(--text-primary);
+            background-color: ${ColorTheme.bgMain};
+            color: ${ColorTheme.textPrimary};
           }
         `}</style>
       </Head>
