@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       model: "gemini-1.5-flash",
     });
 
-    // Updated schema to handle multiple changes at once
+    // Schema for extracting user intentions
     const outputSchema = z.object({
       changes: z
         .array(
@@ -27,95 +27,177 @@ export async function POST(req: NextRequest) {
             intent: z
               .string()
               .describe(
-                "The type of change requested (e.g., change_color, update_text)"
+                "The specific action being requested (add, update, delete, change)"
               ),
             sectionName: z
               .string()
-              .describe("The section of the portfolio being modified"),
-            value: z.string().describe("The new value to be applied"),
+              .describe("The specific section of the portfolio being modified"),
+            value: z.string().describe("The exact new value to be applied"),
+            isNewRequest: z
+              .boolean()
+              .describe(
+                "Whether this is a new request or a reference to a previous message"
+              ),
           })
         )
-        .describe("Array of all changes requested by the user"),
+        .describe("Array of distinct changes requested by the user"),
     });
 
     const outputParser = StructuredOutputParser.fromZodSchema(outputSchema);
     const formatInstructions = outputParser.getFormatInstructions();
 
-    // Format message memory for context
-    const messageContext = messageMemory?.length > 0 
-      ? `Previous messages for context:\n${messageMemory.map((msg: MessageMemory, index: number) => 
-          `${index + 1}. ${msg.text}`
-        ).join('\n')}\n\n`
-      : '';
+    // Format message memory for context - only include the last 3 messages for efficiency
+    const recentMemory =
+      messageMemory?.length > 0
+        ? messageMemory
+            .slice(-3)
+            .map(
+              (msg: MessageMemory, index: number) =>
+                `Message ${index + 1}: ${msg.text}`
+            )
+            .join("\n")
+        : "";
 
     const getIntention = PromptTemplate.fromTemplate(`
-      You are a portfolio customization assistant.
-      Your job is to analyze the user's request, which may contain multiple changes, and extract all requested modifications.
+      You are a portfolio customization assistant analyzing a user request.
       
-      ${messageContext}
-      Current request: {input_value} 
+      # CONTEXT
+      Previous messages (only consider these if directly referenced):
+      ${recentMemory}
       
-      This is the data: {portfolioData}
+      # CURRENT REQUEST
+      "{input_value}"
 
-      IMPORTANT: 
-      - The user may request MULTIPLE changes in a single message. You need to identify ALL requested changes.
-      - Consider the context from previous messages when interpreting the current request.
-      - If the user refers to a previous change (e.g., "shorten it more"), use the context to understand what they're referring to.
-      - For example, if they previously asked to "shorten my summary" and now say "shorten it more", you should understand they want to further shorten the same summary.
+      # PORTFOLIO DATA
+      {portfolioData}
+
+      # INSTRUCTIONS
+      1. Identify ONLY the specific changes requested in the CURRENT message
+      2. For each change, determine if it's a new request or refers to a previous message
+      3. Do NOT repeat actions from previous messages unless explicitly requested again
+      4. If the user says "make it shorter" or similar, mark isNewRequest as false
       
-      Make sure to scan the data properly since fields can be present in multiple sections (e.g., name can be in both hero and userInfo).
-      
-      If the user provides a specific change value (like "change my name to John Smith"), use exactly that value.
-      If the user requests a change but doesn't provide a specific value (like "shorten my summary"), you must come up with a complete and appropriate value based on the existing portfolio data.
+      # PARSING RULES
+      - Extract specific values when provided (e.g., "change name to John Smith" → value: "John Smith")
+      - For vague requests (e.g., "improve my summary"), set isNewRequest: true but leave value empty
+      - Each change must have a precise intent (add, update, remove, change) and clear sectionName
+      - Do NOT infer additional changes beyond what's explicitly requested
+      - If the user mentions multiple sections, create separate change objects for each
       
       {format_instructions}
+      
+      Before responding, validate your JSON output has valid syntax.
     `);
 
     const finalIntention = await getIntention.format({
       input_value: inputValue,
-      portfolioData: JSON.stringify(portfolioData),
+      portfolioData: JSON.stringify(portfolioData, null, 2),
       format_instructions: formatInstructions,
     });
 
     const parsedResponse = await model.generateContent(finalIntention);
     const parsedText = parsedResponse.response.text();
 
-    const parsedOutput = await outputParser.parse(parsedText);
+    // Add error handling for parsing - extract JSON properly
+    let parsedOutput;
+    try {
+      // Attempt to find and parse JSON from the response
+      const jsonRegex = /```(?:json)?\s*([\s\S]*?)```|(\{[\s\S]*\})/;
+      const match = parsedText.match(jsonRegex);
+
+      const jsonContent = match ? match[1] || match[2] : parsedText;
+      parsedOutput = await outputParser.parse(jsonContent.trim());
+
+      // Validate the output structure
+      if (!parsedOutput.changes || !Array.isArray(parsedOutput.changes)) {
+        throw new Error("Invalid output structure");
+      }
+    } catch (error) {
+      console.error("Parsing error:", error);
+      return NextResponse.json(
+        {
+          error:
+            "Failed to understand your request. Please try again with more specific instructions.",
+          details: error instanceof Error ? error.message : String(error),
+        },
+        { status: 400 }
+      );
+    }
+
+    // Filter out changes that refer to previous requests but don't have specific values
+    const validChanges = parsedOutput.changes.filter(
+      (change) =>
+        change.isNewRequest || (change.value && change.value.trim() !== "")
+    );
 
     // Starting with the original portfolio data
     let currentPortfolioData = JSON.parse(JSON.stringify(portfolioData));
+    const appliedChanges = [];
 
-    for (const change of parsedOutput.changes) {
+    // Process each change sequentially
+    for (const change of validChanges) {
+      // For new requests without specific values, generate appropriate content
+      if (
+        change.isNewRequest &&
+        (!change.value || change.value.trim() === "")
+      ) {
+        const contentGeneratorPrompt = PromptTemplate.fromTemplate(`
+          Generate appropriate content for a portfolio update.
+          
+          # TASK
+          Generate content for: {intent} in section {sectionName}
+          
+          # CURRENT PORTFOLIO DATA
+          {portfolioData}
+          
+          # INSTRUCTIONS
+          1. Generate ONLY the specific content needed, nothing more
+          2. Be professional and authentic - never use placeholders
+          3. Match the style and tone of existing content
+          4. Be concise but complete
+          5. For tech stack, ONLY use technologies from this list: {tech_list}
+          
+          # RESPONSE FORMAT
+          Return ONLY the generated content as plain text, no explanations or formatting.
+        `);
+
+        const contentPrompt = await contentGeneratorPrompt.format({
+          intent: change.intent,
+          sectionName: change.sectionName,
+          portfolioData: JSON.stringify(currentPortfolioData, null, 2),
+          tech_list: JSON.stringify(techList),
+        });
+
+        const contentResponse = await model.generateContent(contentPrompt);
+        change.value = contentResponse.response.text().trim();
+      }
+
       const updatePortfolioTemplate = PromptTemplate.fromTemplate(`
-        You are a portfolio data updater with expertise in professional portfolio content.
-        Your job is to modify the portfolio data based on the user's intent.
+        You are a specialized portfolio data updater that ONLY modifies JSON data.
         
-        Current portfolio data: {portfolioData}
-        
-        Intent details:
+        # TASK
+        Make exactly ONE change to the portfolio data based on:
         - Intent: {intent}
         - Section: {sectionName}
         - Value: {value}
         
-        IMPORTANT: 
-        - NEVER use placeholders like "[Your text here]", "More detailed summary text here", or "Example project" in your output
-        - NEVER generate content that says "placeholder" or similar terms
-        - ALWAYS generate realistic, professional content that matches the style and tone of the existing portfolio
-        - When generating content, consider the context of the entire portfolio to maintain consistency
-        - If you need to generate new content, make it detailed and specific, not generic
-        - Always generate two different summaries for summary field and shortSummary field. shortSummary will be like 1 line and summary will be around 2-3 lines.
+        # CURRENT PORTFOLIO DATA
+        {portfolioData}
         
-        Instructions:
-        1. Modify the provided portfolio data based on the intent and section
-        2. Return ONLY the updated portfolio data as a valid JSON array
-        3. Do not add any explanation, just return the JSON
-        4. When adding new projects or experience, give proper detailed descriptions that sound authentic and match the portfolio owner's background
-        5. For projects use this image {image_link}
-        6. When adding tech stack anywhere search in this list and only include tech stack that are present in this list {tech_list}
+        # RULES
+        1. ONLY modify the specified section
+        2. Preserve all other data exactly as is
+        3. For projects or experience, use this image URL: {image_link}
+        4. For tech stack, only use technologies from: {tech_list}
+        5. Generate distinct content for summary (2-3 lines) and shortSummary (1 line) fields
+        6. Never use placeholders like "[Your text here]" or "Example project"
+        
+        # IMPORTANT
+        Return ONLY the complete modified JSON data without any explanations, markdown, or code blocks.
       `);
 
       const updatePrompt = await updatePortfolioTemplate.format({
-        portfolioData: JSON.stringify(currentPortfolioData),
+        portfolioData: JSON.stringify(currentPortfolioData, null, 2),
         intent: change.intent,
         sectionName: change.sectionName,
         value: change.value,
@@ -127,57 +209,45 @@ export async function POST(req: NextRequest) {
       const updatedText = updatedResponse.response.text();
 
       try {
-        // Handle potential code blocks in the response
-        const jsonMatch = updatedText.match(/```json\n([\s\S]*?)\n```/) ||
-          updatedText.match(/```\n([\s\S]*?)\n```/) || [null, updatedText];
-
-        const jsonString = jsonMatch[1] || updatedText;
-        currentPortfolioData = JSON.parse(jsonString.trim());
+        // Handle potential code blocks or raw JSON in the response
+        const cleanJson = updatedText
+          .replace(/```(?:json)?\s*([\s\S]*?)```/g, "$1")
+          .trim();
+        currentPortfolioData = JSON.parse(cleanJson);
+        appliedChanges.push(change);
       } catch (error) {
         console.error("Error parsing updated portfolio data:", error);
-        return NextResponse.json(
-          {
-            error: "Failed to parse updated portfolio data",
-            rawResponse: updatedText,
-          },
-          { status: 500 }
-        );
+        // Continue with other changes if possible instead of failing completely
       }
     }
 
+    // Generate a concise, specific response
     const userResponseTemplate = PromptTemplate.fromTemplate(`
-      You are a helpful portfolio assistant responding to a user request.
+      You are responding to a portfolio update request.
       
-      User request: {input_value}
+      # USER REQUEST
+      "{input_value}"
       
-      Your task is to generate a friendly, concise response confirming what you've updated in their portfolio.
-      
-      Changes made:
+      # CHANGES APPLIED
       {changes}
       
-      Write a brief, conversational response (2-3 sentences) confirming what you've updated.
-      Be specific about what was changed and in which sections.
-      Sound helpful and positive.
+      # INSTRUCTIONS
+      1. Write a short, specific response (2-3 sentences max)
+      2. Mention exactly what was changed in which sections
+      3. Be conversational and helpful
+      4. DO NOT describe changes that weren't made
+      5. NEVER use generic phrases like "as requested" or "I've updated your portfolio"
       
-      IMPORTANT: Your response should:
-      - Mention specific changes that were made (not just "updated as requested")
-      - Sound natural and conversational, not robotic
-      - Not include placeholders or generic statements like "I've updated your [section]"
-      - Focus on what was actually changed
-      
-      Response:
+      Write ONLY your response message, nothing else:
     `);
 
-    const changesFormatted = parsedOutput.changes
-      .map(
-        (change) =>
-          `- Updated ${change.sectionName}: ${change.intent} with value "${change.value}"`
-      )
+    const changesFormatted = appliedChanges
+      .map((change) => `- ${change.intent} in ${change.sectionName}`)
       .join("\n");
 
     const userResponsePrompt = await userResponseTemplate.format({
       input_value: inputValue,
-      changes: changesFormatted,
+      changes: changesFormatted || "No changes were applied",
     });
 
     const userResponseResult = await model.generateContent(userResponsePrompt);
@@ -186,7 +256,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       originalData: portfolioData,
       updatedData: currentPortfolioData,
-      changes: parsedOutput.changes,
+      changes: appliedChanges,
       userReply: userResponse,
     });
   } catch (error) {
@@ -196,7 +266,7 @@ export async function POST(req: NextRequest) {
         error: "An error occurred during portfolio customization",
         details: error instanceof Error ? error.message : String(error),
         userReply:
-          "I'm sorry, but I encountered an error while trying to update your portfolio. Please try again or provide more specific instructions.",
+          "I couldn't process your request due to a technical issue. Please try again with more specific instructions about what you'd like to change in your portfolio.",
       },
       { status: 500 }
     );

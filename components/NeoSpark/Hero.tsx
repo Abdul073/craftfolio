@@ -99,8 +99,6 @@ const Hero = ({currentPortTheme} : any) => {
   const badgeTexts = heroData.badge?.texts || [];
   const titleTexts = heroData.titleSuffixOptions || [];
 
-  console.log(theme)
-
   const badgeColor = theme.colors.primary;
   const badgeTextColor = theme.colors.text.primary;
   const accentColor = theme.colors.accent;
@@ -111,6 +109,7 @@ const Hero = ({currentPortTheme} : any) => {
   const buttonHoverTextColor = theme.colors.text.secondary;
   const mutedColor = theme.colors.states.muted;
   const scrollLineColor = theme.colors.background.secondary;
+
 
   return (
     <div className="relative flex-1 flex flex-col items-center mt-12 px-4 md:px-8">
@@ -171,10 +170,10 @@ const Hero = ({currentPortTheme} : any) => {
           return (
             <motion.div key={item.label} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
-                variant={item.style}
                 style={{
-                  backgroundColor: buttonBgColor,
-                  color: buttonTextColor,
+                  backgroundColor: item.style === "primary" ? buttonBgColor : "transparent",
+                  color: item.style === "primary" ? buttonTextColor : "white",
+                  border: item.style === "outline" ? `1px solid ${buttonBgColor}` : "",
                 }}
                 className="flex items-center gap-2 !px-7 py-5 cursor-pointer text-sm transition-colors"
                 onMouseOver={(e) => {
@@ -182,8 +181,9 @@ const Hero = ({currentPortTheme} : any) => {
                   e.currentTarget.style.color = buttonHoverTextColor;
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = buttonBgColor;
-                  e.currentTarget.style.color = buttonTextColor;
+                  e.currentTarget.style.backgroundColor = item.style === "primary" ? buttonBgColor : "transparent";
+                  e.currentTarget.style.color = item.style === "primary" ? buttonTextColor : "white";
+                  e.currentTarget.style.border = item.style === "outline" ? `1px solid ${buttonBgColor}` : "";
                 }}
               >
                 {item.label} <ArrowRight size={18} />

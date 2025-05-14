@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import EditButton from './EditButton';
 
-const ProfessionalJourney = () => {
+const ProfessionalJourney = ({ currentPortTheme }: any) => {
 
   interface Technology {
     name: string;
@@ -25,6 +25,10 @@ const ProfessionalJourney = () => {
   }
 
   const { portfolioData } = useSelector((state: RootState) => state.data);
+  const inTheme = portfolioData?.find((item: any) => item.type === "themes");
+  const theme = inTheme.data[currentPortTheme];
+  const titleColor = theme.colors.primary;
+
   const [experienceData, setExperienceData] = useState<Experience[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
@@ -108,12 +112,12 @@ const ProfessionalJourney = () => {
   }
 
   return (
-    <div className="text-white min-h-screen p-8">
+    <div className="text-white  p-8">
       <div className="max-w-4xl mx-auto">
         <div 
           className={`mb-16 transition-all relative duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}
         >
-          <h1 className="text-5xl font-bold mb-4 text-center text-green-400">Professional Journey</h1>
+          <h1 className="text-5xl font-bold mb-4 text-center" style={{ color: titleColor }}>Professional Journey</h1>
           <p className="text-xl text-gray-300 text-center">
             Building real-world experience through innovative projects
           </p>
@@ -128,16 +132,16 @@ const ProfessionalJourney = () => {
           </div>
         ) : (
           <div className="relative">
-            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-green-500/30"></div>
+            <div className="absolute left-6 top-0 bottom-0 w-0.5" style={{ backgroundColor: `${titleColor}30` }}></div>
 
             {experienceData.map((experience, index) => (
               <div
                 key={index}
                 className={`relative  transition-all duration-700 ${visibleItems[index] ? 'opacity-100' : 'opacity-0'} ${index !== experienceData.length - 1 ? 'mb-16' : ''}`}
               >
-                <div className="absolute left-6 transform -translate-x-1/2 w-3 h-3 rounded-full bg-green-500 border-4 border-gray-900"></div>
+                <div className="absolute left-6 transform -translate-x-1/2 w-3 h-3 rounded-full border-4 border-gray-900" style={{ backgroundColor: titleColor }}></div>
                 
-                <div className="ml-16 hover:border-green-400 transition-all duration-300 ease-in bg-stone-900/60 rounded-lg p-6 border border-gray-700">
+                <div className="ml-16 transition-all duration-300 ease-in bg-stone-900/60 rounded-lg p-6 border border-gray-700" style={{ borderColor: `${titleColor}30` }}>
                   <h2 
                     className={`text-2xl font-bold mb-2 transition-all duration-700 delay-100 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
                   >
@@ -146,8 +150,8 @@ const ProfessionalJourney = () => {
                   
                   <div className="flex flex-wrap items-center gap-2 mb-4 text-gray-400">
                     <span>{experience.companyName}</span>
-                    <span className="bg-green-900/40 text-green-400 px-3 py-1 rounded-full text-sm">{experience.location}</span>
-                    <span className="bg-green-900/40 text-green-400 px-3 py-1 rounded-full text-sm">{experience.startDate} - {experience.endDate}</span>
+                    <span className="px-3 py-1 rounded-full text-sm" style={{ backgroundColor: `${titleColor}20`, color: titleColor }}>{experience.location}</span>
+                    <span className="px-3 py-1 rounded-full text-sm" style={{ backgroundColor: `${titleColor}20`, color: titleColor }}>{experience.startDate} - {experience.endDate}</span>
                   </div>
 
                   <p 
@@ -161,10 +165,15 @@ const ProfessionalJourney = () => {
                       {experience.techStack.map((tech, techIndex) => (
                         <span 
                           key={techIndex}
-                          className="bg-green-900/20 text-green-400 px-3 py-1 rounded-full text-sm border border-green-700/30"
+                          className="px-3 py-1 rounded-full text-sm"
+                          style={{ 
+                            backgroundColor: `${titleColor}20`, 
+                            color: titleColor,
+                            border: `1px solid ${titleColor}30`
+                          }}
                         >
-                          <img  src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
-                          </span>
+                          <img src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
+                        </span>
                       ))}
                     </div>
                   )}

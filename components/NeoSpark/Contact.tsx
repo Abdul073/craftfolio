@@ -11,12 +11,15 @@ import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase-client';
 import EditButton from './EditButton';
 
-const Contact = () => {
+const Contact = ({ currentPortTheme }: any) => {
   const params = useParams();
   const portfolioId = params.portfolioId as string;
   const dispatch = useDispatch();
   
   const { portfolioData } = useSelector((state: RootState) => state.data);
+  const inTheme = portfolioData?.find((item: any) => item.type === "themes");
+  const theme = inTheme.data[currentPortTheme];
+  const titleColor = theme.colors.primary;
   
   const [isLoading, setIsLoading] = useState(true);
   const [contactData, setContactData] = useState<any>(null);
@@ -69,7 +72,7 @@ const Contact = () => {
        <div 
           className="my-16 transition-all duration-700 relative"
         >
-          <h1 className="text-5xl font-bold mb-4 text-center text-green-400">Let's Work Together!</h1>
+          <h1 className="text-5xl font-bold mb-4 text-center" style={{ color: titleColor }}>Let's Work Together!</h1>
           <p className="text-xl text-gray-300 text-center mb-16">
             Interested in collaborating, hiring, or just having a chat? Reach out to me on your favorite platform!
           </p>
@@ -88,9 +91,13 @@ const Contact = () => {
               href={`mailto:${contactData.email}`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-stone-900/60 cursor-pointer p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 hover:border-green-400 transition-all duration-300 shadow-lg hover:shadow-green-400/20"
+              className="bg-stone-900/60 cursor-pointer p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 transition-all duration-300 shadow-lg"
+              style={{ 
+                borderColor: `${titleColor}30`,
+                boxShadow: `0 10px 15px -3px ${titleColor}10, 0 4px 6px -4px ${titleColor}10`
+              }}
             >
-              <Mail className="text-green-400 w-8 h-8 mb-3" />
+              <Mail className="w-8 h-8 mb-3" style={{ color: titleColor }} />
               <div className="text-white text-xl font-bold mb-2">Email</div>
               <p className="text-gray-300 text-center break-all">{contactData.email}</p>
             </motion.a>
@@ -103,9 +110,13 @@ const Contact = () => {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-stone-900/60 cursor-pointer p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 hover:border-green-400 transition-all duration-300 shadow-lg hover:shadow-green-400/20"
+              className="bg-stone-900/60 cursor-pointer p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 transition-all duration-300 shadow-lg"
+              style={{ 
+                borderColor: `${titleColor}30`,
+                boxShadow: `0 10px 15px -3px ${titleColor}10, 0 4px 6px -4px ${titleColor}10`
+              }}
             >
-              <Linkedin className="text-green-400 w-8 h-8 mb-3" />
+              <Linkedin className="w-8 h-8 mb-3" style={{ color: titleColor }} />
               <div className="text-white text-xl font-bold mb-2">LinkedIn</div>
               <p className="text-gray-300 text-center">
                 {contactData.linkedin.includes('/') 
@@ -122,9 +133,13 @@ const Contact = () => {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-stone-900/60 cursor-pointer p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 hover:border-green-400 transition-all duration-300 shadow-lg hover:shadow-green-400/20"
+              className="bg-stone-900/60 cursor-pointer p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 transition-all duration-300 shadow-lg"
+              style={{ 
+                borderColor: `${titleColor}30`,
+                boxShadow: `0 10px 15px -3px ${titleColor}10, 0 4px 6px -4px ${titleColor}10`
+              }}
             >
-              <Github className="text-green-400 w-8 h-8 mb-3" />
+              <Github className="w-8 h-8 mb-3" style={{ color: titleColor }} />
               <div className="text-white text-xl font-bold mb-2">GitHub</div>
               <p className="text-gray-300 text-center">
                 {contactData.github.includes('/') 
