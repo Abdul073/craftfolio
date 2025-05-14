@@ -44,7 +44,7 @@ const Page = () => {
     if (!Template || !Template.sections || !Template.sections[sectionType]) {
       return null;
     }
-    const SectionComponent = Template.sections[sectionType];
+    const SectionComponent : any= Template.sections[sectionType];
     return SectionComponent ? (
       <SectionComponent
         currentPortTheme={currentPortTheme}
@@ -92,7 +92,7 @@ const Page = () => {
   }
 
 
-  const NavbarComponent = Template.navbar;
+  const NavbarComponent : any = Template.navbar;
   const hasSpotlight = Template.spotlight;
   const selectedFontClass =
     fontClassMap[currentFont] || fontClassMap["raleway"];

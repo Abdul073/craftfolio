@@ -10,7 +10,7 @@ interface MessageMemory {
   timestamp: Date;
 }
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   try {
     const { portfolioData, inputValue, messageMemory } = await req.json();
 
@@ -85,7 +85,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
     // Starting with the original portfolio data
     let currentPortfolioData = JSON.parse(JSON.stringify(portfolioData));
 
-    // Apply each change sequentially
     for (const change of parsedOutput.changes) {
       const updatePortfolioTemplate = PromptTemplate.fromTemplate(`
         You are a portfolio data updater with expertise in professional portfolio content.
@@ -146,7 +145,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
       }
     }
 
-    // Generate user response template
     const userResponseTemplate = PromptTemplate.fromTemplate(`
       You are a helpful portfolio assistant responding to a user request.
       

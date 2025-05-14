@@ -12,28 +12,10 @@ import {
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
-import dynamic from "next/dynamic";
 import MainNavbar from "@/components/MainNavbar";
+// import ArrowLottie from "@/components/ArrowLottie";
+import { ColorTheme } from "@/lib/colorThemes";
 
-const ColorTheme = {
-  primary: "var(--primary)",
-  primaryHover: "var(--primary-hover)",
-  primaryLight: "var(--primary-light)",
-  primaryDark: "var(--primary-dark)",
-  primaryGlow: "var(--primary-glow)",
-
-  bgMain: "var(--bg-main)",
-  bgCard: "var(--bg-card)",
-  bgCardHover: "var(--bg-card-hover)",
-  bgNav: "var(--bg-nav)",
-
-  textPrimary: "var(--text-primary)",
-  textSecondary: "var(--text-secondary)",
-  textMuted: "var(--text-muted)",
-
-  borderLight: "var(--border-light)",
-  borderDark: "var(--border-dark)",
-};
 
 export default function Page() {
   const [isOpen, setIsOpen] = useState(false);
@@ -317,10 +299,7 @@ export default function Page() {
   interface Styles {
     [key: string]: string;
   }
-
-  const ArrowLottie = dynamic(() => import("@/components/ArrowLottie"), {
-    ssr: false,
-  });
+  console.log(ColorTheme.bgMain)
 
   return (
     <div
@@ -328,23 +307,7 @@ export default function Page() {
       style={
         {
           /* CSS Variable definitions */
-          "--primary": "#10b981", // emerald-500
-          "--primary-hover": "#059669", // emerald-600
-          "--primary-light": "#d1fae5", // emerald-100
-          "--primary-dark": "#047857", // emerald-700
-          "--primary-glow": "rgba(16, 185, 129, 0.15)", // emerald with opacity
-
-          "--bg-main": "#121212", // Very dark gray
-          "--bg-card": "rgba(28, 28, 30, 0.7)", // Slightly lighter dark with transparency
-          "--bg-card-hover": "rgba(38, 38, 42, 0.7)", // Even lighter for hover states
-          "--bg-nav": "rgba(18, 18, 18, 0.9)", // Nav background with transparency
-
-          "--text-primary": "#f3f4f6", // Gray-100
-          "--text-secondary": "#d1d5db", // Gray-300
-          "--text-muted": "#9ca3af", // Gray-400
-
-          "--border-light": "rgba(75, 85, 99, 0.3)", // Gray-600 with opacity
-          "--border-dark": "rgba(55, 65, 81, 0.5)", // Gray-700 with opacity
+         
         } as Styles
       }
     >
@@ -425,7 +388,6 @@ export default function Page() {
       <main>
         {/* Hero Section */}
         <section className="pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
-          {/* Hero background effects */}
           <motion.div
             className="absolute top-0 left-0 w-full h-full -z-10"
             style={{
@@ -524,7 +486,6 @@ export default function Page() {
                 }}
                 variants={fadeInScale}
               >
-                {/* Window header bar */}
                 <div
                   className="p-2"
                   style={{ backgroundColor: "rgba(28, 28, 30, 0.9)" }}
@@ -536,9 +497,8 @@ export default function Page() {
                   </div>
                 </div>
 
-                {/* Transformation showcase */}
 
-                <div className="p-6">
+                   <div className="p-6">
                   <div className="text-center mb-12 ">
                     <motion.h3
                       className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent"
@@ -565,7 +525,6 @@ export default function Page() {
                     ref={ref}
                     className="flex flex-col md:flex-row items-center justify-between gap-8"
                   >
-                    {/* Resume side */}
                     <motion.div
                       className="w-full md:w-2/5 rounded-lg shadow-2xl transform transition-all duration-500"
                       transition={{ duration: 0.8 }}
@@ -574,9 +533,7 @@ export default function Page() {
                       }}
                     >
                       <div className="relative">
-                        <div className="absolute -top-4 -left-4 bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                          Before
-                        </div>
+                       
                         <img
                           src="/johndoe_resume.png"
                           alt="Resume Document"
@@ -585,18 +542,12 @@ export default function Page() {
                       </div>
                     </motion.div>
 
-                    {/* Middle transformation arrow */}
-                   {isInView ? <div className="flex flex-col items-center justify-center py-4">
+                   {/* {isInView && <div className="flex flex-col items-center justify-center py-4">
                         <span className="lg:rotate-[-180deg] rotate-[55deg] lg:scale-x-[-1] w-32 overflow-hidden block arrow-animation ">
                           <ArrowLottie />
                         </span>
-                    </div> : <div className="flex flex-col items-center justify-center py-4">
-                        <span className="lg:rotate-[-180deg] rotate-[55deg] lg:scale-x-[-1] w-32 overflow-hidden block arrow-animation ">
-                          <ArrowLottie />
-                        </span>
-                    </div>}
+                    </div> } */}
 
-                    {/* Portfolio side */}
                     <motion.div
                       className="w-full md:w-5/5 rounded-lg shadow-2xl transform transition-all duration-500"
                       transition={{ duration: 0.8 }}
@@ -605,9 +556,7 @@ export default function Page() {
                       }}
                     >
                       <div className="relative">
-                        <div className="absolute -top-4 -left-4 bg-teal-500 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                          After
-                        </div>
+                        
                         <img
                           src="/johndoe_portfolio2.png"
                           alt="Generated Portfolio Website"
@@ -617,7 +566,6 @@ export default function Page() {
                     </motion.div>
                   </div>
 
-                  {/* Feature highlights */}
                   <motion.div
                     className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12"
                     initial={{ opacity: 0, y: 20 }}
@@ -660,6 +608,8 @@ export default function Page() {
                     ))}
                   </motion.div>
                 </div>
+
+               
               </motion.div>
             </motion.div>
           </div>

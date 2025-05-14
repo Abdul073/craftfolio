@@ -1,13 +1,16 @@
-"use client";
+'use client';
 
 import lottie from "lottie-web";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const ArrowLottie = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    // Only run this effect when the ref is available and we're in the browser
+    if (containerRef.current) {
       const animation = lottie.loadAnimation({
-        container: document.getElementById("arrow")!,
+        container: containerRef.current,
         renderer: "svg",
         autoplay: false,
         loop: false,
@@ -21,9 +24,10 @@ const ArrowLottie = () => {
       return () => animation.destroy();
     }
   }, []);
+
   return (
     <div
-      id="arrow"
+      ref={containerRef}
       className="h-40 w-full max-w-32 lg:scale-150 scale-125"
     ></div>
   );

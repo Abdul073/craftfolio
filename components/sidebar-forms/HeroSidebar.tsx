@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import toast from 'react-hot-toast';
 import React from 'react';
 import { templatesConfig } from '@/lib/templateConfig';
+import { ColorTheme } from '@/lib/colorThemes';
 
 const HeroSidebar = () => {
   const params = useParams();
@@ -196,23 +197,23 @@ const HeroSidebar = () => {
 
   return (
     <div className="flex-1 custom-scrollbar">
-      <Card className="bg-gray-900 border-gray-700">
+      <Card className="border-gray-700" style={{ backgroundColor: ColorTheme.bgMain }}>
         <CardHeader>
-          <CardTitle className="text-gray-100">Hero Section</CardTitle>
-          <CardDescription className="text-gray-400">Manage your hero section.</CardDescription>
+          <CardTitle style={{ color: ColorTheme.textPrimary }}>Hero Section</CardTitle>
+          <CardDescription style={{ color: ColorTheme.textSecondary }}>Manage your hero section.</CardDescription>
         </CardHeader>
 
         <CardContent>
           <Tabs defaultValue={defaultTab} className="mt-4">
-            <TabsList className="bg-gray-800 border-gray-700">
+            <TabsList style={{ backgroundColor: ColorTheme.bgNav, borderColor: ColorTheme.borderLight }}>
               {showBasicTab && (
-                <TabsTrigger value="basic" className="data-[state=active]:bg-gray-700 text-gray-300 cursor-pointer">Basic Info</TabsTrigger>
+                <TabsTrigger value="basic" className="data-[state=active]:bg-gray-700 cursor-pointer" style={{ color: ColorTheme.textPrimary }}>Basic Info</TabsTrigger>
               )}
               {showBadgeTab && (
-                <TabsTrigger value="badge" className="data-[state=active]:bg-gray-700 text-gray-300 cursor-pointer">Badge</TabsTrigger>
+                <TabsTrigger value="badge" className="data-[state=active]:bg-gray-700 cursor-pointer" style={{ color: ColorTheme.textPrimary }}>Badge</TabsTrigger>
               )}
               {showActionsTab && (
-                <TabsTrigger value="actions" className="data-[state=active]:bg-gray-700 text-gray-300 cursor-pointer">Actions</TabsTrigger>
+                <TabsTrigger value="actions" className="data-[state=active]:bg-gray-700 cursor-pointer" style={{ color: ColorTheme.textPrimary }}>Actions</TabsTrigger>
               )}
             </TabsList>
 
@@ -221,39 +222,51 @@ const HeroSidebar = () => {
                 <CardContent className="p-0 space-y-5">
                   {fields.includes("name") && (
                     <div className="space-y-2">
-                      <Label htmlFor="name" className="text-sm font-medium text-gray-300">Name</Label>
+                      <Label htmlFor="name" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Name</Label>
                       <Input
                         id="name"
                         value={content.name}
                         onChange={(e) => setContent({ ...content, name: e.target.value })}
                         placeholder="Enter your name"
-                        className="bg-gray-800 border-gray-700 text-gray-100"
+                        style={{ 
+                          backgroundColor: ColorTheme.bgCard,
+                          borderColor: ColorTheme.borderLight,
+                          color: ColorTheme.textPrimary
+                        }}
                       />
                     </div>
                   )}
 
                   {fields.includes("titlePrefix") && (
                     <div className="space-y-2">
-                      <Label htmlFor="titlePrefix" className="text-sm font-medium text-gray-300">Title Prefix</Label>
+                      <Label htmlFor="titlePrefix" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Title Prefix</Label>
                       <Input
                         id="titlePrefix"
                         value={content.titlePrefix}
                         onChange={(e) => setContent({ ...content, titlePrefix: e.target.value })}
                         placeholder="e.g. Aspiring Software"
-                        className="bg-gray-800 border-gray-700 text-gray-100"
+                        style={{ 
+                          backgroundColor: ColorTheme.bgCard,
+                          borderColor: ColorTheme.borderLight,
+                          color: ColorTheme.textPrimary
+                        }}
                       />
                     </div>
                   )}
 
                   {fields.includes("title") && (
                     <div className="space-y-2">
-                      <Label htmlFor="title" className="text-sm font-medium text-gray-300">Title</Label>
+                      <Label htmlFor="title" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Title</Label>
                       <Input
                         id="title"
                         value={content.title}
                         onChange={(e) => setContent({ ...content, title: e.target.value })}
                         placeholder="e.g. Full Stack Developer"
-                        className="bg-gray-800 border-gray-700 text-gray-100"
+                        style={{ 
+                          backgroundColor: ColorTheme.bgCard,
+                          borderColor: ColorTheme.borderLight,
+                          color: ColorTheme.textPrimary
+                        }}
                       />
                     </div>
                   )}
@@ -261,13 +274,17 @@ const HeroSidebar = () => {
                   {fields.includes("titleSuffixOptions") && (
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <Label className="text-sm font-medium text-gray-300">Title Suffixes</Label>
+                        <Label className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Title Suffixes</Label>
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
                           onClick={addTitleSuffix}
-                          className="h-7 bg-gray-800 border-gray-700 hover:bg-gray-700 text-gray-300"
+                          style={{ 
+                            backgroundColor: ColorTheme.bgCard,
+                            borderColor: ColorTheme.borderLight,
+                            color: ColorTheme.textPrimary
+                          }}
                         >
                           <Plus className="h-3.5 w-3.5 mr-1" /> Add
                         </Button>
@@ -280,7 +297,11 @@ const HeroSidebar = () => {
                               value={suffix}
                               onChange={(e) => updateTitleSuffix(index, e.target.value)}
                               placeholder={`Title suffix ${index + 1}`}
-                              className="bg-gray-800 border-gray-700 text-gray-100"
+                              style={{ 
+                                backgroundColor: ColorTheme.bgCard,
+                                borderColor: ColorTheme.borderLight,
+                                color: ColorTheme.textPrimary
+                              }}
                             />
                             {content.titleSuffixOptions.length > 1 && (
                               <Button
@@ -288,7 +309,10 @@ const HeroSidebar = () => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => removeTitleSuffix(index)}
-                                className="h-8 w-8 p-0 text-gray-400 hover:text-gray-100 hover:bg-gray-700"
+                                style={{ 
+                                  color: ColorTheme.textSecondary,
+                                  backgroundColor: 'transparent'
+                                }}
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -301,29 +325,39 @@ const HeroSidebar = () => {
 
                   {fields.includes("summary") && (
                     <div className="space-y-2">
-                      <Label htmlFor="summary" className="text-sm font-medium text-gray-300">Summary</Label>
+                      <Label htmlFor="summary" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Summary</Label>
                       <Textarea
                         id="summary"
                         value={content.summary}
                         onChange={(e) => setContent({ ...content, summary: e.target.value })}
                         placeholder="Enter a brief description about yourself"
-                        className="resize-none custom-scrollbar h-32 bg-gray-800 border-gray-700 text-gray-100"
+                        className="resize-none custom-scrollbar h-32"
+                        style={{ 
+                          backgroundColor: ColorTheme.bgCard,
+                          borderColor: ColorTheme.borderLight,
+                          color: ColorTheme.textPrimary
+                        }}
                       />
-                      <p className="text-xs text-gray-400">Use new lines to create multiple paragraphs</p>
+                      <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>Use new lines to create multiple paragraphs</p>
                     </div>
                   )}
 
                   {fields.includes("shortSummary") && (
                     <div className="space-y-2">
-                      <Label htmlFor="shortSummary" className="text-sm font-medium text-gray-300">Short Summary</Label>
+                      <Label htmlFor="shortSummary" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Short Summary</Label>
                       <Textarea
                         id="shortSummary"
                         value={content.shortSummary}
                         onChange={(e) => setContent({ ...content, shortSummary: e.target.value })}
                         placeholder="Enter a short summary about yourself"
-                        className="resize-none custom-scrollbar h-32 bg-gray-800 border-gray-700 text-gray-100"
+                        className="resize-none custom-scrollbar h-32"
+                        style={{ 
+                          backgroundColor: ColorTheme.bgCard,
+                          borderColor: ColorTheme.borderLight,
+                          color: ColorTheme.textPrimary
+                        }}
                       />
-                      <p className="text-xs text-gray-400">Use new lines to create multiple paragraphs</p>
+                      <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>Use new lines to create multiple paragraphs</p>
                     </div>
                   )}
                 </CardContent>
@@ -334,7 +368,7 @@ const HeroSidebar = () => {
               <TabsContent value="badge" className="mt-4">
                 <CardContent className="p-0 space-y-5">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="badgeVisible" className="text-sm font-medium text-gray-300">Show Badge</Label>
+                    <Label htmlFor="badgeVisible" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Show Badge</Label>
                     <Switch
                       id="badgeVisible"
                       checked={content.badge.isVisible}
@@ -348,13 +382,17 @@ const HeroSidebar = () => {
 
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <Label className="text-sm font-medium text-gray-300">Badge Texts</Label>
+                      <Label className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Badge Texts</Label>
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
                         onClick={addBadgeText}
-                        className="h-7 bg-gray-800 border-gray-700 hover:bg-gray-700 text-gray-300"
+                        style={{ 
+                          backgroundColor: ColorTheme.bgCard,
+                          borderColor: ColorTheme.borderLight,
+                          color: ColorTheme.textPrimary
+                        }}
                       >
                         <Plus className="h-3.5 w-3.5 mr-1" /> Add
                       </Button>
@@ -367,7 +405,11 @@ const HeroSidebar = () => {
                             value={text}
                             onChange={(e) => updateBadgeText(index, e.target.value)}
                             placeholder={`Badge text ${index + 1}`}
-                            className="bg-gray-800 border-gray-700 text-gray-100"
+                            style={{ 
+                              backgroundColor: ColorTheme.bgCard,
+                              borderColor: ColorTheme.borderLight,
+                              color: ColorTheme.textPrimary
+                            }}
                           />
                           {content.badge.texts.length > 1 && (
                             <Button
@@ -375,7 +417,10 @@ const HeroSidebar = () => {
                               variant="ghost"
                               size="icon"
                               onClick={() => removeBadgeText(index)}
-                              className="h-8 w-8 p-0 text-gray-400 hover:text-gray-100 hover:bg-gray-700"
+                              style={{ 
+                                color: ColorTheme.textSecondary,
+                                backgroundColor: 'transparent'
+                              }}
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -392,13 +437,17 @@ const HeroSidebar = () => {
               <TabsContent value="actions" className="mt-4">
                 <CardContent className="p-0 space-y-5">
                   <div className="flex justify-between items-center">
-                    <Label className="text-sm font-medium text-gray-300">Action Buttons</Label>
+                    <Label className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Action Buttons</Label>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={addAction}
-                      className="h-7 bg-gray-800 border-gray-700 hover:bg-gray-700 text-gray-300"
+                      style={{ 
+                        backgroundColor: ColorTheme.bgCard,
+                        borderColor: ColorTheme.borderLight,
+                        color: ColorTheme.textPrimary
+                      }}
                     >
                       <Plus className="h-3.5 w-3.5 mr-1" /> Add
                     </Button>
@@ -406,16 +455,19 @@ const HeroSidebar = () => {
 
                   <div className="space-y-6">
                     {content.actions.map((action, index) => (
-                      <div key={index} className="space-y-3 pt-3 border-t border-gray-700">
+                      <div key={index} className="space-y-3 pt-3 border-t" style={{ borderColor: ColorTheme.borderLight }}>
                         <div className="flex justify-between items-center">
-                          <h4 className="text-sm font-medium text-gray-300">Button {index + 1}</h4>
+                          <h4 className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Button {index + 1}</h4>
                           {content.actions.length > 1 && (
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
                               onClick={() => removeAction(index)}
-                              className="h-7 text-gray-400 hover:text-gray-100 hover:bg-gray-700"
+                              style={{ 
+                                color: ColorTheme.textSecondary,
+                                backgroundColor: 'transparent'
+                              }}
                             >
                               <Minus className="h-3.5 w-3.5 mr-1" /> Remove
                             </Button>
@@ -424,34 +476,46 @@ const HeroSidebar = () => {
 
                         <div className="space-y-3">
                           <div className="space-y-2">
-                            <Label htmlFor={`action-label-${index}`} className="text-xs font-medium text-gray-400">Label</Label>
+                            <Label htmlFor={`action-label-${index}`} className="text-xs font-medium" style={{ color: ColorTheme.textSecondary }}>Label</Label>
                             <Input
                               id={`action-label-${index}`}
                               value={action.label}
                               onChange={(e) => updateAction(index, 'label', e.target.value)}
                               placeholder="e.g. View Projects"
-                              className="bg-gray-800 border-gray-700 text-gray-100"
+                              style={{ 
+                                backgroundColor: ColorTheme.bgCard,
+                                borderColor: ColorTheme.borderLight,
+                                color: ColorTheme.textPrimary
+                              }}
                             />
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor={`action-url-${index}`} className="text-xs font-medium text-gray-400">URL</Label>
+                            <Label htmlFor={`action-url-${index}`} className="text-xs font-medium" style={{ color: ColorTheme.textSecondary }}>URL</Label>
                             <Input
                               id={`action-url-${index}`}
                               value={action.url}
                               onChange={(e) => updateAction(index, 'url', e.target.value)}
                               placeholder="e.g. #projects"
-                              className="bg-gray-800 border-gray-700 text-gray-100"
+                              style={{ 
+                                backgroundColor: ColorTheme.bgCard,
+                                borderColor: ColorTheme.borderLight,
+                                color: ColorTheme.textPrimary
+                              }}
                             />
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor={`action-style-${index}`} className="text-xs font-medium text-gray-400">Style</Label>
+                            <Label htmlFor={`action-style-${index}`} className="text-xs font-medium" style={{ color: ColorTheme.textSecondary }}>Style</Label>
                             <select
                               id={`action-style-${index}`}
                               value={action.style}
                               onChange={(e) => updateAction(index, 'style', e.target.value)}
-                              className="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-md py-2 px-3"
+                              style={{ 
+                                backgroundColor: ColorTheme.bgCard,
+                                borderColor: ColorTheme.borderLight,
+                                color: ColorTheme.textPrimary
+                              }}
                             >
                               {styleOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -472,9 +536,14 @@ const HeroSidebar = () => {
 
         <CardFooter className='pt-4 pb-6'>
           <Button
-            className='w-full bg-blue-600 hover:bg-blue-700 text-white'
+            className='w-full'
             onClick={handleSubmit}
             disabled={isLoading || !hasChanges}
+            style={{ 
+              backgroundColor: ColorTheme.primary,
+              color: ColorTheme.textPrimary,
+              boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
+            }}
           >
             Save Changes
           </Button>

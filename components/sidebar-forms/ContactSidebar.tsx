@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import React from 'react';
 import { Textarea } from '../ui/textarea';
 import { Cloud, X } from 'lucide-react';
+import { ColorTheme } from '@/lib/colorThemes';
 
 const ContactSidebar = () => {
   const params = useParams();
@@ -113,82 +114,106 @@ const ContactSidebar = () => {
 
   return (
     <div className="flex-1 custom-scrollbar h-full">
-      <Card className="bg-gray-900 border-gray-700">
+      <Card style={{ backgroundColor: ColorTheme.bgMain, borderColor: ColorTheme.borderLight }}>
         <CardHeader>
-          <CardTitle className="text-gray-100">Contact Information</CardTitle>
-          <CardDescription className="text-gray-400">Manage your contact information.</CardDescription>
+          <CardTitle style={{ color: ColorTheme.textPrimary }}>Contact Information</CardTitle>
+          <CardDescription style={{ color: ColorTheme.textSecondary }}>Manage your contact information.</CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium text-gray-300">Email Address</Label>
+            <Label htmlFor="email" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Email Address</Label>
             <Input
               id="email"
               type="email"
               value={content.email}
               onChange={(e) => setContent({ ...content, email: e.target.value })}
               placeholder="Enter your email address"
-              className="bg-gray-800 border-gray-700 text-gray-100"
+              style={{ 
+                backgroundColor: ColorTheme.bgCard,
+                borderColor: ColorTheme.borderLight,
+                color: ColorTheme.textPrimary
+              }}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="linkedin" className="text-sm font-medium text-gray-300">LinkedIn Profile</Label>
+            <Label htmlFor="linkedin" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>LinkedIn Profile</Label>
             <Input
               id="linkedin"
               value={content.linkedin}
               onChange={(e) => setContent({ ...content, linkedin: e.target.value })}
               placeholder="Enter your LinkedIn URL"
-              className="bg-gray-800 border-gray-700 text-gray-100"
+              style={{ 
+                backgroundColor: ColorTheme.bgCard,
+                borderColor: ColorTheme.borderLight,
+                color: ColorTheme.textPrimary
+              }}
             />
-            <p className="text-xs text-gray-400">e.g. https://linkedin.com/in/username</p>
+            <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>e.g. https://linkedin.com/in/username</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="github" className="text-sm font-medium text-gray-300">GitHub Profile</Label>
+            <Label htmlFor="github" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>GitHub Profile</Label>
             <Input
               id="github"
               value={content.github}
               onChange={(e) => setContent({ ...content, github: e.target.value })}
               placeholder="Enter your GitHub URL"
-              className="bg-gray-800 border-gray-700 text-gray-100"
+              style={{ 
+                backgroundColor: ColorTheme.bgCard,
+                borderColor: ColorTheme.borderLight,
+                color: ColorTheme.textPrimary
+              }}
             />
-            <p className="text-xs text-gray-400">e.g. https://github.com/username</p>
+            <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>e.g. https://github.com/username</p>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="location" className="text-sm font-medium text-gray-300">Location</Label>
+            <Label htmlFor="location" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Location</Label>
             <Input
               id="location"
               value={content.location}
               onChange={(e) => setContent({ ...content, location: e.target.value })}
               placeholder="Enter your location"
-              className="bg-gray-800 border-gray-700 text-gray-100"
+              style={{ 
+                backgroundColor: ColorTheme.bgCard,
+                borderColor: ColorTheme.borderLight,
+                color: ColorTheme.textPrimary
+              }}
             />
-            <p className="text-xs text-gray-400">e.g. New York, USA </p>
+            <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>e.g. New York, USA </p>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="shortSummary" className="text-sm font-medium text-gray-300">Short Summary</Label>
+            <Label htmlFor="shortSummary" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Short Summary</Label>
             <Textarea
               id="shortSummary"
               value={content.shortSummary}
               onChange={(e) => setContent({ ...content, shortSummary: e.target.value })}
               placeholder="Enter a short summary about yourself"
-              className="resize-none custom-scrollbar h-32 bg-gray-800 border-gray-700 text-gray-100"
+              style={{ 
+                backgroundColor: ColorTheme.bgCard,
+                borderColor: ColorTheme.borderLight,
+                color: ColorTheme.textPrimary
+              }}
+              className="resize-none custom-scrollbar h-32"
             />
-            <p className="text-xs text-gray-400">Use new lines to create multiple paragraphs</p>
+            <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>Use new lines to create multiple paragraphs</p>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="resumeUpload" className="text-sm font-medium text-gray-300">Resume</Label>
+            <Label htmlFor="resumeUpload" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Resume</Label>
             <div className="mt-1 flex flex-col items-center">
               {content.resumeFile ? (
                 <div className="relative w-full">
-                  <div className="flex items-center justify-between w-full p-3 bg-gray-800 border border-gray-700 rounded-md">
+                  <div className="flex items-center justify-between w-full p-3 rounded-md" style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight
+                  }}>
                     <div className="flex items-center">
-                      <div className="mr-3 bg-gray-700 p-2 rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                      <div className="mr-3 p-2 rounded" style={{ backgroundColor: ColorTheme.bgCardHover }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: ColorTheme.textPrimary }}>
                           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                           <polyline points="14 2 14 8 20 8"></polyline>
                           <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -196,14 +221,18 @@ const ContactSidebar = () => {
                           <polyline points="10 9 9 9 8 9"></polyline>
                         </svg>
                       </div>
-                      <span className="text-white truncate max-w-xs">Resume.pdf</span>
+                      <span style={{ color: ColorTheme.textPrimary }} className="truncate max-w-xs">Resume.pdf</span>
                     </div>
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={removeResume}
-                      className="h-8 w-8 p-0 bg-gray-700 text-white hover:bg-gray-600 rounded-full"
+                      style={{ 
+                        backgroundColor: ColorTheme.bgCardHover,
+                        color: ColorTheme.textPrimary
+                      }}
+                      className="h-8 w-8 p-0 hover:bg-opacity-50 rounded-full"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -211,10 +240,12 @@ const ContactSidebar = () => {
                 </div>
               ) : (
                 <label className="w-full cursor-pointer">
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 flex flex-col items-center justify-center h-32 hover:border-gray-400 transition-colors">
-                    <Cloud className="h-8 w-8 text-gray-400" />
-                    <p className="mt-2 text-sm text-gray-400">Upload resume</p>
-                    <p className="mt-1 text-xs text-gray-500">PDF up to 10MB</p>
+                  <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center h-32 hover:border-opacity-50 transition-colors" style={{ 
+                    borderColor: ColorTheme.borderLight
+                  }}>
+                    <Cloud className="h-8 w-8" style={{ color: ColorTheme.textSecondary }} />
+                    <p className="mt-2 text-sm" style={{ color: ColorTheme.textSecondary }}>Upload resume</p>
+                    <p className="mt-1 text-xs" style={{ color: ColorTheme.textMuted }}>PDF up to 10MB</p>
                     <input
                       type="file"
                       id="resumeUpload"
@@ -229,15 +260,20 @@ const ContactSidebar = () => {
             
             {!isUploaded && !content.resumeFile && (
               <div className="mt-2">
-                <Label htmlFor="resumeLink" className="text-sm font-medium text-gray-300">Or paste resume URL</Label>
+                <Label htmlFor="resumeLink" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Or paste resume URL</Label>
                 <Input
                   id="resumeLink"
                   value={content.resumeLink}
                   onChange={(e) => setContent({ ...content, resumeLink: e.target.value })}
                   placeholder="Enter your resume link"
-                  className="bg-gray-800 border-gray-700 text-gray-100 mt-2"
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
+                  className="mt-2"
                 />
-                <p className="text-xs text-gray-400 mt-2">Link to your resume (PDF recommended)</p>
+                <p className="text-xs mt-2" style={{ color: ColorTheme.textSecondary }}>Link to your resume (PDF recommended)</p>
               </div>
             )}
           </div>
@@ -246,9 +282,14 @@ const ContactSidebar = () => {
         <CardFooter className="pt-4 pb-6">
           <div className="flex w-full space-x-2">
             <Button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full"
               onClick={handleSubmit}
               disabled={isLoading}
+              style={{ 
+                backgroundColor: ColorTheme.primary,
+                color: ColorTheme.textPrimary,
+                boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
+              }}
             >
               Save Changes
             </Button>

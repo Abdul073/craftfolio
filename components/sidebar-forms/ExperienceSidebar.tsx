@@ -9,9 +9,10 @@ import { Button } from '../ui/button'
 import { Plus, X, Edit, Trash, Check } from 'lucide-react'
 import { updatePortfolioData } from '@/slices/dataSlice'
 import { useParams } from 'next/navigation'
-import {  updateSection } from '@/app/actions/portfolio'
+import { updateSection } from '@/app/actions/portfolio'
 import toast from 'react-hot-toast'
 import { techList } from '@/lib/techlist'
+import { ColorTheme } from '@/lib/colorThemes'
 
 const ExperienceSidebar = () => {
   interface Technology {
@@ -138,90 +139,119 @@ const ExperienceSidebar = () => {
 
   return (
     <div className="custom-scrollbar">
-      <Card className="bg-gray-900 border-gray-700">
+      <Card style={{ backgroundColor: ColorTheme.bgMain, borderColor: ColorTheme.borderLight }}>
         <CardHeader>
-          <CardTitle className="text-gray-100">Experience</CardTitle>
-          <CardDescription className="text-gray-400">Manage your work experience.</CardDescription>
+          <CardTitle style={{ color: ColorTheme.textPrimary }}>Experience</CardTitle>
+          <CardDescription style={{ color: ColorTheme.textSecondary }}>Manage your work experience.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="company" className="text-sm font-medium text-gray-300">Company</Label>
+              <Label htmlFor="company" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Company</Label>
               <Input 
                 id="company" 
                 value={currentExperience.companyName || ""} 
                 onChange={(e) => setCurrentExperience({...currentExperience, companyName: e.target.value})} 
                 placeholder="Enter company name" 
-                className="bg-gray-800 border-gray-700 text-gray-100" 
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="position" className="text-sm font-medium text-gray-300">Position</Label>
+              <Label htmlFor="position" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Position</Label>
               <Input 
                 id="position" 
                 value={currentExperience.role || ""} 
                 onChange={(e) => setCurrentExperience({...currentExperience, role: e.target.value})} 
                 placeholder="Enter your position" 
-                className="bg-gray-800 border-gray-700 text-gray-100" 
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-sm font-medium text-gray-300">Description</Label>
+              <Label htmlFor="description" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Description</Label>
               <Textarea 
                 id="description" 
                 value={currentExperience.description || ""} 
                 onChange={(e) => setCurrentExperience({...currentExperience, description: e.target.value})} 
                 placeholder="Enter job description" 
-                className="resize-none h-32 bg-gray-800 border-gray-700 text-gray-100" 
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
+                className="resize-none h-32"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location" className="text-sm font-medium text-gray-300">Location</Label>
+              <Label htmlFor="location" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Location</Label>
               <Input 
                 id="location" 
                 value={currentExperience.location || ""} 
                 onChange={(e) => setCurrentExperience({...currentExperience, location: e.target.value})} 
                 placeholder="City, Country or Remote" 
-                className="bg-gray-800 border-gray-700 text-gray-100" 
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="startDate" className="text-sm font-medium text-gray-300">Start Date</Label>
+                <Label htmlFor="startDate" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Start Date</Label>
                 <Input 
                   id="startDate" 
                   value={currentExperience.startDate || ""} 
                   onChange={(e) => setCurrentExperience({...currentExperience, startDate: e.target.value})} 
                   placeholder="MM/YYYY" 
-                  className="bg-gray-800 border-gray-700 text-gray-100" 
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="endDate" className="text-sm font-medium text-gray-300">End Date</Label>
+                <Label htmlFor="endDate" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>End Date</Label>
                 <Input 
                   id="endDate" 
                   value={currentExperience.endDate || ""} 
                   onChange={(e) => setCurrentExperience({...currentExperience, endDate: e.target.value})} 
                   placeholder="MM/YYYY or Present" 
-                  className="bg-gray-800 border-gray-700 text-gray-100" 
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex flex-col justify-between items-start">
-                <Label className="text-sm font-medium text-gray-300 mb-2">Tech Stack / Skills</Label>
+                <Label className="text-sm font-medium mb-2" style={{ color: ColorTheme.textPrimary }}>Tech Stack / Skills</Label>
                 <div className="flex gap-2 w-full">
                   <Input 
                     value={techInput} 
                     onChange={(e) => handleTechInputChange(e.target.value)} 
                     placeholder="Search technologies..." 
-                    className="bg-gray-800 border-gray-700 text-gray-100 flex-1" 
+                    style={{ 
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                      color: ColorTheme.textPrimary
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && suggestions.length > 0) {
                         addTechItem(suggestions[0]);
@@ -235,53 +265,71 @@ const ExperienceSidebar = () => {
                     variant="outline" 
                     size="sm" 
                     onClick={addCustomTech}
-                    className="h-9 bg-gray-800 border-gray-600 hover:bg-gray-700 text-gray-300"
+                    style={{ 
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                      color: ColorTheme.textPrimary
+                    }}
                   >
                     <Plus className="h-4 w-4 mr-1" /> Add
                   </Button>
                 </div>
               </div>
               
-              {/* Tech suggestions */}
               {suggestions.length > 0 && (
                 <div className="mb-4 mt-1">
                   {suggestions.map((tech) => (
                     <div 
                       key={tech.name}
                       onClick={() => addTechItem(tech)}
-                      className="flex bg-stone-700/25 border border-white/15 px-3 py-2 mt-1 rounded-lg items-center justify-between gap-2 cursor-pointer hover:bg-stone-700/40 transition-colors"
+                      style={{ 
+                        backgroundColor: ColorTheme.bgCardHover,
+                        borderColor: ColorTheme.borderLight,
+                        color: ColorTheme.textPrimary
+                      }}
+                      className="flex border px-3 py-2 mt-1 rounded-lg items-center justify-between gap-2 cursor-pointer hover:bg-opacity-50 transition-colors"
                     >
                       <span className="text-sm">{tech.name}</span>
-                      <img src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} width={20} height={20} />
+                      <img src={tech.logo} alt={tech.name} width={20} height={20} />
                     </div>
                   ))}
                 </div>
               )}
               
               {hasSearched && suggestions.length === 0 && (
-                <div className="bg-stone-700/25 border border-white/15 rounded-lg p-3 text-center my-2">
-                  <p className="text-sm text-gray-400">No technologies found matching "{techInput}"</p>
-                  <p className="text-xs mt-1 text-gray-500">Click Add to create it as a custom technology</p>
+                <div style={{ 
+                  backgroundColor: ColorTheme.bgCardHover,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textSecondary
+                }} className="border rounded-lg p-3 text-center my-2">
+                  <p className="text-sm">No technologies found matching "{techInput}"</p>
+                  <p className="text-xs mt-1" style={{ color: ColorTheme.textMuted }}>Click Add to create it as a custom technology</p>
                 </div>
               )}
               
-              {/* Selected tech stack */}
               {currentExperience.techStack && currentExperience.techStack.length > 0 && (
                 <div className="mt-3">
-                  <Label className="text-xs font-medium text-gray-400 mb-1">Selected Technologies</Label>
+                  <Label className="text-xs font-medium mb-1" style={{ color: ColorTheme.textSecondary }}>Selected Technologies</Label>
                   <div className="space-y-2 mt-2">
                     {currentExperience.techStack.map((tech, index) => (
-                      <div key={index} className="flex items-center justify-between bg-gray-700 rounded-md px-3 py-2">
+                      <div key={index} style={{ 
+                        backgroundColor: ColorTheme.bgCard,
+                        color: ColorTheme.textPrimary
+                      }} className="flex items-center justify-between rounded-md px-3 py-2">
                         <div className="flex items-center gap-2">
-                          <img src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} className="w-5 h-5" />
-                          <span className="text-sm text-white">{tech.name}</span>
+                          <img src={tech.logo} alt={tech.name} className="w-5 h-5" />
+                          <span className="text-sm">{tech.name}</span>
                         </div>
                         <Button 
                           type="button" 
                           variant="ghost" 
                           size="sm" 
                           onClick={() => removeTechItem(index)}
-                          className="h-6 w-6 p-0 text-gray-400 hover:text-white hover:bg-gray-600 rounded-full"
+                          style={{ 
+                            color: ColorTheme.textSecondary,
+                            backgroundColor: 'transparent'
+                          }}
+                          className="h-6 w-6 p-0 hover:bg-opacity-50 rounded-full"
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -295,7 +343,12 @@ const ExperienceSidebar = () => {
             <Button 
               type="button" 
               onClick={handleSaveExperience}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              style={{ 
+                backgroundColor: ColorTheme.primary,
+                color: ColorTheme.textPrimary,
+                boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
+              }}
+              className="w-full"
             >
               {editingIndex !== null ? 'Update Experience' : 'Add Experience'}
             </Button>
@@ -303,21 +356,27 @@ const ExperienceSidebar = () => {
 
           {experiences.length > 0 && (
             <div className="mt-8 space-y-4">
-              <h3 className="text-lg font-medium text-white">Saved Experiences</h3>
+              <h3 className="text-lg font-medium" style={{ color: ColorTheme.textPrimary }}>Saved Experiences</h3>
               <div className="space-y-4">
                 {experiences.map((experience, index) => (
-                  <div key={index} className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                  <div key={index} style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight
+                  }} className="p-4 rounded-lg border">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-medium text-white">{experience.role}</h4>
-                        <p className="text-sm text-gray-400">{experience.companyName} • {experience.location}</p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <h4 className="font-medium" style={{ color: ColorTheme.textPrimary }}>{experience.role}</h4>
+                        <p className="text-sm" style={{ color: ColorTheme.textSecondary }}>{experience.companyName} • {experience.location}</p>
+                        <p className="text-xs mt-1" style={{ color: ColorTheme.textMuted }}>
                           {experience.startDate} - {experience.endDate}
                         </p>
                         {experience.techStack && experience.techStack.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {experience.techStack.map((tech, techIndex) => (
-                              <div key={techIndex} className="bg-gray-700/60 text-xs text-gray-300 px-2 py-1 rounded">
+                              <div key={techIndex} style={{ 
+                                backgroundColor: ColorTheme.bgCardHover,
+                                color: ColorTheme.textSecondary
+                              }} className="text-xs px-2 py-1 rounded">
                                 {tech.name}
                               </div>
                             ))}
@@ -330,7 +389,11 @@ const ExperienceSidebar = () => {
                           variant="ghost" 
                           size="sm" 
                           onClick={() => editExperience(index)}
-                          className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-gray-700"
+                          style={{ 
+                            color: ColorTheme.textSecondary,
+                            backgroundColor: 'transparent'
+                          }}
+                          className="h-8 w-8 p-0 hover:bg-opacity-50"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -339,7 +402,11 @@ const ExperienceSidebar = () => {
                           variant="ghost" 
                           size="sm" 
                           onClick={() => deleteExperience(index)}
-                          className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-gray-700"
+                          style={{ 
+                            color: ColorTheme.textSecondary,
+                            backgroundColor: 'transparent'
+                          }}
+                          className="h-8 w-8 p-0 hover:bg-opacity-50"
                         >
                           <Trash className="h-4 w-4" />
                         </Button>

@@ -11,6 +11,7 @@ import { useParams } from 'next/navigation'
 import { updateSection } from '@/app/actions/portfolio'
 import toast from 'react-hot-toast'
 import { Label } from '../ui/label'
+import { ColorTheme } from '@/lib/colorThemes'
 
 interface Technology {
   name: string;
@@ -106,22 +107,26 @@ const TechnologiesSidebar: React.FC = () => {
 
   return (
     <div className="custom-scrollbar">
-      <Card className="bg-gray-900 border-gray-700">
+      <Card className='min-h-screen' style={{ backgroundColor: ColorTheme.bgMain, borderColor: ColorTheme.borderLight }}>
         <CardHeader>
-          <CardTitle className="text-gray-100">Technologies</CardTitle>
-          <CardDescription className="text-gray-400">Manage your skills and technologies.</CardDescription>
+          <CardTitle style={{ color: ColorTheme.textPrimary }}>Technologies</CardTitle>
+          <CardDescription style={{ color: ColorTheme.textSecondary }}>Manage your skills and technologies.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="techSearch" className="text-sm font-medium text-gray-300">Add Technology</Label>
+              <Label htmlFor="techSearch" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Add Technology</Label>
               <div className="flex gap-2">
                 <Input
                   id="techSearch"
                   value={searchValue}
                   onChange={(e) => handleChange(e.target.value)}
                   placeholder="Search technologies..."
-                  className="bg-gray-800 border-gray-700 text-gray-100 flex-1"
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && suggestions.length > 0) {
                       addSuggestion(suggestions[0]);
@@ -134,17 +139,25 @@ const TechnologiesSidebar: React.FC = () => {
                   type="button"
                   onClick={() => handleAddCustomTech()}
                   disabled={!searchValue.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  style={{ 
+                    backgroundColor: ColorTheme.primary,
+                    color: ColorTheme.textPrimary,
+                    boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
+                  }}
                 >
                   Add
                 </Button>
               </div>
               {suggestions.length > 0 && (
-                <div className="mt-2 bg-gray-800 border border-gray-700 rounded-md overflow-hidden">
+                <div className="mt-2 rounded-md overflow-hidden" style={{ backgroundColor: ColorTheme.bgCard, borderColor: ColorTheme.borderLight }}>
                   {suggestions.map((tech, index) => (
                     <div
                       key={index}
-                      className="px-3 py-2 hover:bg-gray-700 cursor-pointer text-gray-100"
+                      className="px-3 py-2 hover:bg-opacity-50 cursor-pointer"
+                      style={{ 
+                        backgroundColor: ColorTheme.bgCardHover,
+                        color: ColorTheme.textPrimary
+                      }}
                       onClick={() => addSuggestion(tech)}
                     >
                       <div className="flex items-center gap-4">
@@ -158,17 +171,22 @@ const TechnologiesSidebar: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">Your Technologies</Label>
+              <Label className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Your Technologies</Label>
               <div className="flex flex-wrap gap-2">
                 {selected.map((tech, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-1 bg-gray-800 border border-gray-700 rounded-md px-2 py-1"
+                    className="flex items-center gap-1 rounded-md px-2 py-1"
+                    style={{ 
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight
+                    }}
                   >
-                    <span className="text-gray-100">{tech.name}</span>
+                    <span style={{ color: ColorTheme.textPrimary }}>{tech.name}</span>
                     <button
                       onClick={() => removeTech(tech)}
-                      className="text-gray-400 hover:text-gray-100"
+                      style={{ color: ColorTheme.textSecondary }}
+                      className="hover:text-opacity-80"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -185,15 +203,25 @@ const TechnologiesSidebar: React.FC = () => {
               <Button
                 variant="outline"
                 onClick={handleReset}
-                className="flex-1 bg-gray-800 border-gray-700 hover:bg-gray-700 text-gray-300"
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
+                className="flex-1"
               >
                 Reset
               </Button>
             )}
             <Button 
-              className={`${hasChanges ? "flex-1" : "w-full"} bg-blue-600 hover:bg-blue-700 text-white`}
+              className={`${hasChanges ? "flex-1" : "w-full"}`}
               onClick={handleSaveChanges}
               disabled={isLoading || !hasChanges}
+              style={{ 
+                backgroundColor: ColorTheme.primary,
+                color: ColorTheme.textPrimary,
+                boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
+              }}
             >
               {isLoading ? 'Saving...' : 'Save Changes'}
             </Button>

@@ -12,6 +12,7 @@ import { useParams } from 'next/navigation'
 import { updateSection } from '@/app/actions/portfolio'
 import toast from 'react-hot-toast'
 import { techList } from '@/lib/techlist'
+import { ColorTheme } from '@/lib/colorThemes'
 
 const ProjectSidebar = () => {
   interface Technology {
@@ -190,48 +191,61 @@ const ProjectSidebar = () => {
 
   return (
     <div className="custom-scrollbar">
-      <Card className="bg-gray-900 border-gray-700">
+      <Card className="border-gray-700" style={{ backgroundColor: ColorTheme.bgMain }}>
         <CardHeader>
-          <CardTitle className="text-gray-100">Projects</CardTitle>
-          <CardDescription className="text-gray-400">Manage your portfolio projects</CardDescription>
+          <CardTitle style={{ color: ColorTheme.textPrimary }}>Projects</CardTitle>
+          <CardDescription style={{ color: ColorTheme.textSecondary }}>Manage your portfolio projects</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="projectName" className="text-sm font-medium text-gray-300">Project Name</Label>
+              <Label htmlFor="projectName" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Project Name</Label>
               <Input 
                 id="projectName" 
                 value={currentProject.projectName || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, projectName: e.target.value})} 
                 placeholder="Enter project name" 
-                className="bg-gray-800 border-gray-700 text-gray-100" 
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="projectTitle" className="text-sm font-medium text-gray-300">Project Title</Label>
+              <Label htmlFor="projectTitle" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Project Title</Label>
               <Input 
                 id="projectTitle" 
                 value={currentProject.projectTitle || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, projectTitle: e.target.value})} 
                 placeholder="Project title" 
-                className="bg-gray-800 border-gray-700 text-gray-100" 
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="projectDescription" className="text-sm font-medium text-gray-300">Project Description</Label>
+              <Label htmlFor="projectDescription" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Project Description</Label>
               <Textarea 
                 id="projectDescription" 
                 value={currentProject.projectDescription || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, projectDescription: e.target.value})} 
                 placeholder="Enter project description" 
-                className="resize-none h-32 bg-gray-800 border-gray-700 text-gray-100" 
+                className="resize-none h-32"
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">Project Image</Label>
+              <Label className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Project Image</Label>
               
               <div className="mt-1 flex flex-col items-center">
                 {currentProject.projectImage ? (
@@ -246,17 +260,25 @@ const ProjectSidebar = () => {
                       variant="ghost"
                       size="sm"
                       onClick={removeImage}
-                      className="absolute top-2 right-2 h-8 w-8 p-0 bg-gray-800 bg-opacity-70 text-gray-100 hover:bg-gray-700 rounded-full"
+                      style={{ 
+                        backgroundColor: ColorTheme.bgCard,
+                        color: ColorTheme.textPrimary
+                      }}
                     >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
                 ) : (
                   <label className="w-full cursor-pointer">
-                    <div className="border-2 border-dashed border-gray-700 rounded-lg p-6 flex flex-col items-center justify-center h-48 hover:border-gray-600 transition-colors">
-                      <Cloud className="h-12 w-12 text-gray-400" />
-                      <p className="mt-2 text-sm text-gray-400">Upload project image</p>
-                      <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center h-48 transition-colors"
+                      style={{ 
+                        borderColor: ColorTheme.borderLight,
+                        color: ColorTheme.textSecondary
+                      }}
+                    >
+                      <Cloud className="h-12 w-12" style={{ color: ColorTheme.textSecondary }} />
+                      <p className="mt-2 text-sm">Upload project image</p>
+                      <p className="mt-1 text-xs" style={{ color: ColorTheme.textMuted }}>PNG, JPG, GIF up to 10MB</p>
                       <input
                         type="file"
                         id="projectImage"
@@ -269,30 +291,38 @@ const ProjectSidebar = () => {
                 )}
               </div>
               
-              {/* Only show the URL input field if image is not uploaded from device */}
               {!isUploaded && !currentProject.projectImage && (
                 <div className="mt-2">
-                  <Label htmlFor="projectImageUrl" className="text-sm font-medium text-gray-300">Or paste image URL</Label>
+                  <Label htmlFor="projectImageUrl" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Or paste image URL</Label>
                   <Input 
                     id="projectImageUrl" 
                     value={currentProject.projectImage || ""} 
                     onChange={(e) => setCurrentProject({...currentProject, projectImage: e.target.value})} 
                     placeholder="Enter image URL" 
-                    className="bg-gray-800 border-gray-700 text-gray-100 mt-1" 
+                    className="mt-1"
+                    style={{ 
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                      color: ColorTheme.textPrimary
+                    }}
                   />
                 </div>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-300">Tech Stack</Label>
+              <Label className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Tech Stack</Label>
               <div className='flex items-center justify-between gap-4 mb-4'>
                 <Input 
                   type='text'
                   value={techSearchValue}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTechSearch(e.target.value)}
                   placeholder='Search Technologies...'
-                  className="bg-gray-800 border-gray-700 text-gray-100"
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
                   onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                     if (e.key === 'Enter' && techSuggestions.length > 0) {
                       addTechToProject(techSuggestions[0])
@@ -301,19 +331,32 @@ const ProjectSidebar = () => {
                     }
                   }}
                 />
-                <Button onClick={addCustomTech}>Add</Button>
+                <Button 
+                  onClick={addCustomTech}
+                  style={{ 
+                    backgroundColor: ColorTheme.primary,
+                    color: ColorTheme.textPrimary,
+                    boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
+                  }}
+                >
+                  Add
+                </Button>
               </div>
               
-              {/* Technology Suggestions */}
               {techSuggestions.length > 0 ? (
                 <div className='mb-6'>
-                  <h3 className='text-sm font-medium mb-2'>Suggestions</h3>
+                  <h3 className='text-sm font-medium mb-2' style={{ color: ColorTheme.textPrimary }}>Suggestions</h3>
                   <div>
                     {techSuggestions.map((item: Technology) => (
                       <div 
                         onClick={() => addTechToProject(item)}
                         key={item.name}
-                        className='flex bg-stone-700/25 border border-white/15 px-4 mt-2 rounded-lg items-center justify-between gap-4 py-2 cursor-pointer hover:bg-stone-700/40 transition-colors'
+                        className='flex px-4 mt-2 rounded-lg items-center justify-between gap-4 py-2 cursor-pointer transition-colors'
+                        style={{ 
+                          backgroundColor: ColorTheme.bgCard,
+                          borderColor: ColorTheme.borderLight,
+                          color: ColorTheme.textPrimary
+                        }}
                       >
                         <span className='text-sm'>{item.name}</span>
                         <img src={item.logo} alt={item.name} width={25} height={25} />
@@ -323,83 +366,117 @@ const ProjectSidebar = () => {
                 </div>
               ) : (
                 hasSearched && (
-                  <div className='bg-stone-700/25 border border-white/15 rounded-lg p-4 text-center mb-6'>
-                    <p className='text-sm text-gray-400'>No technologies found matching "{techSearchValue}"</p>
-                    <p className='text-xs mt-1 text-gray-500'>Use the Add button to add it as a custom technology</p>
+                  <div className='rounded-lg p-4 text-center mb-6'
+                    style={{ 
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight
+                    }}
+                  >
+                    <p className='text-sm' style={{ color: ColorTheme.textSecondary }}>No technologies found matching "{techSearchValue}"</p>
+                    <p className='text-xs mt-1' style={{ color: ColorTheme.textMuted }}>Use the Add button to add it as a custom technology</p>
                   </div>
                 )
               )}
               
-              {/* Selected Technologies */}
               {currentProject.techStack && currentProject.techStack.length > 0 ? (
                 <div>
-                  <h3 className='text-sm font-medium mb-2'>Selected Technologies</h3>
+                  <h3 className='text-sm font-medium mb-2' style={{ color: ColorTheme.textPrimary }}>Selected Technologies</h3>
                   <div>
                     {currentProject.techStack.map((item: Technology) => (
                       <div 
                         key={item.name}
-                        className='flex bg-stone-700/25 border border-white/15 px-4 mt-2 rounded-lg items-center justify-between py-2'
+                        className='flex px-4 mt-2 rounded-lg items-center justify-between py-2'
+                        style={{ 
+                          backgroundColor: ColorTheme.bgCard,
+                          borderColor: ColorTheme.borderLight
+                        }}
                       >
                         <div className='flex items-center gap-4'>
                           <img src={item.logo} alt={item.name} width={25} height={25} />
-                          <span className='text-sm'>{item.name}</span>
+                          <span className='text-sm' style={{ color: ColorTheme.textPrimary }}>{item.name}</span>
                         </div>
                         <Button 
                           variant="ghost"
                           size="sm"
                           onClick={() => removeTechItem(item.name)}
-                          className='p-1 h-auto hover:bg-red-500/20'
+                          className='p-1 h-auto'
+                          style={{ 
+                            backgroundColor: 'transparent',
+                            color: ColorTheme.textSecondary
+                          }}
                         >
-                          <X size={16} className='text-red-400' />
+                          <X size={16} />
                         </Button>
                       </div>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className='bg-stone-700/25 border border-white/15 rounded-lg p-4 text-center mb-2'>
-                  <p className='text-sm text-gray-400'>No technologies selected</p>
+                <div className='rounded-lg p-4 text-center mb-2'
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight
+                  }}
+                >
+                  <p className='text-sm' style={{ color: ColorTheme.textSecondary }}>No technologies selected</p>
                 </div>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="githubLink" className="text-sm font-medium text-gray-300">GitHub Link</Label>
+              <Label htmlFor="githubLink" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>GitHub Link</Label>
               <Input 
                 id="githubLink" 
                 value={currentProject.githubLink || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, githubLink: e.target.value})} 
                 placeholder="Enter GitHub URL" 
-                className="bg-gray-800 border-gray-700 text-gray-100" 
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="liveLink" className="text-sm font-medium text-gray-300">Live Link</Label>
+              <Label htmlFor="liveLink" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Live Link</Label>
               <Input 
                 id="liveLink" 
                 value={currentProject.liveLink || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, liveLink: e.target.value})} 
                 placeholder="Enter live project URL" 
-                className="bg-gray-800 border-gray-700 text-gray-100" 
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="year" className="text-sm font-medium text-gray-300">Year</Label>
+              <Label htmlFor="year" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Year</Label>
               <Input 
                 id="year" 
                 value={currentProject.year || ""} 
                 onChange={(e) => setCurrentProject({...currentProject, year: e.target.value})} 
                 placeholder="Year completed" 
-                className="bg-gray-800 border-gray-700 text-gray-100" 
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
               />
             </div>
 
             <Button 
               type="button" 
               onClick={handleSaveProject}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full"
+              style={{ 
+                backgroundColor: ColorTheme.primary,
+                color: ColorTheme.textPrimary,
+                boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
+              }}
             >
               {editingIndex !== null ? 'Update Project' : 'Add Project'}
             </Button>
@@ -407,14 +484,19 @@ const ProjectSidebar = () => {
 
           {projects.length > 0 && (
             <div className="mt-8 space-y-4">
-              <h3 className="text-lg font-medium text-white">Saved Projects</h3>
+              <h3 className="text-lg font-medium" style={{ color: ColorTheme.textPrimary }}>Saved Projects</h3>
               <div className="space-y-4">
                 {projects.map((project, index) => (
-                  <div key={index} className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                  <div key={index} className="p-4 rounded-lg border"
+                    style={{ 
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight
+                    }}
+                  >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-medium text-white">{project.projectName}</h4>
-                        <p className="text-sm text-gray-400 mt-1">{project.projectDescription?.substring(0, 20)}...</p>
+                        <h4 className="font-medium" style={{ color: ColorTheme.textPrimary }}>{project.projectName}</h4>
+                        <p className="text-sm mt-1" style={{ color: ColorTheme.textSecondary }}>{project.projectDescription?.substring(0, 20)}...</p>
                       </div>
                       <div className="flex gap-2">
                         <Button 
@@ -422,7 +504,10 @@ const ProjectSidebar = () => {
                           variant="ghost" 
                           size="sm" 
                           onClick={() => editProject(index)}
-                          className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-gray-700"
+                          style={{ 
+                            backgroundColor: 'transparent',
+                            color: ColorTheme.textSecondary
+                          }}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -431,7 +516,10 @@ const ProjectSidebar = () => {
                           variant="ghost" 
                           size="sm" 
                           onClick={() => deleteProject(index)}
-                          className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-gray-700"
+                          style={{ 
+                            backgroundColor: 'transparent',
+                            color: ColorTheme.textSecondary
+                          }}
                         >
                           <Trash className="h-4 w-4" />
                         </Button>
