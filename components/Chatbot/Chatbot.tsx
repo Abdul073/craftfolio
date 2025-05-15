@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { MessageSquare, X, Send, GripVertical, Sun, Moon } from "lucide-react";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import axios from "axios";
 import { updatePortfolio } from "@/app/actions/portfolio";
 import { useDispatch } from "react-redux";
@@ -9,6 +9,12 @@ import toast from "react-hot-toast";
 import { fontClassMap, fontOptions } from "@/lib/font";
 import { Button } from "../ui/button";
 import { ColorTheme } from "@/lib/colorThemes";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Editor from 'react-simple-code-editor';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-css';
+import 'prismjs/themes/prism-tomorrow.css';
 
 interface Message {
   id: number;
@@ -26,12 +32,82 @@ interface ChatbotProps {
   onOpenChange: (isOpen: boolean) => void;
   setCurrentFont: (font: string) => void;
   setCurrentPortTheme: (theme: string) => void;
+  setCustomCSS?: (css: string) => void;
 }
 
 interface MessageMemory {
   text: string;
   timestamp: Date;
 }
+
+interface SectionItemProps {
+  section: string;
+  index: number;
+}
+
+const SectionItem = ({ section, index }: { section: string; index: number }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 * index }}
+      className="flex items-center gap-2 p-3 rounded-lg cursor-move"
+      style={{
+        backgroundColor: ColorTheme.bgCardHover,
+        border: `1px solid ${ColorTheme.borderLight}`,
+      }}
+    >
+      <GripVertical 
+        size={16} 
+        style={{ 
+          color: ColorTheme.textSecondary,
+        }} 
+      />
+      <div className="flex-1">
+        <span
+          className="font-medium capitalize"
+          style={{ color: ColorTheme.textPrimary }}
+        >
+          {section.replace(/_/g, " ")}
+        </span>
+        <p
+          className="text-xs mt-1"
+          style={{
+            color: ColorTheme.textSecondary,
+          }}
+        >
+          {section} Section
+        </p>
+      </div>
+    </motion.div>
+  );
+};
+
+// Theme palettes
+const CHATBOT_THEMES = {
+  dark: {
+    bgMain: ColorTheme.bgMain,
+    bgNav: ColorTheme.bgNav,
+    bgCard: ColorTheme.bgCard,
+    bgCardHover: ColorTheme.bgCardHover,
+    textPrimary: ColorTheme.textPrimary,
+    textSecondary: ColorTheme.textSecondary,
+    borderLight: ColorTheme.borderLight,
+    primary: ColorTheme.primary,
+    primaryGlow: ColorTheme.primaryGlow,
+  },
+  light: {
+    bgMain: "#F9FAFB",
+    bgNav: "#F3F4F6",
+    bgCard: "#FFFFFF",
+    bgCardHover: "#F3F4F6",
+    textPrimary: "#18181B",
+    textSecondary: "#52525B",
+    borderLight: "#E5E7EB",
+    primary: "#10B981",
+    primaryGlow: "#10B98133",
+  },
+};
 
 const PortfolioChatbot = ({
   portfolioData,
@@ -41,6 +117,7 @@ const PortfolioChatbot = ({
   themeOptions,
   onOpenChange,
   setCurrentFont,
+  setCustomCSS,
 }: ChatbotProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -56,6 +133,29 @@ const PortfolioChatbot = ({
   const [sections, setSections] = useState<string[]>([]);
   const [reorderedSections, setReorderedSections] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [showCSSOptions, setShowCSSOptions] = useState(false);
+  const [customCSS, setCustomCSSState] = useState("");
+  const [selectedSection, setSelectedSection] = useState<string>("");
+  const [cssPreview, setCSSPreview] = useState(false);
+  const [chatbotTheme, setChatbotTheme] = useState<'dark' | 'light'>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('chatbotTheme');
+      if (stored === 'light' || stored === 'dark') return stored;
+    }
+    return 'dark';
+  });
+
+  const themeColors = CHATBOT_THEMES[chatbotTheme];
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('chatbotTheme', chatbotTheme);
+    }
+  }, [chatbotTheme]);
+
+  const handleThemeToggle = () => {
+    setChatbotTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   const dispatch = useDispatch();
   const themeOptionsArray = Object.keys(themeOptions);
@@ -312,19 +412,6 @@ const PortfolioChatbot = ({
     }
   };
 
-  const moveSection = (index: number, direction: "up" | "down") => {
-    const newSections = [...reorderedSections];
-    const newIndex = direction === "up" ? index - 1 : index + 1;
-
-    if (newIndex >= 0 && newIndex < reorderedSections.length) {
-      [newSections[index], newSections[newIndex]] = [
-        newSections[newIndex],
-        newSections[index],
-      ];
-      setReorderedSections(newSections);
-    }
-  };
-
   const resetSectionOrder = () => {
     setReorderedSections([...sections]);
   };
@@ -400,8 +487,77 @@ const PortfolioChatbot = ({
     setShowThemeOptions(false);
     setShowFontOptions(false);
     setShowSectionReorder(false);
+    setShowCSSOptions(false);
     setIsOpen(newIsOpen);
     onOpenChange(newIsOpen);
+  };
+
+  const handleShowCSSOptions = () => {
+    setShowHelpPanel(false);
+    setShowThemeOptions(false);
+    setShowFontOptions(false);
+    setShowSectionReorder(false);
+    setShowCSSOptions(true);
+  };
+
+  const handleApplyCSS = () => {
+
+    if (setCustomCSS) {
+      setCustomCSS(customCSS);
+      toast.success("Custom CSS applied successfully!");
+      const notificationMessage: Message = {
+        id: Date.now(),
+        text: "Custom CSS has been applied to your portfolio.",
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, notificationMessage]);
+      setShowCSSOptions(false);
+    }
+  };
+
+
+  const CSS_TEMPLATES = {
+    "Hover Effects": `
+.section-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}`,
+    "Gradient Text": `
+.section-title {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}`,
+    "Custom Animation": `
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-content {
+  animation: fadeIn 0.5s ease-out;
+}`,
+    "Custom Border": `
+.section-container {
+  border: 2px solid #4ecdc4;
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+}
+
+.section-container::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border: 2px solid #ff6b6b;
+  border-radius: 12px;
+  z-index: -1;
+}`
   };
 
   return (
@@ -421,14 +577,14 @@ const PortfolioChatbot = ({
             exit="exit"
             className="h-full w-full flex flex-col"
             style={{
-              backgroundColor: ColorTheme.bgMain,
-              color: ColorTheme.textPrimary,
-              borderLeft: `1px solid ${ColorTheme.borderLight}`,
+              backgroundColor: themeColors.bgMain,
+              color: themeColors.textPrimary,
+              borderLeft: `1px solid ${themeColors.borderLight}`,
             }}
           >
             <div
               className="p-4 flex rounded-t-lg justify-between items-center"
-              style={{ backgroundColor: ColorTheme.bgNav }}
+              style={{ backgroundColor: themeColors.bgNav }}
             >
               <div className="flex items-center gap-2">
                 <motion.button
@@ -437,7 +593,7 @@ const PortfolioChatbot = ({
                   whileTap="tap"
                   onClick={() => handleOpenChange(false)}
                   className="p-1 hover:bg-[#2c2c2e] rounded-full transition-colors"
-                  style={{ color: ColorTheme.textPrimary }}
+                  style={{ color: themeColors.textPrimary }}
                 >
                   <X size={20} className="cursor-pointer" />
                 </motion.button>
@@ -446,22 +602,34 @@ const PortfolioChatbot = ({
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.1 }}
                   className="font-bold text-lg"
-                  style={{ color: ColorTheme.textPrimary }}
+                  style={{ color: themeColors.textPrimary }}
                 >
                   Portfolio Assistant
                 </motion.h3>
               </div>
+              <motion.button
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                onClick={handleThemeToggle}
+                className="ml-2 p-1 rounded-full transition-colors"
+                style={{ color: themeColors.textPrimary }}
+                aria-label="Toggle chatbot theme"
+              >
+                {chatbotTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </motion.button>
             </div>
 
             <div
               className="flex-1 p-4 overflow-y-auto rounded-lg relative"
-              style={{ backgroundColor: ColorTheme.bgMain }}
+              style={{ backgroundColor: themeColors.bgMain }}
             >
               <AnimatePresence>
                 {showThemeOptions ||
                 showFontOptions ||
                 showHelpPanel ||
-                showSectionReorder ? (
+                showSectionReorder ||
+                showCSSOptions ? (
                   <motion.div
                     key="options-panel"
                     variants={panelVariants}
@@ -469,12 +637,12 @@ const PortfolioChatbot = ({
                     animate="visible"
                     exit="exit"
                     className="absolute top-0 left-0 right-0 bottom-0 z-10 p-4 overflow-y-auto"
-                    style={{ backgroundColor: ColorTheme.bgMain }}
+                    style={{ backgroundColor: themeColors.bgMain }}
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <h4
                         className="font-bold text-lg"
-                        style={{ color: ColorTheme.textPrimary }}
+                        style={{ color: themeColors.textPrimary }}
                       >
                         {showThemeOptions
                           ? "Select a Theme"
@@ -482,6 +650,8 @@ const PortfolioChatbot = ({
                           ? "Select a Font"
                           : showSectionReorder
                           ? "Reorder Sections"
+                          : showCSSOptions
+                          ? "Custom CSS Injection"
                           : "How Can I Help You?"}
                       </h4>
                       <motion.button
@@ -493,9 +663,10 @@ const PortfolioChatbot = ({
                           setShowFontOptions(false);
                           setShowHelpPanel(false);
                           setShowSectionReorder(false);
+                          setShowCSSOptions(false);
                         }}
                         className="ml-auto p-1 hover:bg-[#2c2c2e] rounded-full transition-colors"
-                        style={{ color: ColorTheme.textPrimary }}
+                        style={{ color: themeColors.textPrimary }}
                       >
                         <X size={18} className="cursor-pointer" />
                       </motion.button>
@@ -505,17 +676,17 @@ const PortfolioChatbot = ({
                       <div className="space-y-6">
                         <div
                           className="rounded-lg p-4"
-                          style={{ backgroundColor: ColorTheme.bgCard }}
+                          style={{ backgroundColor: themeColors.bgCard }}
                         >
                           <h5
                             className="font-semibold mb-2"
-                            style={{ color: ColorTheme.primary }}
+                            style={{ color: themeColors.primary }}
                           >
                             About Me
                           </h5>
                           <p
                             className="text-sm"
-                            style={{ color: ColorTheme.textSecondary }}
+                            style={{ color: themeColors.textSecondary }}
                           >
                             I'm your AI portfolio assistant. I can help you
                             customize your portfolio's content, layout, and
@@ -531,11 +702,11 @@ const PortfolioChatbot = ({
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 * index }}
                             className="rounded-lg p-4"
-                            style={{ backgroundColor: ColorTheme.bgCard }}
+                            style={{ backgroundColor: themeColors.bgCard }}
                           >
                             <h5
                               className="font-semibold mb-3"
-                              style={{ color: ColorTheme.primary }}
+                              style={{ color: themeColors.primary }}
                             >
                               {section.category}
                             </h5>
@@ -548,8 +719,8 @@ const PortfolioChatbot = ({
                                   transition={{ delay: 0.1 * (index + idx) }}
                                   className="rounded-lg p-3 cursor-pointer transition-colors"
                                   style={{
-                                    backgroundColor: ColorTheme.bgCardHover,
-                                    color: ColorTheme.textPrimary,
+                                    backgroundColor: themeColors.bgCardHover,
+                                    color: themeColors.textPrimary,
                                   }}
                                   onClick={() => {
                                     setInputValue(example);
@@ -565,17 +736,17 @@ const PortfolioChatbot = ({
 
                         <div
                           className="rounded-lg p-4"
-                          style={{ backgroundColor: ColorTheme.bgCard }}
+                          style={{ backgroundColor: themeColors.bgCard }}
                         >
                           <h5
                             className="font-semibold mb-2"
-                            style={{ color: ColorTheme.primary }}
+                            style={{ color: themeColors.primary }}
                           >
                             Tips
                           </h5>
                           <ul
                             className="text-sm space-y-2"
-                            style={{ color: ColorTheme.textSecondary }}
+                            style={{ color: themeColors.textSecondary }}
                           >
                             <li>
                               • Be specific in your requests for better results
@@ -615,14 +786,14 @@ const PortfolioChatbot = ({
                                   : ""
                               }`}
                               style={{
-                                backgroundColor: ColorTheme.bgCard,
+                                backgroundColor: themeColors.bgCard,
                                 borderColor:
                                   currentPortTheme === theme
-                                    ? ColorTheme.primary
-                                    : ColorTheme.borderLight,
+                                    ? themeColors.primary
+                                    : themeColors.borderLight,
                                 boxShadow:
                                   currentPortTheme === theme
-                                    ? `0 0 20px ${ColorTheme.primaryGlow}`
+                                    ? `0 0 20px ${themeColors.primaryGlow}`
                                     : "none",
                               }}
                             >
@@ -631,7 +802,7 @@ const PortfolioChatbot = ({
                                 <div
                                   className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
                                   style={{
-                                    backgroundColor: ColorTheme.primary,
+                                    backgroundColor: themeColors.primary,
                                   }}
                                 >
                                   <svg
@@ -666,7 +837,7 @@ const PortfolioChatbot = ({
                               </div>
                               <p
                                 className="font-medium capitalize"
-                                style={{ color: ColorTheme.textPrimary }}
+                                style={{ color: themeColors.textPrimary }}
                               >
                                 {theme}
                               </p>
@@ -691,21 +862,21 @@ const PortfolioChatbot = ({
                                 : ""
                             } ${fontClassMap[font]}`}
                             style={{
-                              backgroundColor: ColorTheme.bgCard,
+                              backgroundColor: themeColors.bgCard,
                               borderColor:
                                 selectedFont === font
-                                  ? ColorTheme.primary
-                                  : ColorTheme.borderLight,
+                                  ? themeColors.primary
+                                  : themeColors.borderLight,
                               boxShadow:
                                 selectedFont === font
-                                  ? `0 0 20px ${ColorTheme.primaryGlow}`
+                                  ? `0 0 20px ${themeColors.primaryGlow}`
                                   : "none",
                             }}
                           >
                             {selectedFont === font && (
                               <div
                                 className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
-                                style={{ backgroundColor: ColorTheme.primary }}
+                                style={{ backgroundColor: themeColors.primary }}
                               >
                                 <svg
                                   className="w-3 h-3 text-white"
@@ -724,13 +895,13 @@ const PortfolioChatbot = ({
                             )}
                             <p
                               className={`text-xl font-medium`}
-                              style={{ color: ColorTheme.textPrimary }}
+                              style={{ color: themeColors.textPrimary }}
                             >
                               Aa
                             </p>
                             <p
                               className="font-medium mt-2"
-                              style={{ color: ColorTheme.textPrimary }}
+                              style={{ color: themeColors.textPrimary }}
                             >
                               {font}
                             </p>
@@ -743,14 +914,14 @@ const PortfolioChatbot = ({
                       <div className="space-y-4">
                         <div
                           className="rounded-lg p-4"
-                          style={{ backgroundColor: ColorTheme.bgCard }}
+                          style={{ backgroundColor: themeColors.bgCard }}
                         >
                           <div className="flex justify-between items-center mb-4">
                             <p
                               className="text-sm"
-                              style={{ color: ColorTheme.textSecondary }}
+                              style={{ color: themeColors.textSecondary }}
                             >
-                              Use arrows to reorder sections
+                              Drag and drop to reorder sections
                             </p>
                             <motion.button
                               variants={buttonVariants}
@@ -759,77 +930,168 @@ const PortfolioChatbot = ({
                               onClick={resetSectionOrder}
                               className="text-sm px-3 py-1 rounded-lg border transition-colors"
                               style={{
-                                backgroundColor: ColorTheme.bgCardHover,
-                                borderColor: ColorTheme.borderLight,
-                                color: ColorTheme.textPrimary,
+                                backgroundColor: themeColors.bgCardHover,
+                                borderColor: themeColors.borderLight,
+                                color: themeColors.textPrimary,
                               }}
                             >
                               Reset Order
                             </motion.button>
                           </div>
-                          <div className="space-y-2">
-                            {reorderedSections.map((section, index) => {
-                              return (
-                                <motion.div
-                                  key={section}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: 0.1 * index }}
-                                  className="flex items-center gap-2 p-3 rounded-lg"
-                                  style={{
-                                    backgroundColor: ColorTheme.bgCardHover,
-                                    border: `1px solid ${ColorTheme.borderLight}`,
-                                  }}
-                                >
-                                  <div className="flex-1">
-                                    <span
-                                      className="font-medium capitalize"
-                                      style={{ color: ColorTheme.textPrimary }}
-                                    >
-                                      {section.replace(/_/g, " ")}
-                                    </span>
-                                    <p
-                                      className="text-xs mt-1"
-                                      style={{
-                                        color: ColorTheme.textSecondary,
-                                      }}
-                                    >
-                                      {/* {portfolioData.sections[section]?.title || 
-                                       portfolioData.sections[section]?.name || 
-                                       'Section'} */}{" "}
-                                      {section} Section
-                                    </p>
-                                  </div>
-                                  <div className="flex gap-1">
-                                    <motion.button
-                                      variants={buttonVariants}
-                                      whileHover="hover"
-                                      whileTap="tap"
-                                      onClick={() => moveSection(index, "up")}
-                                      disabled={index === 0}
-                                      className="p-1 rounded hover:bg-[#2c2c2e] transition-colors disabled:opacity-50"
-                                      style={{ color: ColorTheme.textPrimary }}
-                                    >
-                                      ↑
-                                    </motion.button>
-                                    <motion.button
-                                      variants={buttonVariants}
-                                      whileHover="hover"
-                                      whileTap="tap"
-                                      onClick={() => moveSection(index, "down")}
-                                      disabled={
-                                        index === reorderedSections.length - 1
-                                      }
-                                      className="p-1 rounded hover:bg-[#2c2c2e] transition-colors disabled:opacity-50"
-                                      style={{ color: ColorTheme.textPrimary }}
-                                    >
-                                      ↓
-                                    </motion.button>
-                                  </div>
-                                </motion.div>
-                              );
-                            })}
+                          <Reorder.Group
+                            axis="y"
+                            values={reorderedSections}
+                            onReorder={setReorderedSections}
+                            className="space-y-2"
+                          >
+                            {reorderedSections.map((section, index) => (
+                              <Reorder.Item
+                                key={section}
+                                value={section}
+                                initial={false}
+                                whileDrag={{
+                                  scale: 1.02,
+                                  boxShadow: `0 8px 16px ${themeColors.primaryGlow}`,
+                                  opacity: 0.8,
+                                  backgroundColor: `${themeColors.primary}20`,
+                                  border: `2px dashed ${themeColors.primary}`,
+                                  transition: {
+                                    duration: 0.2,
+                                    ease: "easeInOut"
+                                  }
+                                }}
+                                animate={{
+                                  scale: 1,
+                                  opacity: 1,
+                                  backgroundColor: themeColors.bgCardHover,
+                                  border: `1px solid ${themeColors.borderLight}`,
+                                  transition: {
+                                    duration: 0.2,
+                                    ease: "easeInOut"
+                                  }
+                                }}
+                                className="cursor-move"
+                              >
+                                <SectionItem section={section} index={index} />
+                              </Reorder.Item>
+                            ))}
+                          </Reorder.Group>
+                        </div>
+                      </div>
+                    )}
+
+                    {showCSSOptions && (
+                      <div className="space-y-4">
+                        <div className="rounded-lg p-4" style={{ backgroundColor: themeColors.bgCard }}>
+                          <h5 className="font-semibold mb-2" style={{ color: themeColors.primary }}>
+                            Custom CSS Editor
+                          </h5>
+                          <div className="relative">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="flex-1">
+                                <div className="text-xs px-2 py-1 rounded bg-[#2c2c2e] inline-block" style={{ color: themeColors.textSecondary }}>
+                                  CSS Editor
+                                </div>
+                              </div>
+                              <motion.button
+                                variants={buttonVariants}
+                                whileHover="hover"
+                                whileTap="tap"
+                                onClick={() => setCustomCSSState("")}
+                                className="p-1.5 rounded-md hover:bg-[#2c2c2e] transition-colors"
+                                style={{ color: themeColors.textPrimary }}
+                              >
+                                <X size={16} />
+                              </motion.button>
+                            </div>
+                            <Editor
+                              value={customCSS}
+                              onValueChange={setCustomCSSState}
+                              highlight={code => Prism.highlight(code, Prism.languages.css, 'css')}
+                              padding={16}
+                              style={{
+                                fontFamily: 'Fira Mono, Menlo, Monaco, Consolas, monospace',
+                                fontSize: 14,
+                                minHeight: '16rem',
+                                borderRadius: '0.5rem',
+                                background: themeColors.bgCardHover,
+                                color: themeColors.textPrimary,
+                                outline: 'none',
+                                border: 'none',
+                                caretColor: themeColors.primary,
+                                resize: 'vertical',
+                                tabSize: 2,
+                                whiteSpace: 'pre',
+                              }}
+                              textareaId="custom-css-editor"
+                              placeholder={`/* Example CSS */\n.section {\n  padding: 2rem;\n  margin: 1rem;\n}\n\n.section-title {\n  font-size: 2rem;\n  color: #fff;\n}`}
+                              spellCheck={false}
+                            />
                           </div>
+                        </div>
+
+                        <div className="rounded-lg p-4" style={{ backgroundColor: themeColors.bgCard }}>
+                          <h5 className="font-semibold mb-2" style={{ color: themeColors.primary }}>
+                            Available Classes
+                          </h5>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="space-y-2">
+                              <h6 className="text-sm font-medium" style={{ color: themeColors.textSecondary }}>
+                                Section Classes
+                              </h6>
+                              <div className="space-y-1">
+                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                  .section
+                                </code>
+                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                  .section-card
+                                </code>
+                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                  .section-image
+                                </code>
+                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                  .btn-primary
+                                </code>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <h6 className="text-sm font-medium" style={{ color: themeColors.textSecondary }}>
+                                Typography Classes
+                              </h6>
+                              <div className="space-y-1">
+                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                  .section-title
+                                </code>
+                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                  .section-sub-heading
+                                </code>
+                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                  .section-description
+                                </code>
+                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                  .section-sub-description
+                                </code>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="rounded-lg p-4" style={{ backgroundColor: themeColors.bgCard }}>
+                          <h5 className="font-semibold mb-2" style={{ color: themeColors.primary }}>
+                            Tips
+                          </h5>
+                          <ul className="text-sm space-y-2" style={{ color: themeColors.textSecondary }}>
+                            <li>• Use <b>.section</b> for main section wrappers</li>
+                            <li>• Use <b>.section-card</b> for card elements</li>
+                            <li>• Use <b>.section-image</b> for images</li>
+                            <li>• Use <b>.btn-primary</b> to style primary buttons</li>
+                            <li>• Use <b>.section-title</b> for main headings</li>
+                            <li>• Use <b>.section-sub-heading</b> for subheadings</li>
+                            <li>• Use <b>.section-description</b> for main descriptions</li>
+                            <li>• Use <b>.section-sub-description</b> for secondary text</li>
+                            <li>• If your changes don't apply, try adding <b>!important</b> to your CSS rule</li>
+                            <li>• Test your CSS before applying</li>
+                          </ul>
                         </div>
                       </div>
                     )}
@@ -859,8 +1121,8 @@ const PortfolioChatbot = ({
                               transition={{ duration: 0.2 }}
                               className="text-xs py-1 px-3 rounded-full max-w-[80%]"
                               style={{
-                                backgroundColor: ColorTheme.primary,
-                                color: ColorTheme.textPrimary,
+                                backgroundColor: themeColors.primary,
+                                color: themeColors.textPrimary,
                               }}
                             >
                               {message.text}
@@ -877,9 +1139,9 @@ const PortfolioChatbot = ({
                               }`}
                               style={{
                                 backgroundColor: message.isUser
-                                  ? ColorTheme.primary
-                                  : ColorTheme.bgCard,
-                                color: ColorTheme.textPrimary,
+                                  ? themeColors.primary
+                                  : themeColors.bgCard,
+                                color: themeColors.textPrimary,
                               }}
                             >
                               <p className="text-sm whitespace-pre-line">
@@ -887,7 +1149,7 @@ const PortfolioChatbot = ({
                               </p>
                               <span
                                 className="text-xs opacity-70 mt-1 block"
-                                style={{ color: ColorTheme.textSecondary }}
+                                style={{ color: themeColors.textSecondary }}
                               >
                                 {message.timestamp.toLocaleTimeString([], {
                                   hour: "2-digit",
@@ -907,27 +1169,27 @@ const PortfolioChatbot = ({
                         >
                           <div
                             className="rounded-lg rounded-bl-none p-3 max-w-[80%]"
-                            style={{ backgroundColor: ColorTheme.bgCard }}
+                            style={{ backgroundColor: themeColors.bgCard }}
                           >
                             <div className="flex space-x-2">
                               <div
                                 className="w-2 h-2 rounded-full animate-bounce"
                                 style={{
-                                  backgroundColor: ColorTheme.primary,
+                                  backgroundColor: themeColors.primary,
                                   animationDelay: "0ms",
                                 }}
                               ></div>
                               <div
                                 className="w-2 h-2 rounded-full animate-bounce"
                                 style={{
-                                  backgroundColor: ColorTheme.primary,
+                                  backgroundColor: themeColors.primary,
                                   animationDelay: "150ms",
                                 }}
                               ></div>
                               <div
                                 className="w-2 h-2 rounded-full animate-bounce"
                                 style={{
-                                  backgroundColor: ColorTheme.primary,
+                                  backgroundColor: themeColors.primary,
                                   animationDelay: "300ms",
                                 }}
                               ></div>
@@ -942,15 +1204,15 @@ const PortfolioChatbot = ({
               </AnimatePresence>
             </div>
 
-            {!(showFontOptions || showThemeOptions || showSectionReorder) && (
+            {!(showFontOptions || showThemeOptions || showSectionReorder || showCSSOptions) && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
                 className="p-4 border-t rounded-lg"
                 style={{
-                  backgroundColor: ColorTheme.bgNav,
-                  borderColor: ColorTheme.borderLight,
+                  backgroundColor: themeColors.bgNav,
+                  borderColor: themeColors.borderLight,
                 }}
               >
                 <div className="flex gap-2 mb-3">
@@ -963,9 +1225,9 @@ const PortfolioChatbot = ({
                     disabled={isProcessing}
                     className="flex-1 px-3 py-2 rounded-lg outline-none resize-none min-h-[80px]"
                     style={{
-                      backgroundColor: ColorTheme.bgCard,
-                      color: ColorTheme.textPrimary,
-                      borderColor: ColorTheme.borderLight,
+                      backgroundColor: themeColors.bgCard,
+                      color: themeColors.textPrimary,
+                      borderColor: themeColors.borderLight,
                     }}
                     rows={3}
                   />
@@ -979,12 +1241,12 @@ const PortfolioChatbot = ({
                     style={{
                       backgroundColor:
                         isProcessing || !inputValue.trim()
-                          ? ColorTheme.bgCard
-                          : ColorTheme.primary,
-                      color: ColorTheme.textPrimary,
+                          ? themeColors.bgCard
+                          : themeColors.primary,
+                      color: themeColors.textPrimary,
                       boxShadow:
                         !isProcessing && inputValue.trim()
-                          ? `0 4px 14px ${ColorTheme.primaryGlow}`
+                          ? `0 4px 14px ${themeColors.primaryGlow}`
                           : "none",
                     }}
                   >
@@ -1000,9 +1262,9 @@ const PortfolioChatbot = ({
                     onClick={handleShowThemeOptions}
                     className="text-sm py-2 px-3 text-center rounded-lg border transition-colors"
                     style={{
-                      backgroundColor: ColorTheme.bgCard,
-                      borderColor: ColorTheme.borderLight,
-                      color: ColorTheme.textPrimary,
+                      backgroundColor: themeColors.bgCard,
+                      borderColor: themeColors.borderLight,
+                      color: themeColors.textPrimary,
                     }}
                   >
                     Change Theme
@@ -1014,9 +1276,9 @@ const PortfolioChatbot = ({
                     onClick={handleShowFontOptions}
                     className="text-sm py-2 px-3 text-center rounded-lg border transition-colors"
                     style={{
-                      backgroundColor: ColorTheme.bgCard,
-                      borderColor: ColorTheme.borderLight,
-                      color: ColorTheme.textPrimary,
+                      backgroundColor: themeColors.bgCard,
+                      borderColor: themeColors.borderLight,
+                      color: themeColors.textPrimary,
                     }}
                   >
                     Change Font
@@ -1028,9 +1290,9 @@ const PortfolioChatbot = ({
                     onClick={handleShowSectionReorder}
                     className="text-sm py-2 px-3 text-center rounded-lg border transition-colors"
                     style={{
-                      backgroundColor: ColorTheme.bgCard,
-                      borderColor: ColorTheme.borderLight,
-                      color: ColorTheme.textPrimary,
+                      backgroundColor: themeColors.bgCard,
+                      borderColor: themeColors.borderLight,
+                      color: themeColors.textPrimary,
                     }}
                   >
                     Reorder Sections
@@ -1039,15 +1301,15 @@ const PortfolioChatbot = ({
                     variants={buttonVariants}
                     whileHover="hover"
                     whileTap="tap"
-                    onClick={handleShowHelp}
+                    onClick={handleShowCSSOptions}
                     className="text-sm py-2 px-3 text-center rounded-lg border transition-colors"
                     style={{
-                      backgroundColor: ColorTheme.bgCard,
-                      borderColor: ColorTheme.borderLight,
-                      color: ColorTheme.textPrimary,
+                      backgroundColor: themeColors.bgCard,
+                      borderColor: themeColors.borderLight,
+                      color: themeColors.textPrimary,
                     }}
                   >
-                    Help
+                    Custom CSS
                   </motion.button>
                 </div>
               </motion.div>
@@ -1059,8 +1321,8 @@ const PortfolioChatbot = ({
                 animate={{ opacity: 1, y: 0 }}
                 className="p-4 border-t"
                 style={{
-                  backgroundColor: ColorTheme.bgNav,
-                  borderColor: ColorTheme.borderLight,
+                  backgroundColor: themeColors.bgNav,
+                  borderColor: themeColors.borderLight,
                 }}
               >
                 <div className="flex gap-2">
@@ -1068,9 +1330,9 @@ const PortfolioChatbot = ({
                     onClick={resetSectionOrder}
                     className="flex-1 font-medium py-2 px-4 rounded-lg transition-colors"
                     style={{
-                      backgroundColor: ColorTheme.bgCard,
-                      color: ColorTheme.textPrimary,
-                      borderColor: ColorTheme.borderLight,
+                      backgroundColor: themeColors.bgCard,
+                      color: themeColors.textPrimary,
+                      borderColor: themeColors.borderLight,
                     }}
                   >
                     Reset
@@ -1088,14 +1350,14 @@ const PortfolioChatbot = ({
                         isProcessing ||
                         JSON.stringify(sections) ===
                           JSON.stringify(reorderedSections)
-                          ? ColorTheme.bgCard
-                          : ColorTheme.primary,
-                      color: ColorTheme.textPrimary,
+                          ? themeColors.bgCard
+                          : themeColors.primary,
+                      color: themeColors.textPrimary,
                       boxShadow:
                         !isProcessing &&
                         JSON.stringify(sections) !==
                           JSON.stringify(reorderedSections)
-                          ? `0 4px 14px ${ColorTheme.primaryGlow}`
+                          ? `0 4px 14px ${themeColors.primaryGlow}`
                           : "none",
                     }}
                   >
@@ -1111,8 +1373,8 @@ const PortfolioChatbot = ({
                 animate={{ opacity: 1, y: 0 }}
                 className="p-4 border-t"
                 style={{
-                  backgroundColor: ColorTheme.bgNav,
-                  borderColor: ColorTheme.borderLight,
+                  backgroundColor: themeColors.bgNav,
+                  borderColor: themeColors.borderLight,
                 }}
               >
                 <Button
@@ -1121,11 +1383,11 @@ const PortfolioChatbot = ({
                   className="w-full font-medium py-2 px-4 rounded-lg transition-colors"
                   style={{
                     backgroundColor: !selectedFont
-                      ? ColorTheme.bgCard
-                      : ColorTheme.primary,
-                    color: ColorTheme.textPrimary,
+                      ? themeColors.bgCard
+                      : themeColors.primary,
+                    color: themeColors.textPrimary,
                     boxShadow: selectedFont
-                      ? `0 4px 14px ${ColorTheme.primaryGlow}`
+                      ? `0 4px 14px ${themeColors.primaryGlow}`
                       : "none",
                   }}
                 >
@@ -1139,8 +1401,8 @@ const PortfolioChatbot = ({
                 animate={{ opacity: 1, y: 0 }}
                 className="p-4 border-t"
                 style={{
-                  backgroundColor: ColorTheme.bgNav,
-                  borderColor: ColorTheme.borderLight,
+                  backgroundColor: themeColors.bgNav,
+                  borderColor: themeColors.borderLight,
                 }}
               >
                 <Button
@@ -1149,15 +1411,40 @@ const PortfolioChatbot = ({
                   className="w-full font-medium py-2 px-4 rounded-lg transition-colors"
                   style={{
                     backgroundColor: !selectedTheme
-                      ? ColorTheme.bgCard
-                      : ColorTheme.primary,
-                    color: ColorTheme.textPrimary,
+                      ? themeColors.bgCard
+                      : themeColors.primary,
+                    color: themeColors.textPrimary,
                     boxShadow: selectedTheme
-                      ? `0 4px 14px ${ColorTheme.primaryGlow}`
+                      ? `0 4px 14px ${themeColors.primaryGlow}`
                       : "none",
                   }}
                 >
                   Apply Selected Theme
+                </Button>
+              </motion.div>
+            )}
+
+            {showCSSOptions && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 border-t"
+                style={{
+                  backgroundColor: themeColors.bgNav,
+                  borderColor: themeColors.borderLight,
+                }}
+              >
+                <Button
+                  onClick={handleApplyCSS}
+                  disabled={!customCSS.trim()}
+                  className="w-full font-medium py-2 px-4 rounded-lg transition-colors"
+                  style={{
+                    backgroundColor: !customCSS.trim() ? themeColors.bgCard : themeColors.primary,
+                    color: themeColors.textPrimary,
+                    boxShadow: customCSS.trim() ? `0 4px 14px ${themeColors.primaryGlow}` : "none",
+                  }}
+                >
+                  Apply Custom CSS
                 </Button>
               </motion.div>
             )}
@@ -1175,9 +1462,9 @@ const PortfolioChatbot = ({
           onClick={() => handleOpenChange(true)}
           className="fixed bottom-6 right-6 p-4 cursor-pointer rounded-full shadow-lg transition-colors"
           style={{
-            backgroundColor: ColorTheme.primary,
-            color: ColorTheme.textPrimary,
-            boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`,
+            backgroundColor: themeColors.primary,
+            color: themeColors.textPrimary,
+            boxShadow: `0 4px 14px ${themeColors.primaryGlow}`,
           }}
         >
           <MessageSquare size={24} />

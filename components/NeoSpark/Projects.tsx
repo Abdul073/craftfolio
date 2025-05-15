@@ -27,7 +27,7 @@ interface Project {
   year?: string;
 }
 
-const Projects: React.FC = ({ currentPortTheme }: any) => {
+const Projects: React.FC = ({ currentPortTheme, customCSS }: any) => {
   const [isInView, setIsInView] = useState<boolean>(false);
   const sectionRef = useRef<HTMLElement | null>(null);
   const params = useParams();
@@ -163,13 +163,14 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
       ref={sectionRef}
       className="py-24 w-full overflow-hidden min-h-screen text-white"
     >
+      <style>{customCSS}</style>
       <div className="container relative mx-auto max-w-6xl px-4">
         <div className="max-w-4xl mx-auto">
           <div className="max-w-xl block mx-auto">
-            <h1 className="text-5xl font-bold mb-4 text-center" style={{color: titleColor}}>
+            <h1 className="text-5xl section-title font-bold mb-4 text-center" style={{color: titleColor}}>
               My Projects
             </h1>
-            <p className="text-xl text-gray-300 text-center mb-16">
+            <p className="text-xl section-description text-gray-300 text-center mb-16">
               A showcase of my full-stack projects, built using modern web
               technologies and frameworks.
             </p>
@@ -195,7 +196,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                 onMouseOut={(e) => {
                   e.currentTarget.style.border = `1px solid rgb(156 163 175 / 0.25)`;
                 }}
-                className="bg-stone-800/30 border rounded-lg overflow-hidden transition-colors duration-300 hover:bg-zinc-900/80"
+                className="bg-stone-800/30 section-card border rounded-lg overflow-hidden transition-colors duration-300 hover:bg-zinc-900/80"
               >
                 <div className={`flex flex-col md:flex-row items-center`}>
                   <div className="w-full md:w-2/5 relative">
@@ -203,7 +204,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                       <motion.img
                         src={project?.projectImage}
                         alt={`${project?.projectTitle} project screenshot`}
-                        className="w-full h-52 object-cover rounded-lg"
+                        className="w-full section-image h-52 object-cover rounded-lg"
                         initial="rest"
                         whileHover="hover"
                         variants={imageVariants}
@@ -216,7 +217,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                         transition={{ duration: 0.3 }}
                       ></motion.div>
                     </div>
-                    <div className="p-3 bg-zinc-900/90 flex justify-center gap-3">
+                    <div className="p-3  flex justify-center gap-3">
                       <motion.div
                         whileHover={{ scale: 1.05 }}
                         transition={{
@@ -229,7 +230,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                           href={project?.githubLink || "#"}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-1.5 bg-transparent border rounded-md hover:text-white transition-colors duration-300 text-sm"
+                          className="flex items-center gap-2 btn-primary px-3 py-1.5 bg-transparent border rounded-md hover:text-white transition-colors duration-300 text-sm"
                           style={{ borderColor: `${titleColor}30`, color: titleColor }}
                         >
                           <Github className="h-4 w-4" />
@@ -248,7 +249,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                           href={project?.liveLink || "#"}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-1.5 bg-stone-700/30 text-white border rounded-md transition-colors duration-300 text-sm font-medium"
+                          className="flex items-center btn-primary gap-2 px-3 py-1.5 bg-stone-700/30 text-white border rounded-md transition-colors duration-300 text-sm font-medium"
                           style={{ borderColor: `${titleColor}30` }}
                         >
                           <ExternalLink className="h-4 w-4" />
@@ -260,7 +261,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
 
                   <div className="w-full md:w-3/5 p-5 md:p-6">
                     <div className="flex flex-wrap items-center justify-between mb-3">
-                      <h3 className="text-xl md:text-2xl font-bold text-white transition-colors duration-300"
+                      <h3 className="text-xl section-sub-title md:text-2xl font-bold text-white transition-colors duration-300"
                           style={{ color: titleColor }}
                       >
                         {project?.projectName}
@@ -271,7 +272,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                       </div>
                     </div>
 
-                    <p className="text-gray-300 mb-4">
+                    <p className="section-sub-description text-gray-300 mb-4">
                       {project?.projectDescription}
                     </p>
 
@@ -286,7 +287,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                             <motion.span
                               key={idx}
                               whileHover={{ scale: 1.05 }}
-                              className="px-3 py-1 bg-gray-800 rounded-full text-sm font-medium text-white cursor-pointer border border-gray-700 transition-all duration-300"
+                              className="px-3 py-1  rounded-full text-sm font-medium text-white cursor-pointer border border-gray-700 transition-all duration-300"
                               style={{ borderColor: `${titleColor}30` }}
                             >
                               <img

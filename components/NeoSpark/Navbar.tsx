@@ -7,7 +7,7 @@ import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
-const Navbar = ({ currentPortTheme }: any) => {
+const Navbar = ({ currentPortTheme, customCSS }: any) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,6 +76,7 @@ const Navbar = ({ currentPortTheme }: any) => {
         boxShadow: scrolled ? "0 2px 10px rgba(0,0,0,0.1)" : "none",
       }}
     >
+      <style>{customCSS}</style>
       <LayoutGroup>
         <div className="flex items-center justify-between w-full">
           <motion.div
@@ -153,7 +154,7 @@ const Navbar = ({ currentPortTheme }: any) => {
                   e.currentTarget.style.color = buttonHoverTextColor;
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = buttonBgColor ;
+                  e.currentTarget.style.backgroundColor = buttonBgColor;
                   e.currentTarget.style.color = buttonTextColor;
                   e.currentTarget.style.border = `1px solid ${buttonBgColor}`;
                 }}

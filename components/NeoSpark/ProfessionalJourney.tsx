@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import EditButton from './EditButton';
 
-const ProfessionalJourney = ({ currentPortTheme }: any) => {
+const ProfessionalJourney = ({ currentPortTheme, customCSS }: any) => {
 
   interface Technology {
     name: string;
@@ -113,12 +113,13 @@ const ProfessionalJourney = ({ currentPortTheme }: any) => {
 
   return (
     <div className="text-white  p-8">
+      <style>{customCSS}</style>
       <div className="max-w-4xl mx-auto">
         <div 
           className={`mb-16 transition-all relative duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}
         >
-          <h1 className="text-5xl font-bold mb-4 text-center" style={{ color: titleColor }}>Professional Journey</h1>
-          <p className="text-xl text-gray-300 text-center">
+          <h1 className="text-5xl section-title font-bold mb-4 text-center" style={{ color: titleColor }}>Professional Journey</h1>
+          <p className="text-xl section-description text-gray-300 text-center">
             Building real-world experience through innovative projects
           </p>
         <EditButton  sectionName="experience"/>
@@ -137,13 +138,13 @@ const ProfessionalJourney = ({ currentPortTheme }: any) => {
             {experienceData.map((experience, index) => (
               <div
                 key={index}
-                className={`relative  transition-all duration-700 ${visibleItems[index] ? 'opacity-100' : 'opacity-0'} ${index !== experienceData.length - 1 ? 'mb-16' : ''}`}
+                className={`relative section-card  transition-all duration-700 ${visibleItems[index] ? 'opacity-100' : 'opacity-0'} ${index !== experienceData.length - 1 ? 'mb-16' : ''}`}
               >
                 <div className="absolute left-6 transform -translate-x-1/2 w-3 h-3 rounded-full border-4 border-gray-900" style={{ backgroundColor: titleColor }}></div>
                 
                 <div className="ml-16 transition-all duration-300 ease-in bg-stone-900/60 rounded-lg p-6 border border-gray-700" style={{ borderColor: `${titleColor}30` }}>
                   <h2 
-                    className={`text-2xl font-bold mb-2 transition-all duration-700 delay-100 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
+                    className={`text-2xl section-sub-title font-bold mb-2 transition-all duration-700 delay-100 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
                   >
                     {experience.role}
                   </h2>
@@ -155,7 +156,7 @@ const ProfessionalJourney = ({ currentPortTheme }: any) => {
                   </div>
 
                   <p 
-                    className={`text-gray-300 mb-4 transition-all duration-700 delay-200 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
+                    className={`text-gray-300 section-sub-description mb-4 transition-all duration-700 delay-200 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
                   >
                     {experience.description}
                   </p>

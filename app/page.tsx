@@ -303,7 +303,7 @@ export default function Page() {
 
   return (
     <div
-      className="relative min-h-screen scrollbar custom-scrollbar"
+      className="relative min-h-screen scrollbar main-bg-noise  custom-scrollbar"
       style={
         {
           /* CSS Variable definitions */

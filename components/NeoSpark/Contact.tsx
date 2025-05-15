@@ -11,7 +11,7 @@ import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase-client';
 import EditButton from './EditButton';
 
-const Contact = ({ currentPortTheme }: any) => {
+const Contact = ({ currentPortTheme, customCSS }: any) => {
   const params = useParams();
   const portfolioId = params.portfolioId as string;
   const dispatch = useDispatch();
@@ -66,14 +66,14 @@ const Contact = ({ currentPortTheme }: any) => {
 
   return (
     <div id="contact" className="py-16 px-4 relative text-white">
-      
+      <style>{customCSS}</style>
       <div className="mx-auto">
        <div className='max-w-4xl mx-auto'>
        <div 
           className="my-16 transition-all duration-700 relative"
         >
-          <h1 className="text-5xl font-bold mb-4 text-center" style={{ color: titleColor }}>Let's Work Together!</h1>
-          <p className="text-xl text-gray-300 text-center mb-16">
+          <h1 className="text-5xl section-title font-bold mb-4 text-center" style={{ color: titleColor }}>Let's Work Together!</h1>
+          <p className="text-xl section-description text-gray-300 text-center mb-16">
             Interested in collaborating, hiring, or just having a chat? Reach out to me on your favorite platform!
           </p>
           <EditButton sectionName='contact'/>

@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase-client";
 import EditButton from "./EditButton";
 
-const Technologies = ({ currentPortTheme }: any) => {
+const Technologies = ({ currentPortTheme, customCSS }: any) => {
   const { portfolioData } = useSelector((state: RootState) => state.data);
   const inTheme = portfolioData?.find((item: any) => item.type === "themes");
   const theme = inTheme.data[currentPortTheme];
@@ -74,15 +74,16 @@ const Technologies = ({ currentPortTheme }: any) => {
 
   return (
     <div className={`py-16 text-white`}>
+      <style>{customCSS}</style>
       <div className="max-w-4xl mx-auto">
         <div className="container block relative mx-auto">
           <h1
-            className="text-5xl font-bold mb-4 text-center"
+            className="text-5xl section-title font-bold mb-4 text-center"
             style={{ color: titleColor }}
           >
             My Tech Stack
           </h1>
-          <p className="text-xl text-gray-300 text-center mb-16">
+          <p className="text-xl section-description text-gray-300 text-center mb-16">
             Technologies I Worked On.
           </p>
           <EditButton sectionName="technologies" />

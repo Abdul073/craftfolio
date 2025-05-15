@@ -26,6 +26,7 @@ const Page = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [currentFont, setCurrentFont] = useState("Raleway");
   const [currentPortTheme, setCurrentPortTheme] = useState("default");
+  const [customCSS, setCustomCSS] = useState("");
 
   type TemplateType = {
     navbar: React.ComponentType;
@@ -48,6 +49,7 @@ const Page = () => {
     return SectionComponent ? (
       <SectionComponent
         currentPortTheme={currentPortTheme}
+        customCSS={customCSS}
         key={`${sectionType}`}
       />
     ) : null;
@@ -114,7 +116,7 @@ const Page = () => {
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        {NavbarComponent && <NavbarComponent currentPortTheme={currentPortTheme}/>}
+        {NavbarComponent && <NavbarComponent customCSS={customCSS} currentPortTheme={currentPortTheme}/>}
         <Sidebar />
 
         {allSections && allSections.length > 0 ? (
@@ -133,6 +135,7 @@ const Page = () => {
         portfolioId={portfolioId}
         currentPortTheme={currentPortTheme}
         onOpenChange={setIsChatOpen}
+        setCustomCSS={setCustomCSS}
       />
     </div>
   );
