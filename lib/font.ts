@@ -13,6 +13,12 @@ import {
   Merriweather,
   Ubuntu,
   Work_Sans,
+  Outfit,
+  Space_Grotesk,
+  Plus_Jakarta_Sans,
+  DM_Sans,
+  Sora,
+  Figtree,
 } from "next/font/google";
 
 export type FontName =
@@ -28,7 +34,13 @@ export type FontName =
   | "Nunito"
   | "Merriweather"
   | "Ubuntu"
-  | "WorkSans";
+  | "WorkSans"
+  | "Outfit"
+  | "SpaceGrotesk"
+  | "PlusJakartaSans"
+  | "DMSans"
+  | "Sora"
+  | "Figtree";
 
 export const interFont = Inter({ subsets: ["latin"] });
 export const montserratFont = Montserrat({ subsets: ["latin"] });
@@ -74,15 +86,38 @@ export const workSansFont = Work_Sans({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
+export const outfitFont = Outfit({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
+export const spaceGroteskFont = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+export const plusJakartaSansFont = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
+});
+export const dmSansFont = DM_Sans({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
+export const soraFont = Sora({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
+});
+export const figtreeFont = Figtree({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+});
 
 export const fontOptions = [
-  "Roboto",
+  "Poppins",
+  "Geologica",
+  "Montserrat",
   "Raleway",
   "Inter",
   "OpenSans",
-  "Poppins",
-  "Montserrat",
-  "Geologica",
   "Lato",
   "PlayfairDisplay",
   "SourceSans",
@@ -90,6 +125,12 @@ export const fontOptions = [
   "Merriweather",
   "Ubuntu",
   "WorkSans",
+  "Outfit",
+  "SpaceGrotesk",
+  "PlusJakartaSans",
+  "DMSans",
+  "Sora",
+  "Figtree",
 ];
 
 export const fontClassMap: Record<string, string | undefined> = {
@@ -99,7 +140,6 @@ export const fontClassMap: Record<string, string | undefined> = {
   Poppins: poppinsFont.className,
   Geologica: geologicaFont.className,
   Raleway: ralewayFont.className,
-  Roboto: robotoFont.className,
   Lato: latoFont.className,
   PlayfairDisplay: playfairDisplayFont.className,
   SourceSans: sourceSansFont.className,
@@ -107,4 +147,10 @@ export const fontClassMap: Record<string, string | undefined> = {
   Merriweather: merriweatherFont.className,
   Ubuntu: ubuntuFont.className,
   WorkSans: workSansFont.className,
+  Outfit: outfitFont.className,
+  SpaceGrotesk: spaceGroteskFont.className,
+  PlusJakartaSans: plusJakartaSansFont.className,
+  DMSans: dmSansFont.className,
+  Sora: soraFont.className,
+  Figtree: figtreeFont.className,
 };

@@ -57,8 +57,6 @@ const Page = () => {
     (item: any) => item.type === "themes"
   )?.data;
 
-  console.log(themes)
-
   useEffect(() => {
     const initializePortfolio = async () => {
       setIsLoading(true);
