@@ -12,7 +12,7 @@ import { supabase } from '@/lib/supabase-client';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
-const Hero: NextPage = () => {
+const Hero: NextPage = ({ customCSS }: any) => {
   const params = useParams();
   const portfolioId = params.portfolioId as string;
 
@@ -92,10 +92,11 @@ const Hero: NextPage = () => {
   //   );
   // }
 
-  console.log(userInfo)
 
   return (
     <div id='about' className="min-h-screen relative bg-white simple-white">
+      <style>{customCSS}</style>
+
       <Navbar />
 
       <div className="flex justify-center items-end min-h-screen">
@@ -106,7 +107,7 @@ const Hero: NextPage = () => {
               <EditButton styles='right-0 -top-16' sectionName="hero" />
 
               <motion.h1
-                className="text-7xl font-extrabold text-gray-900 mb-3"
+                className="text-7xl font-extrabold text-gray-900 mb-3 section-title"
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{
@@ -120,7 +121,7 @@ const Hero: NextPage = () => {
               </motion.h1>
 
               <motion.h2
-                className="text-2xl font-bold text-gray-600 mb-4"
+                className="text-2xl font-bold text-gray-600 mb-4 section-sub-title"
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{
@@ -134,7 +135,7 @@ const Hero: NextPage = () => {
               </motion.h2>
 
               <motion.p
-                className="text-lg font-medium text-gray-700 mb-10"
+                className="text-lg font-medium text-gray-700 mb-10 section-description"
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{
@@ -208,7 +209,7 @@ const Hero: NextPage = () => {
                 }}
               >
                 <motion.h2
-                  className="text-4xl font-bold text-gray-900 mb-6"
+                  className="text-4xl font-bold section-sub-title text-gray-900 mb-6"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{
                     y: 0,
@@ -220,7 +221,7 @@ const Hero: NextPage = () => {
                 </motion.h2>
 
                 <motion.div
-                  className="flex items-center mb-4"
+                  className="flex items-center  mb-4"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{
                     y: 0,
@@ -248,7 +249,7 @@ const Hero: NextPage = () => {
                 </motion.div>
 
                 <motion.p
-                  className="text-gray-700 text-md"
+                  className="text-gray-700 section-sub-description text-md"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{
                     y: 0,

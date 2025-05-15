@@ -114,7 +114,7 @@ const ContactSidebar = () => {
 
   return (
     <div className="flex-1 custom-scrollbar h-full">
-      <Card style={{ backgroundColor: ColorTheme.bgMain, borderColor: ColorTheme.borderLight }}>
+      <Card className='min-h-screen rounded-none' style={{ backgroundColor: ColorTheme.bgMain, borderColor: ColorTheme.borderLight }}>
         <CardHeader>
           <CardTitle style={{ color: ColorTheme.textPrimary }}>Contact Information</CardTitle>
           <CardDescription style={{ color: ColorTheme.textSecondary }}>Manage your contact information.</CardDescription>

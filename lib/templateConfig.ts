@@ -29,7 +29,7 @@ export const templatesConfig: TemplatesConfig = {
         },
         hero: ["name", "summary", "titlePrefix", "titleSuffixOptions", "badge", "actions"]
     },
-    SimpleWhite: {
+    MonoEdge: {
         navbar: dynamic(() => import("@/components/SimpleWhite/Navbar")),
         sections: {
             hero: dynamic(() => import("@/components/SimpleWhite/Hero")),

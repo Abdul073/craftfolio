@@ -22,7 +22,7 @@ interface Experience {
   location ?: string
 }
 
-const Experience: React.FC = () => {
+const Experience: React.FC = ({ customCSS }: any) => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const { portfolioData } = useSelector((state: RootState) => state.data);
   const [experienceData, setExperienceData] = useState<Experience[]>([]);
@@ -156,6 +156,7 @@ const Experience: React.FC = () => {
       id="experience"
       className="min-h-screen flex items-center justify-center bg-white text-black relative overflow-hidden py-20"
     >
+      <style>{customCSS}</style>
       <div className="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -164,10 +165,10 @@ const Experience: React.FC = () => {
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <h2 className={`font-display text-4xl md:text-5xl font-medium tracking-tight text-gray-900 mb-4 transition-all duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}>
+          <h2 className={`font-display section-title text-4xl md:text-5xl font-medium tracking-tight text-gray-900 mb-4 transition-all duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}>
             Professional Experience
           </h2>
-          <p className={`font-sans text-lg md:text-xl font-normal text-gray-600 tracking-normal leading-relaxed max-w-2xl mx-auto transition-all duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}>
+          <p className={`font-sans text-lg section-description md:text-xl font-normal text-gray-600 tracking-normal leading-relaxed max-w-2xl mx-auto transition-all duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}>
             My journey in the industry
           </p>
           <div className="mt-6">
@@ -193,7 +194,7 @@ const Experience: React.FC = () => {
               <motion.div
                 key={index}
                 // variants={itemVariants}
-                className={`relative bg-white/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 mb-12 border border-gray-300
+                className={`relative  bg-white/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 mb-12 border border-gray-300
                         shadow-sm hover:shadow-md transition-all duration-300 hover:border-gray-400
                         md:w-[calc(50%-2rem)] ${
                           visibleItems[index] ? 'opacity-100' : 'opacity-0'
@@ -214,10 +215,10 @@ const Experience: React.FC = () => {
                 />
 
                 <motion.div className="mb-6">
-                  <h3 className="font-title text-xl md:text-2xl font-semibold text-gray-900 mb-2">
+                  <h3 className="font-title section-sub-title text-xl md:text-2xl font-semibold text-gray-900 mb-2">
                     {exp.role}
                   </h3>
-                  <p className="font-title text-lg font-medium text-gray-600 mb-3">
+                  <p className="font-title section-sub-title text-lg font-medium text-gray-600 mb-3">
                     {exp.company}
                   </p>
                   <p className="font-sans text-sm uppercase tracking-wider font-medium text-gray-500">
@@ -232,7 +233,7 @@ const Experience: React.FC = () => {
                       className="flex items-start group"
                     >
                       <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-500 mt-2.5 mr-3 flex-shrink-0" />
-                      <p className="font-sans text-base text-gray-700 leading-relaxed font-normal">
+                      <p className="font-sans section-sub-description text-base text-gray-700 leading-relaxed font-normal">
                         {exp.description}
                       </p>
                     </motion.li>

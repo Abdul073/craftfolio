@@ -21,7 +21,7 @@ interface ProjectType {
   liveLink: string;
 }
 
-const Projects: NextPage = () => {
+const Projects: NextPage = ({ customCSS }: any) => {
   const params = useParams();
   const portfolioId = params.portfolioId as string;
   
@@ -100,8 +100,9 @@ const Projects: NextPage = () => {
   return (
     <section
       id="projects"
-      className="min-h-screen py-24 bg-gradient-to-b text-gray-900 from-white to-white relative"
+      className="min-h-screen pb-24 bg-gradient-to-b text-gray-900 from-white to-white relative"
     >
+      <style>{customCSS}</style>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"
@@ -109,15 +110,23 @@ const Projects: NextPage = () => {
           viewport={{ once: true, margin: "-100px" }}
           variants={containerVariants}
         >
-          <div className="relative">
-            <EditButton styles="right-60 -top-18" sectionName="projects" />
-            <motion.h2
-              variants={projectVariants}
-              className="text-4xl md:text-5xl font-title font-semibold text-primary-800 mb-12 text-center"
-            >
-              Featured Projects
-            </motion.h2>
+           <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-20"
+        >
+          <h2 className={`font-display section-title text-4xl md:text-5xl font-medium tracking-tight text-gray-900 mb-4 transition-all duration-700 `}>
+           My Projects
+          </h2>
+          <p className={`font-sans text-lg section-description md:text-xl font-normal text-gray-600 tracking-normal leading-relaxed max-w-2xl mx-auto transition-all duration-700 `}>
+            Some cool things that i have worked on.
+          </p>
+          <div className="mt-6">
+          <EditButton styles="right-64 -top-18" sectionName="projects" />
           </div>
+        </motion.div>
 
           <div className="space-y-20">
             {projectsData.map((project, index) => (
@@ -133,17 +142,17 @@ const Projects: NextPage = () => {
                     <img
                       src={project.projectImage}
                       alt={project.projectTitle}
-                      className="w-full h-full object-cover transform transition-all duration-700"
+                      className="w-full h-full section-image object-cover transform transition-all duration-700"
                     />
                   </div>
 
                   {/* Project Info */}
                   <div className="w-full lg:w-1/2 space-y-6">
-                    <h3 className="text-3xl font-bold text-primary-900 hover:text-primary-700 transition-all duration-300 cursor-pointer">
+                    <h3 className="text-3xl section-sub-title font-bold text-primary-900 hover:text-primary-700 transition-all duration-300 cursor-pointer">
                       {project.projectTitle}
                     </h3>
 
-                    <p className="text-lg text-primary-600 leading-relaxed">
+                    <p className="text-lg section-sub-description leading-relaxed">
                       {project.projectDescription}
                     </p>
 

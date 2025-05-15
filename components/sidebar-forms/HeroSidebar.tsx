@@ -197,7 +197,7 @@ const HeroSidebar = () => {
 
   return (
     <div className="flex-1 custom-scrollbar">
-      <Card className="border-gray-700" style={{ backgroundColor: ColorTheme.bgMain }}>
+      <Card className="border-gray-700 min-h-screen rounded-none" style={{ backgroundColor: ColorTheme.bgMain }}>
         <CardHeader>
           <CardTitle style={{ color: ColorTheme.textPrimary }}>Hero Section</CardTitle>
           <CardDescription style={{ color: ColorTheme.textSecondary }}>Manage your hero section.</CardDescription>

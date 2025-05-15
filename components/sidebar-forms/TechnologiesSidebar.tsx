@@ -107,7 +107,7 @@ const TechnologiesSidebar: React.FC = () => {
 
   return (
     <div className="custom-scrollbar">
-      <Card className='min-h-screen' style={{ backgroundColor: ColorTheme.bgMain, borderColor: ColorTheme.borderLight }}>
+      <Card className='min-h-screen rounded-none' style={{ backgroundColor: ColorTheme.bgMain, borderColor: ColorTheme.borderLight }}>
         <CardHeader>
           <CardTitle style={{ color: ColorTheme.textPrimary }}>Technologies</CardTitle>
           <CardDescription style={{ color: ColorTheme.textSecondary }}>Manage your skills and technologies.</CardDescription>

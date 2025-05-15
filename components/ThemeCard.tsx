@@ -116,18 +116,6 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
           ))}
         </Slider>
         
-        <div 
-          className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-medium z-10"
-          style={{ 
-            backgroundColor: 'rgba(16, 185, 129, 0.2)',
-            border: `1px solid ${ColorTheme.primary}`,
-            color: ColorTheme.primary,
-            backdropFilter: 'blur(8px)'
-          }}
-        >
-          {theme.category}
-        </div>
-        
         {selectedTheme === theme.id && (
           <motion.div 
             className="absolute top-4 right-4 p-1 rounded-full z-10"
@@ -145,7 +133,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
       
       {/* Content Section */}
       <div className="p-6">
-        <h3 className="text-2xl font-bold mb-2" style={{ color: ColorTheme.textPrimary }}>{theme.templateName}</h3>
+        <h3 className="text-2xl font-bold mb-2" style={{ color: ColorTheme.textPrimary }}>{theme.name}</h3>
         <p className="mb-4" style={{ color: ColorTheme.textSecondary }}>{theme.description}</p>
         
         {/* Features Section */}

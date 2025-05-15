@@ -12,7 +12,7 @@ interface TechnologyType {
   logo: string;
 }
 
-const Skills: NextPage = () => {
+const Skills: NextPage = ({ customCSS }: any) => {
   const params = useParams();
   const portfolioId = params.portfolioId as string;
   const dispatch = useDispatch();
@@ -94,13 +94,14 @@ const Skills: NextPage = () => {
 
   return (
     <section id="skills" className="py-20 bg-gray-50 dark:bg-gray-900">
+      <style>{customCSS}</style>
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 relative">
         <EditButton styles="right-96 -top-18" sectionName="technologies" />
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">
+          <h2 className="text-3xl md:text-4xl section-title font-bold text-gray-800 dark:text-white mb-4">
             Technical Skills
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg section-description text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             A comprehensive list of technologies and tools I work with
           </p>
         </div>
