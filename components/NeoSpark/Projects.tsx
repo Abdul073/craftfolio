@@ -40,7 +40,6 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
   const { portfolioData } = useSelector((state: RootState) => state.data);
   const inTheme = portfolioData?.find((item: any) => item.type === "themes");
   const theme = inTheme.data[currentPortTheme];
-  const accentColor = theme.colors.accent;
   const titleColor = theme.colors.primary;
   const buttonBgColor = theme.colors.primary;
   const buttonHoverBgColor = theme.colors.primaryHover;
@@ -146,6 +145,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
     },
   };
 
+  
   if (isLoading) {
     return (
       <section className="py-24 w-full overflow-hidden min-h-screen text-white">
@@ -210,7 +210,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                       />
                       <motion.div
                         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full blur-lg z-0"
-                        style={{ backgroundColor: `${accentColor}35` }}
+                        style={{ backgroundColor: `${titleColor}35` }}
                         initial={{ opacity: 0.5, scale: 1 }}
                         whileHover={{ opacity: 0.8, scale: 1.3 }}
                         transition={{ duration: 0.3 }}
@@ -230,7 +230,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 px-3 py-1.5 bg-transparent border rounded-md hover:text-white transition-colors duration-300 text-sm"
-                          style={{ borderColor: `${accentColor}30`, color: accentColor }}
+                          style={{ borderColor: `${titleColor}30`, color: titleColor }}
                         >
                           <Github className="h-4 w-4" />
                           GitHub
@@ -249,7 +249,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 px-3 py-1.5 bg-stone-700/30 text-white border rounded-md transition-colors duration-300 text-sm font-medium"
-                          style={{ borderColor: `${accentColor}30` }}
+                          style={{ borderColor: `${titleColor}30` }}
                         >
                           <ExternalLink className="h-4 w-4" />
                           Live Demo
@@ -287,7 +287,7 @@ const Projects: React.FC = ({ currentPortTheme }: any) => {
                               key={idx}
                               whileHover={{ scale: 1.05 }}
                               className="px-3 py-1 bg-gray-800 rounded-full text-sm font-medium text-white cursor-pointer border border-gray-700 transition-all duration-300"
-                              style={{ borderColor: `${accentColor}30` }}
+                              style={{ borderColor: `${titleColor}30` }}
                             >
                               <img
                                 src={
