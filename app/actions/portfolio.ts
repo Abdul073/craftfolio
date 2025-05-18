@@ -221,3 +221,16 @@ export async function updateCustomCSS({customCSS,portfolioId} : {customCSS : str
     return { success: false, error: error };
   }
 }
+
+export async function fetchPortfoliosByUserId(userId: string) {
+  try {
+    const portfolios = await prisma.portfolio.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' }, // Optional: order by creation date
+    });
+    return { success: true, data: portfolios };
+  } catch (error) {
+    console.error("Error fetching portfolios by userId:", error);
+    return { success: false, error: "Failed to fetch portfolios" };
+  }
+}

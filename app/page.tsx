@@ -15,15 +15,14 @@ import { useUser } from "@clerk/nextjs";
 import MainNavbar from "@/components/MainNavbar";
 // import ArrowLottie from "@/components/ArrowLottie";
 import { ColorTheme } from "@/lib/colorThemes";
-
+import BgShapes from "@/components/BgShapes";
+import { testimonials, features, benefitsList } from "@/lib/data";
 
 export default function Page() {
-  const [isOpen, setIsOpen] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [resumeUploaded, setResumeUploaded] = useState(false);
 
   const router = useRouter();
-  const { user } = useUser();
 
   const handleResumeUpload = () => {
     setResumeUploaded(true);
@@ -34,331 +33,9 @@ export default function Page() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
-  const features = [
-    {
-      id: 1,
-      icon: (
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
-      ),
-      title: "Resume Import",
-      description:
-        "Transform your existing resume into a professional portfolio website with a single click. No manual work needed.",
-    },
-    {
-      id: 2,
-      icon: (
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
-          />
-        </svg>
-      ),
-      title: "Drag & Drop Builder",
-      description:
-        "Our intuitive drag-and-drop editor makes it easy to build stunning portfolio pages without unknown technical knowledge.",
-    },
-    {
-      id: 3,
-      icon: (
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
-          />
-        </svg>
-      ),
-      title: "Customizable Themes",
-      description:
-        "Choose from 40+ professionally designed themes and customize colors, fonts, and layouts to match your personal brand.",
-    },
-    {
-      id: 4,
-      icon: (
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-          />
-        </svg>
-      ),
-      title: "Mobile Responsive",
-      description:
-        "All portfolio templates are fully responsive, ensuring your work looks amazing on unknown device or screen size.",
-    },
-    {
-      id: 5,
-      icon: (
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-      ),
-      title: "Media Integration",
-      description:
-        "Easily embed images, videos, and interactive content to create engaging project showcases.",
-    },
-    {
-      id: 6,
-      icon: (
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-          />
-        </svg>
-      ),
-      title: "SEO Optimization",
-      description:
-        "Built-in SEO tools to help your portfolio rank higher in search results and get discovered by potential clients.",
-    },
-  ];
-
-  const benefitsList = [
-    {
-      id: 1,
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      ),
-      title: "Save Hours of Work",
-      description:
-        "Get your portfolio online in minutes instead of days. Our AI does the heavy lifting.",
-    },
-    {
-      id: 2,
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M13 10V3L4 14h7v7l9-11h-7z"
-          />
-        </svg>
-      ),
-      title: "AI-Powered Optimization",
-      description:
-        "Our AI extracts and highlights your best achievements and skills for maximum impact.",
-    },
-    {
-      id: 3,
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
-          />
-        </svg>
-      ),
-      title: "Professionally Organized",
-      description:
-        "Your experience and skills are automatically organized into a professional layout.",
-    },
-    {
-      id: 4,
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-          />
-        </svg>
-      ),
-      title: "Fully Customizable",
-      description:
-        "Edit anything you want after import. Your portfolio adapts to your preferences.",
-    },
-  ];
-
-  const testimonials = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      role: "UX Designer",
-      image: "/api/placeholder/60/60",
-      content:
-        "CraftFolio helped me land my dream job! The resume import feature saved me hours of work and the final portfolio looked incredibly professional.",
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      role: "Front-end Developer",
-      image: "/api/placeholder/60/60",
-      content:
-        "As a developer, I was skeptical about using a no-code tool, but I was amazed by how customizable and clean the code output is. Highly recommended!",
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: "Elena Rodriguez",
-      role: "Graphic Designer",
-      image: "/api/placeholder/60/60",
-      content:
-        "The templates are stunning and I could easily customize everything to match my brand. My clients love how my work is showcased!",
-      rating: 5,
-    },
-  ];
-
-  interface Styles {
-    [key: string]: string;
-  }
-  console.log(ColorTheme.bgMain)
-
   return (
-    <div
-      className="relative min-h-screen scrollbar main-bg-noise  custom-scrollbar"
-      style={
-        {
-          /* CSS Variable definitions */
-         
-        } as Styles
-      }
-    >
-      {/* Animated background shapes */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <motion.div 
-          className="absolute top-0 right-0 w-1/3 h-1/3 rounded-full opacity-10"
-          style={{
-            background: `radial-gradient(circle, ${ColorTheme.primary}, transparent 70%)`,
-          }}
-          animate={{
-            x: [0, 10, 0],
-            y: [0, 15, 0],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 left-1/4 w-1/4 h-1/4 rounded-full opacity-10"
-          style={{
-            background: `radial-gradient(circle, ${ColorTheme.primary}, transparent 70%)`,
-          }}
-          animate={{
-            x: [0, -15, 0],
-            y: [0, 10, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-        />
-        <motion.div
-          className="absolute top-1/3 left-1/6 w-1/6 h-1/6 rounded-full opacity-5"
-          style={{
-            background: `radial-gradient(circle, ${ColorTheme.primary}, transparent 70%)`,
-          }}
-          animate={{
-            x: [0, 20, 0],
-            y: [0, -10, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-        />
-      </div>
+    <div className="relative min-h-screen scrollbar main-bg-noise  custom-scrollbar">
+      <BgShapes />
 
       <Head>
         <title>
@@ -377,16 +54,9 @@ export default function Page() {
         `}</style>
       </Head>
 
-      {/* Navbar */}
-      <MainNavbar
-        ColorTheme={ColorTheme}
-        user={user}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      />
+      <MainNavbar />
 
       <main>
-        {/* Hero Section */}
         <section className="pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
           <motion.div
             className="absolute top-0 left-0 w-full h-full -z-10"
@@ -497,8 +167,7 @@ export default function Page() {
                   </div>
                 </div>
 
-
-                   <div className="p-6">
+                <div className="p-6">
                   <div className="text-center mb-12 ">
                     <motion.h3
                       className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent"
@@ -533,7 +202,6 @@ export default function Page() {
                       }}
                     >
                       <div className="relative">
-                       
                         <img
                           src="/johndoe_resume.png"
                           alt="Resume Document"
@@ -542,7 +210,7 @@ export default function Page() {
                       </div>
                     </motion.div>
 
-                   {/* {isInView && <div className="flex flex-col items-center justify-center py-4">
+                    {/* {isInView && <div className="flex flex-col items-center justify-center py-4">
                         <span className="lg:rotate-[-180deg] rotate-[55deg] lg:scale-x-[-1] w-32 overflow-hidden block arrow-animation ">
                           <ArrowLottie />
                         </span>
@@ -556,7 +224,6 @@ export default function Page() {
                       }}
                     >
                       <div className="relative">
-                        
                         <img
                           src="/johndoe_portfolio2.png"
                           alt="Generated Portfolio Website"
@@ -608,8 +275,6 @@ export default function Page() {
                     ))}
                   </motion.div>
                 </div>
-
-               
               </motion.div>
             </motion.div>
           </div>
@@ -883,31 +548,42 @@ export default function Page() {
                 </h3>
 
                 <motion.div className="space-y-6" variants={staggerContainer}>
-                  {benefitsList.map((benefit) => (
-                    <motion.div
-                      key={benefit.id}
-                      className="flex gap-4"
-                      variants={fadeIn}
-                      whileHover={{ x: 5 }}
-                    >
-                      <div className="flex-shrink-0">
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: `${ColorTheme.primary}30` }}
-                        >
-                          <span style={{ color: ColorTheme.primary }}>
-                            {benefit.icon}
-                          </span>
+                  {benefitsList.map(
+                    (benefit: {
+                      id: number;
+                      icon: React.ReactNode;
+                      title: string;
+                      description: string;
+                    }) => (
+                      <motion.div
+                        key={benefit.id}
+                        className="flex gap-4"
+                        variants={fadeIn}
+                        whileHover={{ x: 5 }}
+                      >
+                        <div className="flex-shrink-0">
+                          <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center"
+                            style={{
+                              backgroundColor: `${ColorTheme.primary}30`,
+                            }}
+                          >
+                            <span style={{ color: ColorTheme.primary }}>
+                              {benefit.icon}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold mb-1">{benefit.title}</h4>
-                        <p style={{ color: ColorTheme.textSecondary }}>
-                          {benefit.description}
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
+                        <div>
+                          <h4 className="font-semibold mb-1">
+                            {benefit.title}
+                          </h4>
+                          <p style={{ color: ColorTheme.textSecondary }}>
+                            {benefit.description}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )
+                  )}
                 </motion.div>
 
                 {/* Call to action */}
@@ -1117,84 +793,93 @@ export default function Page() {
               viewport={{ once: true }}
               variants={staggerContainer}
             >
-              {testimonials.map((testimonial) => (
-                <motion.div
-                  key={testimonial.id}
-                  className="p-8 rounded-xl backdrop-blur-sm border relative"
-                  style={{
-                    backgroundColor: ColorTheme.bgCard,
-                    borderColor: ColorTheme.borderLight,
-                  }}
-                  variants={fadeInScale}
-                  whileHover={{
-                    y: -8,
-                    borderColor: ColorTheme.primary,
-                    boxShadow: `0 10px 30px rgba(0,0,0,0.15), 0 5px 15px ${ColorTheme.primaryGlow}`,
-                  }}
-                >
-                  {/* Quote mark */}
-                  <div
-                    className="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-xl font-serif"
+              {testimonials.map(
+                (testimonial: {
+                  id: number;
+                  name: string;
+                  role: string;
+                  image: string;
+                  content: string;
+                  rating: number;
+                }) => (
+                  <motion.div
+                    key={testimonial.id}
+                    className="p-8 rounded-xl backdrop-blur-sm border relative"
                     style={{
-                      backgroundColor: ColorTheme.primary,
-                      color: ColorTheme.textPrimary,
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                    }}
+                    variants={fadeInScale}
+                    whileHover={{
+                      y: -8,
+                      borderColor: ColorTheme.primary,
+                      boxShadow: `0 10px 30px rgba(0,0,0,0.15), 0 5px 15px ${ColorTheme.primaryGlow}`,
                     }}
                   >
-                    "
-                  </div>
-
-                  <div className="mb-6">
-                    {/* Star rating */}
-                    <div className="flex mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className="w-5 h-5"
-                          style={{
-                            color:
-                              i < testimonial.rating
-                                ? ColorTheme.primary
-                                : ColorTheme.borderLight,
-                          }}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                    </div>
-                    <p
-                      className="italic mb-6"
-                      style={{ color: ColorTheme.textSecondary }}
-                    >
-                      "{testimonial.content}"
-                    </p>
-                  </div>
-
-                  <div className="flex items-center">
+                    {/* Quote mark */}
                     <div
-                      className="w-12 h-12 rounded-full overflow-hidden mr-4 border-2"
-                      style={{ borderColor: ColorTheme.primary }}
+                      className="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-xl font-serif"
+                      style={{
+                        backgroundColor: ColorTheme.primary,
+                        color: ColorTheme.textPrimary,
+                      }}
                     >
-                      <img
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        className="w-full h-full object-cover"
-                      />
+                      "
                     </div>
-                    <div>
-                      <h4 className="font-semibold">{testimonial.name}</h4>
+
+                    <div className="mb-6">
+                      {/* Star rating */}
+                      <div className="flex mb-4">
+                        {[...Array(5)].map((_, i) => (
+                          <svg
+                            key={i}
+                            className="w-5 h-5"
+                            style={{
+                              color:
+                                i < testimonial.rating
+                                  ? ColorTheme.primary
+                                  : ColorTheme.borderLight,
+                            }}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
                       <p
-                        className="text-sm"
-                        style={{ color: ColorTheme.textMuted }}
+                        className="italic mb-6"
+                        style={{ color: ColorTheme.textSecondary }}
                       >
-                        {testimonial.role}
+                        "{testimonial.content}"
                       </p>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+
+                    <div className="flex items-center">
+                      <div
+                        className="w-12 h-12 rounded-full overflow-hidden mr-4 border-2"
+                        style={{ borderColor: ColorTheme.primary }}
+                      >
+                        <img
+                          src={testimonial.image}
+                          alt={testimonial.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">{testimonial.name}</h4>
+                        <p
+                          className="text-sm"
+                          style={{ color: ColorTheme.textMuted }}
+                        >
+                          {testimonial.role}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              )}
             </motion.div>
 
             {/* Call-to-action */}
