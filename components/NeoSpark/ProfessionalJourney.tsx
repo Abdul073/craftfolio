@@ -133,14 +133,14 @@ const ProfessionalJourney = ({ currentPortTheme, customCSS }: any) => {
           </div>
         ) : (
           <div className="relative">
-            <div className="absolute left-6 top-0 bottom-0 w-0.5" style={{ backgroundColor: `${titleColor}30` }}></div>
 
             {experienceData.map((experience, index) => (
               <div
                 key={index}
-                className={`relative section-card  transition-all duration-700 ${visibleItems[index] ? 'opacity-100' : 'opacity-0'} ${index !== experienceData.length - 1 ? 'mb-16' : ''}`}
+                className={`relative section-card transition-all duration-700 ${visibleItems[index] ? 'opacity-100' : 'opacity-0'} ${index !== experienceData.length - 1 ? 'mb-16' : ''}`}
               >
                 <div className="absolute left-6 transform -translate-x-1/2 w-3 h-3 rounded-full border-4 border-gray-900" style={{ backgroundColor: titleColor }}></div>
+            <div className="absolute left-6 top-0 bottom-0 w-0.5" style={{ backgroundColor: `${titleColor}30` }}></div>
                 
                 <div className="ml-16 transition-all duration-300 ease-in bg-stone-900/60 rounded-lg p-6 border border-gray-700" style={{ borderColor: `${titleColor}30` }}>
                   <h2 

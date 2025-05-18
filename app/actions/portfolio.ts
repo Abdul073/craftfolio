@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { maps } from "@/lib/templateThemeMaps";
 
 export async function createPortfolio(userId: string, templateName: string, creationMethod: string, customBodyResume: string) {
   try {
@@ -19,13 +20,11 @@ export async function createPortfolio(userId: string, templateName: string, crea
     let content : any;
 
     if (creationMethod === "import" && customBodyResume) {
-      // Parse both template and custom resume content
       const templateContent : any = typeof template.defaultContent === 'string' 
         ? JSON.parse(template.defaultContent) 
         : template.defaultContent;
       
       const customContent : any = JSON.parse(customBodyResume);
-      // Create a map of custom sections by type for easy lookup
       const customSectionMap : any = {};
       if (customContent.sections && Array.isArray(customContent.sections)) {
         customContent.sections.forEach((section : any) => {
@@ -35,11 +34,9 @@ export async function createPortfolio(userId: string, templateName: string, crea
         });
       }
       
-      // Create a new template content object with the same structure but replaced sections
       const newContent = {
         ...templateContent,
         sections: templateContent.sections.map((section : any) => {
-          // If this section type exists in the custom content, use that instead
           return customSectionMap[section.type] || section;
         })
       };
@@ -57,6 +54,8 @@ export async function createPortfolio(userId: string, templateName: string, crea
         content: content,
         isPublished: false,
         templateName: templateName,
+        fontName : maps[templateName].fontName,
+        themeName : maps[templateName].themeName
       },
     });
 
@@ -178,6 +177,47 @@ export async function fetchContent({ portfolioId }: { portfolioId: string }) {
     return { success: true, data: hero.content };
   } catch (error) {
     console.error("Error fetching content:", error);
+    return { success: false, error: error };
+  }
+}
+
+
+export async function updateTheme({themeName,portfolioId} : {themeName : string,portfolioId : string}){
+  try {
+    const theme = await prisma.portfolio.update({
+      where : {id: portfolioId},
+      data : {themeName : themeName}
+    })
+    return { success: true, data: theme };
+  }catch(error){
+    console.error("Error updating theme:", error);
+    return { success: false, error: error };
+  }
+}
+
+export async function updateFont({fontName,portfolioId} : {fontName : string,portfolioId : string}){
+  try {
+    const theme = await prisma.portfolio.update({
+      where : {id: portfolioId},
+      data : {fontName : fontName}
+    })
+    console.log({fontName,theme})
+    return { success: true, data: theme };
+  }catch(error){
+    console.error("Error updating theme:", error);
+    return { success: false, error: error };
+  }
+}
+
+export async function updateCustomCSS({customCSS,portfolioId} : {customCSS : string,portfolioId : string}){
+  try {
+    const theme = await prisma.portfolio.update({
+      where : {id: portfolioId},
+      data : {customCSS : customCSS}
+    })
+    return { success: true, data: theme };
+  }catch(error){
+    console.error("Error updating theme:", error);
     return { success: false, error: error };
   }
 }

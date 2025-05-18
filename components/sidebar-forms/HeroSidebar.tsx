@@ -21,7 +21,7 @@ const HeroSidebar = () => {
   const params = useParams();
   const dispatch = useDispatch();
   const portfolioId = params.portfolioId as string;
-  const { portfolioData,themeName } = useSelector((state: RootState) => state.data);
+  const { portfolioData,templateName } = useSelector((state: RootState) => state.data);
   const heroSectionData = portfolioData?.find((section: any) => section.type === "hero");
   const heroData = heroSectionData?.data || {};
 
@@ -41,8 +41,7 @@ const HeroSidebar = () => {
     ]
   };
 
-  const fields = templatesConfig[themeName as keyof typeof templatesConfig].hero!;
-
+  const fields = templatesConfig[templateName as keyof typeof templatesConfig].hero!;
   const [content, setContent] = useState(emptyContent);
   const [isLoading, setIsLoading] = useState(false);
   const [originalContent, setOriginalContent] = useState({});

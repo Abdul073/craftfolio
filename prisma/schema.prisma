@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Portfolio {
@@ -16,6 +17,9 @@ model Portfolio {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   isTemplate   Boolean  @default(false)
+  themeName    String   @default("default")
+  fontName     String   @default("Raleway")
+  customCSS    String?
 }
 
 model Template {

@@ -2,19 +2,22 @@ import { useState, useRef, useEffect } from "react";
 import { MessageSquare, X, Send, GripVertical, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import axios from "axios";
-import { updatePortfolio } from "@/app/actions/portfolio";
+import {
+  updateCustomCSS,
+  updateFont,
+  updatePortfolio,
+  updateTheme,
+} from "@/app/actions/portfolio";
 import { useDispatch } from "react-redux";
 import { newPortfolioData } from "@/slices/dataSlice";
 import toast from "react-hot-toast";
 import { fontClassMap, fontOptions } from "@/lib/font";
 import { Button } from "../ui/button";
 import { ColorTheme } from "@/lib/colorThemes";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import Editor from 'react-simple-code-editor';
-import Prism from 'prismjs';
-import 'prismjs/components/prism-css';
-import 'prismjs/themes/prism-tomorrow.css';
+import Editor from "react-simple-code-editor";
+import Prism from "prismjs";
+import "prismjs/components/prism-css";
+import "prismjs/themes/prism-tomorrow.css";
 
 interface Message {
   id: number;
@@ -29,23 +32,25 @@ interface ChatbotProps {
   portfolioId: string;
   themeOptions: any;
   currentPortTheme: any;
+  currentFont: any;
   onOpenChange: (isOpen: boolean) => void;
   setCurrentFont: (font: string) => void;
   setCurrentPortTheme: (theme: string) => void;
-  setCustomCSS?: (css: string) => void;
+  setCustomCSS: (css: string) => void;
+  customCSSState: string;
 }
 
 interface MessageMemory {
   text: string;
   timestamp: Date;
 }
-
-interface SectionItemProps {
+const SectionItem = ({
+  section,
+  index,
+}: {
   section: string;
   index: number;
-}
-
-const SectionItem = ({ section, index }: { section: string; index: number }) => {
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -57,11 +62,11 @@ const SectionItem = ({ section, index }: { section: string; index: number }) => 
         border: `1px solid ${ColorTheme.borderLight}`,
       }}
     >
-      <GripVertical 
-        size={16} 
-        style={{ 
+      <GripVertical
+        size={16}
+        style={{
           color: ColorTheme.textSecondary,
-        }} 
+        }}
       />
       <div className="flex-1">
         <span
@@ -83,7 +88,6 @@ const SectionItem = ({ section, index }: { section: string; index: number }) => 
   );
 };
 
-// Theme palettes
 const CHATBOT_THEMES = {
   dark: {
     bgMain: ColorTheme.bgMain,
@@ -113,11 +117,13 @@ const PortfolioChatbot = ({
   portfolioData,
   setCurrentPortTheme,
   currentPortTheme,
+  currentFont,
   portfolioId,
   themeOptions,
   onOpenChange,
   setCurrentFont,
   setCustomCSS,
+  customCSSState,
 }: ChatbotProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -134,27 +140,25 @@ const PortfolioChatbot = ({
   const [reorderedSections, setReorderedSections] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showCSSOptions, setShowCSSOptions] = useState(false);
-  const [customCSS, setCustomCSSState] = useState("");
-  const [selectedSection, setSelectedSection] = useState<string>("");
-  const [cssPreview, setCSSPreview] = useState(false);
-  const [chatbotTheme, setChatbotTheme] = useState<'dark' | 'light'>(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('chatbotTheme');
-      if (stored === 'light' || stored === 'dark') return stored;
+  const [customCSS, setCustomCSSState] = useState(customCSSState);
+  const [chatbotTheme, setChatbotTheme] = useState<"dark" | "light">(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("chatbotTheme");
+      if (stored === "light" || stored === "dark") return stored;
     }
-    return 'dark';
+    return "dark";
   });
 
   const themeColors = CHATBOT_THEMES[chatbotTheme];
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('chatbotTheme', chatbotTheme);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chatbotTheme", chatbotTheme);
     }
   }, [chatbotTheme]);
 
   const handleThemeToggle = () => {
-    setChatbotTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    setChatbotTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   const dispatch = useDispatch();
@@ -209,7 +213,6 @@ const PortfolioChatbot = ({
       throw error;
     }
   };
-
 
   const handleSendMessage = async (messageText = inputValue) => {
     if (!messageText.trim() || isProcessing) return;
@@ -302,8 +305,9 @@ const PortfolioChatbot = ({
     setSelectedTheme(theme);
   };
 
-  const handleApplySelectedTheme = () => {
+  const handleApplySelectedTheme = async () => {
     setCurrentPortTheme(selectedTheme);
+    await updateTheme({ themeName: selectedTheme, portfolioId });
     toast.success(`Theme "${selectedTheme}" applied!`);
     const notificationMessage: Message = {
       id: Date.now(),
@@ -333,8 +337,8 @@ const PortfolioChatbot = ({
     setCurrentFont(font);
   };
 
-  const handleApplyFont = (font: string) => {
-    console.log("Font applied successfully:", font);
+  const handleApplyFont = async (font: string) => {
+    await updateFont({ fontName: font, portfolioId });
     toast.success("Font applied successfully!");
     const notificationMessage: Message = {
       id: Date.now(),
@@ -365,20 +369,24 @@ const PortfolioChatbot = ({
     try {
       setIsProcessing(true);
       const sectionOrder: any = [];
-      portfolioData.map((item : any) => sectionOrder.push(item.type))
-      const updatedOrder : any= [];
+      portfolioData.map((item: any) => sectionOrder.push(item.type));
+      const updatedOrder: any = [];
       let idx = 0;
-      sectionOrder.forEach((section : any) => {
-        if(section === "hero" || section === "userInfo" || section === "themes"){
+      sectionOrder.forEach((section: any) => {
+        if (
+          section === "hero" ||
+          section === "userInfo" ||
+          section === "themes"
+        ) {
           updatedOrder.push(section);
-        }else{
+        } else {
           updatedOrder.push(reorderedSections[idx]);
           idx++;
         }
-      })
+      });
       const finalSections: any = [];
-      updatedOrder.forEach((item : any) => {
-        const found = portfolioData.find((it : any) => it.type === item);
+      updatedOrder.forEach((item: any) => {
+        const found = portfolioData.find((it: any) => it.type === item);
         if (found) {
           finalSections.push({ type: item, data: found.data });
         } else {
@@ -500,10 +508,10 @@ const PortfolioChatbot = ({
     setShowCSSOptions(true);
   };
 
-  const handleApplyCSS = () => {
-
+  const handleApplyCSS = async () => {
     if (setCustomCSS) {
       setCustomCSS(customCSS);
+      await updateCustomCSS({ customCSS: customCSS, portfolioId });
       toast.success("Custom CSS applied successfully!");
       const notificationMessage: Message = {
         id: Date.now(),
@@ -512,10 +520,22 @@ const PortfolioChatbot = ({
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, notificationMessage]);
-      setShowCSSOptions(false);
     }
   };
 
+  const handleChatClose = () => {
+    setShowThemeOptions(false);
+    setShowFontOptions(false);
+    setShowHelpPanel(false);
+    setShowSectionReorder(false);
+    setShowCSSOptions(false);
+    setCurrentFont(currentFont);
+    setSelectedFont(currentFont);
+    setCurrentPortTheme(currentPortTheme);
+    setSelectedTheme(currentPortTheme);
+    setCustomCSSState(customCSSState);
+    handleOpenChange(false);
+  };
 
   const CSS_TEMPLATES = {
     "Hover Effects": `
@@ -557,8 +577,13 @@ const PortfolioChatbot = ({
   border: 2px solid #ff6b6b;
   border-radius: 12px;
   z-index: -1;
-}`
+}`,
   };
+
+  // Update local state when prop changes
+  useEffect(() => {
+    setCustomCSSState(customCSSState);
+  }, [customCSSState]);
 
   return (
     <div
@@ -591,7 +616,7 @@ const PortfolioChatbot = ({
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
-                  onClick={() => handleOpenChange(false)}
+                  onClick={() => handleChatClose()}
                   className="p-1 hover:bg-[#2c2c2e] rounded-full transition-colors"
                   style={{ color: themeColors.textPrimary }}
                 >
@@ -616,7 +641,11 @@ const PortfolioChatbot = ({
                 style={{ color: themeColors.textPrimary }}
                 aria-label="Toggle chatbot theme"
               >
-                {chatbotTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                {chatbotTheme === "dark" ? (
+                  <Sun size={18} />
+                ) : (
+                  <Moon size={18} />
+                )}
               </motion.button>
             </div>
 
@@ -658,13 +687,7 @@ const PortfolioChatbot = ({
                         variants={buttonVariants}
                         whileHover="hover"
                         whileTap="tap"
-                        onClick={() => {
-                          setShowThemeOptions(false);
-                          setShowFontOptions(false);
-                          setShowHelpPanel(false);
-                          setShowSectionReorder(false);
-                          setShowCSSOptions(false);
-                        }}
+                        onClick={handleChatClose}
                         className="ml-auto p-1 hover:bg-[#2c2c2e] rounded-full transition-colors"
                         style={{ color: themeColors.textPrimary }}
                       >
@@ -857,23 +880,22 @@ const PortfolioChatbot = ({
                             transition={{ delay: 0.1 * index }}
                             onClick={() => handleFontSelect(font)}
                             className={`p-4 rounded-lg border cursor-pointer transition-all text-center relative ${
-                              selectedFont === font
-                                ? "ring ring-opacity-50"
-                                : ""
+                              currentFont === font ? "ring ring-opacity-50" : ""
                             } ${fontClassMap[font]}`}
                             style={{
                               backgroundColor: themeColors.bgCard,
                               borderColor:
-                                selectedFont === font
+                                currentFont === font
                                   ? themeColors.primary
                                   : themeColors.borderLight,
                               boxShadow:
-                                selectedFont === font
+                                currentFont === font
                                   ? `0 0 20px ${themeColors.primaryGlow}`
                                   : "none",
                             }}
                           >
-                            {selectedFont === font && (
+                            {(currentFont === font ||
+                              selectedFont === font) && (
                               <div
                                 className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
                                 style={{ backgroundColor: themeColors.primary }}
@@ -957,8 +979,8 @@ const PortfolioChatbot = ({
                                   border: `2px dashed ${themeColors.primary}`,
                                   transition: {
                                     duration: 0.2,
-                                    ease: "easeInOut"
-                                  }
+                                    ease: "easeInOut",
+                                  },
                                 }}
                                 animate={{
                                   scale: 1,
@@ -967,8 +989,8 @@ const PortfolioChatbot = ({
                                   border: `1px solid ${themeColors.borderLight}`,
                                   transition: {
                                     duration: 0.2,
-                                    ease: "easeInOut"
-                                  }
+                                    ease: "easeInOut",
+                                  },
                                 }}
                                 className="cursor-move"
                               >
@@ -982,14 +1004,23 @@ const PortfolioChatbot = ({
 
                     {showCSSOptions && (
                       <div className="space-y-4">
-                        <div className="rounded-lg p-4" style={{ backgroundColor: themeColors.bgCard }}>
-                          <h5 className="font-semibold mb-2" style={{ color: themeColors.primary }}>
+                        <div
+                          className="rounded-lg p-4"
+                          style={{ backgroundColor: themeColors.bgCard }}
+                        >
+                          <h5
+                            className="font-semibold mb-2"
+                            style={{ color: themeColors.primary }}
+                          >
                             Custom CSS Editor
                           </h5>
                           <div className="relative">
                             <div className="flex items-center gap-2 mb-2">
                               <div className="flex-1">
-                                <div className="text-xs px-2 py-1 rounded bg-[#2c2c2e] inline-block" style={{ color: themeColors.textSecondary }}>
+                                <div
+                                  className="text-xs px-2 py-1 rounded bg-[#2c2c2e] inline-block"
+                                  style={{ color: themeColors.textSecondary }}
+                                >
                                   CSS Editor
                                 </div>
                               </div>
@@ -1007,21 +1038,28 @@ const PortfolioChatbot = ({
                             <Editor
                               value={customCSS}
                               onValueChange={setCustomCSSState}
-                              highlight={code => Prism.highlight(code, Prism.languages.css, 'css')}
+                              highlight={(code) =>
+                                Prism.highlight(
+                                  code,
+                                  Prism.languages.css,
+                                  "css"
+                                )
+                              }
                               padding={16}
                               style={{
-                                fontFamily: 'Fira Mono, Menlo, Monaco, Consolas, monospace',
+                                fontFamily:
+                                  "Fira Mono, Menlo, Monaco, Consolas, monospace",
                                 fontSize: 14,
-                                minHeight: '16rem',
-                                borderRadius: '0.5rem',
+                                minHeight: "16rem",
+                                borderRadius: "0.5rem",
                                 background: themeColors.bgCardHover,
                                 color: themeColors.textPrimary,
-                                outline: 'none',
-                                border: 'none',
+                                outline: "none",
+                                border: "none",
                                 caretColor: themeColors.primary,
-                                resize: 'vertical',
+                                resize: "vertical",
                                 tabSize: 2,
-                                whiteSpace: 'pre',
+                                whiteSpace: "pre",
                               }}
                               textareaId="custom-css-editor"
                               placeholder={`/* Example CSS */\n.section {\n  padding: 2rem;\n  margin: 1rem;\n}\n\n.section-title {\n  font-size: 2rem;\n  color: #fff;\n}`}
@@ -1030,45 +1068,81 @@ const PortfolioChatbot = ({
                           </div>
                         </div>
 
-                        <div className="rounded-lg p-4" style={{ backgroundColor: themeColors.bgCard }}>
-                          <h5 className="font-semibold mb-2" style={{ color: themeColors.primary }}>
+                        <div
+                          className="rounded-lg p-4"
+                          style={{ backgroundColor: themeColors.bgCard }}
+                        >
+                          <h5
+                            className="font-semibold mb-2"
+                            style={{ color: themeColors.primary }}
+                          >
                             Available Classes
                           </h5>
                           <div className="grid grid-cols-2 gap-2">
                             <div className="space-y-2">
-                              <h6 className="text-sm font-medium" style={{ color: themeColors.textSecondary }}>
+                              <h6
+                                className="text-sm font-medium"
+                                style={{ color: themeColors.textSecondary }}
+                              >
                                 Section Classes
                               </h6>
                               <div className="space-y-1">
-                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                <code
+                                  className="text-xs block p-1.5 rounded bg-[#2c2c2e]"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
                                   .section
                                 </code>
-                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                <code
+                                  className="text-xs block p-1.5 rounded bg-[#2c2c2e]"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
                                   .section-card
                                 </code>
-                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                <code
+                                  className="text-xs block p-1.5 rounded bg-[#2c2c2e]"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
                                   .section-image
                                 </code>
-                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                <code
+                                  className="text-xs block p-1.5 rounded bg-[#2c2c2e]"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
                                   .btn-primary
                                 </code>
                               </div>
                             </div>
                             <div className="space-y-2">
-                              <h6 className="text-sm font-medium" style={{ color: themeColors.textSecondary }}>
+                              <h6
+                                className="text-sm font-medium"
+                                style={{ color: themeColors.textSecondary }}
+                              >
                                 Typography Classes
                               </h6>
                               <div className="space-y-1">
-                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                <code
+                                  className="text-xs block p-1.5 rounded bg-[#2c2c2e]"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
                                   .section-title
                                 </code>
-                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                <code
+                                  className="text-xs block p-1.5 rounded bg-[#2c2c2e]"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
                                   .section-sub-heading
                                 </code>
-                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                <code
+                                  className="text-xs block p-1.5 rounded bg-[#2c2c2e]"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
                                   .section-description
                                 </code>
-                                <code className="text-xs block p-1.5 rounded bg-[#2c2c2e]" style={{ color: themeColors.textPrimary }}>
+                                <code
+                                  className="text-xs block p-1.5 rounded bg-[#2c2c2e]"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
                                   .section-sub-description
                                 </code>
                               </div>
@@ -1076,20 +1150,50 @@ const PortfolioChatbot = ({
                           </div>
                         </div>
 
-                        <div className="rounded-lg p-4" style={{ backgroundColor: themeColors.bgCard }}>
-                          <h5 className="font-semibold mb-2" style={{ color: themeColors.primary }}>
+                        <div
+                          className="rounded-lg p-4"
+                          style={{ backgroundColor: themeColors.bgCard }}
+                        >
+                          <h5
+                            className="font-semibold mb-2"
+                            style={{ color: themeColors.primary }}
+                          >
                             Tips
                           </h5>
-                          <ul className="text-sm space-y-2" style={{ color: themeColors.textSecondary }}>
-                            <li>• Use <b>.section</b> for main section wrappers</li>
-                            <li>• Use <b>.section-card</b> for card elements</li>
-                            <li>• Use <b>.section-image</b> for images</li>
-                            <li>• Use <b>.btn-primary</b> to style primary buttons</li>
-                            <li>• Use <b>.section-title</b> for main headings</li>
-                            <li>• Use <b>.section-sub-heading</b> for subheadings</li>
-                            <li>• Use <b>.section-description</b> for main descriptions</li>
-                            <li>• Use <b>.section-sub-description</b> for secondary text</li>
-                            <li>• If your changes don't apply, try adding <b>!important</b> to your CSS rule</li>
+                          <ul
+                            className="text-sm space-y-2"
+                            style={{ color: themeColors.textSecondary }}
+                          >
+                            <li>
+                              • Use <b>.section</b> for main section wrappers
+                            </li>
+                            <li>
+                              • Use <b>.section-card</b> for card elements
+                            </li>
+                            <li>
+                              • Use <b>.section-image</b> for images
+                            </li>
+                            <li>
+                              • Use <b>.btn-primary</b> to style primary buttons
+                            </li>
+                            <li>
+                              • Use <b>.section-title</b> for main headings
+                            </li>
+                            <li>
+                              • Use <b>.section-sub-heading</b> for subheadings
+                            </li>
+                            <li>
+                              • Use <b>.section-description</b> for main
+                              descriptions
+                            </li>
+                            <li>
+                              • Use <b>.section-sub-description</b> for
+                              secondary text
+                            </li>
+                            <li>
+                              • If your changes don't apply, try adding{" "}
+                              <b>!important</b> to your CSS rule
+                            </li>
                             <li>• Test your CSS before applying</li>
                           </ul>
                         </div>
@@ -1204,7 +1308,12 @@ const PortfolioChatbot = ({
               </AnimatePresence>
             </div>
 
-            {!(showFontOptions || showThemeOptions || showSectionReorder || showCSSOptions) && (
+            {!(
+              showFontOptions ||
+              showThemeOptions ||
+              showSectionReorder ||
+              showCSSOptions
+            ) && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1439,9 +1548,13 @@ const PortfolioChatbot = ({
                   disabled={!customCSS.trim()}
                   className="w-full font-medium py-2 px-4 rounded-lg transition-colors"
                   style={{
-                    backgroundColor: !customCSS.trim() ? themeColors.bgCard : themeColors.primary,
+                    backgroundColor: !customCSS.trim()
+                      ? themeColors.bgCard
+                      : themeColors.primary,
                     color: themeColors.textPrimary,
-                    boxShadow: customCSS.trim() ? `0 4px 14px ${themeColors.primaryGlow}` : "none",
+                    boxShadow: customCSS.trim()
+                      ? `0 4px 14px ${themeColors.primaryGlow}`
+                      : "none",
                   }}
                 >
                   Apply Custom CSS

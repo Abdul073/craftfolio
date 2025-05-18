@@ -4,28 +4,26 @@ import { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
 import { fetchContent, getThemeNameApi } from "@/app/actions/portfolio";
 import { useParams } from "next/navigation";
-import { setPortfolioData, setThemeName } from "@/slices/dataSlice";
+import { setCustomCSSState, setFontName, setPortfolioData, setTemplateName, setThemeName } from "@/slices/dataSlice";
 import { templatesConfig } from "@/lib/templateConfig";
 import Sidebar from "../Sidebar";
 import { Spotlight } from "@/components/NeoSpark/Spotlight";
 import Chatbot from "@/components/Chatbot/Chatbot";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { fontClassMap } from "@/lib/font";
 import { cn } from "@/lib/utils";
-import type { NextPage } from "next";
 
 const Page = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const portfolioId = params.portfolioId as string;
-  const { portfolioData, themeName: currentTheme } = useSelector(
+  const { portfolioData, templateName, themeName, fontName,customCSSState } = useSelector(
     (state: RootState) => state.data
   );
-  const allSections = portfolioData?.map((item: any) => item.type);
+  
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [dataLoaded, setDataLoaded] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [currentFont, setCurrentFont] = useState("Raleway");
-  const [currentPortTheme, setCurrentPortTheme] = useState("default");
   const [customCSS, setCustomCSS] = useState("");
 
   type TemplateType = {
@@ -36,45 +34,39 @@ const Page = () => {
     };
   };
 
-  const Template = currentTheme
-    ? (templatesConfig[
-        currentTheme as keyof typeof templatesConfig
-      ] as TemplateType)
-    : null;
-  const getComponentForSection = (sectionType: string) => {
-    if (!Template || !Template.sections || !Template.sections[sectionType]) {
-      return null;
-    }
-    const SectionComponent : any= Template.sections[sectionType];
-    return SectionComponent ? (
-      <SectionComponent
-        currentPortTheme={currentPortTheme}
-        customCSS={customCSS}
-        key={`${sectionType}`}
-      />
-    ) : null;
-  };
+  // Only access portfolio data after it's loaded
+  const allSections = dataLoaded ? portfolioData?.map((item: any) => item.type) : [];
+  
+  const themes = dataLoaded 
+    ? portfolioData?.find((item: any) => item.type === "themes")?.data 
+    : undefined;
 
-  const themes = portfolioData?.find(
-    (item: any) => item.type === "themes"
-  )?.data;
-
+  // Initialize portfolio data
   useEffect(() => {
     const initializePortfolio = async () => {
       setIsLoading(true);
+      setDataLoaded(false);
 
       try {
+        // Fetch theme data
         const themeResult = await getThemeNameApi({ portfolioId });
         if (themeResult.success) {
-          dispatch(setThemeName(themeResult?.data?.templateName || "default"));
+          dispatch(setTemplateName(themeResult?.data?.templateName || "default"));
+          dispatch(setThemeName(themeResult?.data?.themeName || "default"));
+          dispatch(setFontName(themeResult?.data?.fontName || "Raleway"));
+          dispatch(setCustomCSSState(themeResult?.data?.customCSS || ""));
         }
 
+        // Fetch content data
         const contentResult: any = await fetchContent({ portfolioId });
         if (contentResult.success) {
           dispatch(setPortfolioData(contentResult?.data?.sections));
         }
+        
+        // Mark data as loaded only after both fetches complete
+        setDataLoaded(true);
       } catch (error) {
-        console.log("Error initializing portfolio:", error);
+        console.error("Error initializing portfolio:", error);
       } finally {
         setIsLoading(false);
       }
@@ -83,7 +75,29 @@ const Page = () => {
     initializePortfolio();
   }, [portfolioId, dispatch]);
 
-  if (!Template || isLoading) {
+  // Don't try to access template config until we have template name
+  const Template = (dataLoaded && templateName)
+    ? (templatesConfig[
+        templateName as keyof typeof templatesConfig
+      ] as TemplateType)
+    : null;
+
+  const getComponentForSection = (sectionType: string) => {
+    if (!Template || !Template.sections || !Template.sections[sectionType]) {
+      return null;
+    }
+    const SectionComponent : any = Template.sections[sectionType];
+    return SectionComponent ? (
+      <SectionComponent
+        currentPortTheme={themeName}
+        customCSS={customCSSState}
+        key={`${sectionType}`}
+      />
+    ) : null;
+  };
+
+  // Show loading state until both API calls complete and data is processed
+  if (isLoading || !dataLoaded || !Template) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-xl">Loading portfolio...</p>
@@ -91,11 +105,10 @@ const Page = () => {
     );
   }
 
-
+  // By this point, we guarantee the data is loaded
   const NavbarComponent : any = Template.navbar;
   const hasSpotlight = Template.spotlight;
-  const selectedFontClass =
-    fontClassMap[currentFont] || fontClassMap["raleway"];
+  const selectedFontClass = fontClassMap[fontName] || fontClassMap["raleway"];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -116,7 +129,7 @@ const Page = () => {
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        {NavbarComponent && <NavbarComponent customCSS={customCSS} currentPortTheme={currentPortTheme}/>}
+        {NavbarComponent && <NavbarComponent customCSS={customCSSState} currentPortTheme={themeName}/>}
         <Sidebar />
 
         {allSections && allSections.length > 0 ? (
@@ -127,16 +140,22 @@ const Page = () => {
           </div>
         )}
       </motion.div>
-      <Chatbot
-        portfolioData={portfolioData}
-        themeOptions={themes}
-        setCurrentFont={setCurrentFont}
-        setCurrentPortTheme={setCurrentPortTheme}
-        portfolioId={portfolioId}
-        currentPortTheme={currentPortTheme}
-        onOpenChange={setIsChatOpen}
-        setCustomCSS={setCustomCSS}
-      />
+      
+      {/* Only render Chatbot after data is loaded */}
+      {dataLoaded && (
+        <Chatbot
+          portfolioData={portfolioData}
+          themeOptions={themes}
+          setCurrentFont={(font) => dispatch(setFontName(font))}
+          setCurrentPortTheme={(theme) => dispatch(setThemeName(theme))}
+          portfolioId={portfolioId}
+          currentPortTheme={themeName}
+          currentFont={fontName}
+          onOpenChange={setIsChatOpen}
+          setCustomCSS={(css) => dispatch(setCustomCSSState(css))}
+          customCSSState={customCSSState}
+        />
+      )}
     </div>
   );
 };

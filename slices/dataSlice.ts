@@ -2,12 +2,18 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface PortfolioState {
   portfolioData: any[];
+  templateName: string;
   themeName: string;
+  fontName: string;
+  customCSSState : string;
 }
 
 const initialState: PortfolioState = {
   portfolioData: [],
+  templateName: "",
   themeName: "",
+  fontName: "",
+  customCSSState : "",
 };
 
 export const dataSlice = createSlice({
@@ -18,8 +24,20 @@ export const dataSlice = createSlice({
       state.portfolioData = action.payload;
     },
     
-    setThemeName: (state, action: PayloadAction<string>) => {
+    setTemplateName: (state, action: PayloadAction<string>) => {
+      state.templateName = action.payload;
+    },
+
+     setThemeName: (state, action: PayloadAction<string>) => {
       state.themeName = action.payload;
+    },
+
+     setFontName: (state, action: PayloadAction<string>) => {
+      state.fontName = action.payload;
+    },
+
+    setCustomCSSState: (state, action: PayloadAction<string>) => {
+      state.customCSSState = action.payload;
     },
 
     updatePortfolioData: (
@@ -37,15 +55,20 @@ export const dataSlice = createSlice({
     newPortfolioData: (state, action: PayloadAction<any[]>) => {
       // Replace the entire portfolio data array with the new one
       state.portfolioData = action.payload;
-    }
+    },
+    
+
   },
 });
 
 export const { 
   setPortfolioData, 
-  setThemeName, 
+  setTemplateName, 
+  setThemeName,
+  setFontName,
   updatePortfolioData, 
-  newPortfolioData 
+  newPortfolioData,
+  setCustomCSSState
 } = dataSlice.actions;
 
 export default dataSlice.reducer;
