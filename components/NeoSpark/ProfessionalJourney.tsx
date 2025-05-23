@@ -112,68 +112,61 @@ const ProfessionalJourney = ({ currentPortTheme, customCSS }: any) => {
   }
 
   return (
-    <div className="text-white  p-8">
+    <div className="text-white p-2 sm:p-4 md:p-8">
       <style>{customCSS}</style>
       <div className="max-w-4xl mx-auto">
         <div 
-          className={`mb-16 transition-all relative duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}
+          className={`mb-10 sm:mb-16 transition-all relative duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}
         >
-          <h1 className="text-5xl section-title font-bold mb-4 text-center" style={{ color: titleColor }}>Professional Journey</h1>
-          <p className="text-xl section-description text-gray-300 text-center">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl section-title font-bold mb-2 sm:mb-4 text-center" style={{ color: titleColor }}>Professional Journey</h1>
+          <p className="text-base sm:text-lg md:text-xl section-description text-gray-300 text-center mb-2 sm:mb-0">
             Building real-world experience through innovative projects
           </p>
         <EditButton  sectionName="experience"/>
-
         </div>
 
-
         {experienceData.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
+          <div className="text-center py-8 sm:py-12 text-gray-400">
             No professional experience added yet.
           </div>
         ) : (
           <div className="relative">
-
             {experienceData.map((experience, index) => (
               <div
                 key={index}
-                className={`relative section-card transition-all duration-700 ${visibleItems[index] ? 'opacity-100' : 'opacity-0'} ${index !== experienceData.length - 1 ? 'mb-16' : ''}`}
+                className={`relative section-card transition-all duration-700 ${visibleItems[index] ? 'opacity-100' : 'opacity-0'} ${index !== experienceData.length - 1 ? 'mb-10 sm:mb-16' : ''}`}
               >
-                <div className="absolute left-6 transform -translate-x-1/2 w-3 h-3 rounded-full border-4 border-gray-900" style={{ backgroundColor: titleColor }}></div>
-            <div className="absolute left-6 top-0 bottom-0 w-0.5" style={{ backgroundColor: `${titleColor}30` }}></div>
-                
-                <div className="ml-16 transition-all duration-300 ease-in bg-stone-900/60 rounded-lg p-6 border border-gray-700" style={{ borderColor: `${titleColor}30` }}>
+                <div className="absolute left-4 sm:left-6 transform -translate-x-1/2 w-3 h-3 rounded-full border-4 border-gray-900" style={{ backgroundColor: titleColor }}></div>
+                <div className="absolute left-4 sm:left-6 top-0 bottom-0 w-0.5" style={{ backgroundColor: `${titleColor}30` }}></div>
+                <div className="ml-0 sm:ml-16 transition-all duration-300 ease-in bg-stone-900/60 rounded-lg p-4 sm:p-6 border border-gray-700" style={{ borderColor: `${titleColor}30` }}>
                   <h2 
-                    className={`text-2xl section-sub-title font-bold mb-2 transition-all duration-700 delay-100 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
+                    className={`text-lg sm:text-2xl section-sub-title font-bold mb-1 sm:mb-2 transition-all duration-700 delay-100 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
                   >
                     {experience.role}
                   </h2>
-                  
-                  <div className="flex flex-wrap items-center gap-2 mb-4 text-gray-400">
-                    <span>{experience.companyName}</span>
-                    <span className="px-3 py-1 rounded-full text-sm" style={{ backgroundColor: `${titleColor}20`, color: titleColor }}>{experience.location}</span>
-                    <span className="px-3 py-1 rounded-full text-sm" style={{ backgroundColor: `${titleColor}20`, color: titleColor }}>{experience.startDate} - {experience.endDate}</span>
+                  <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-4 text-gray-400">
+                    <span className="truncate max-w-[60vw] sm:max-w-none">{experience.companyName}</span>
+                    <span className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm" style={{ backgroundColor: `${titleColor}20`, color: titleColor }}>{experience.location}</span>
+                    <span className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm" style={{ backgroundColor: `${titleColor}20`, color: titleColor }}>{experience.startDate} - {experience.endDate}</span>
                   </div>
-
                   <p 
-                    className={`text-gray-300 section-sub-description mb-4 transition-all duration-700 delay-200 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
+                    className={`text-gray-300 section-sub-description mb-2 sm:mb-4 text-sm sm:text-base transition-all duration-700 delay-200 ${visibleItems[index] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
                   >
                     {experience.description}
                   </p>
-
                   {experience.techStack && experience.techStack.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-6">
+                    <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
                       {experience.techStack.map((tech, techIndex) => (
                         <span 
                           key={techIndex}
-                          className="px-3 py-1 rounded-full text-sm"
+                          className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1 border"
                           style={{ 
                             backgroundColor: `${titleColor}20`, 
                             color: titleColor,
                             border: `1px solid ${titleColor}30`
                           }}
                         >
-                          <img src={tech.logo || "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
+                          <img src={tech.logo || `https://placehold.co/100x100?text=${tech.name}&font=montserrat&fontsize=18`} alt={tech.name} className="h-4 w-4 inline-block mr-1"/>  {tech.name}
                         </span>
                       ))}
                     </div>

@@ -89,7 +89,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
 
   return (
     <motion.div 
-      className="rounded-xl overflow-hidden transition-all h-full"
+      className="rounded-xl overflow-hidden transition-all h-full w-full max-w-full md:max-w-none sm:max-w-md md:mx-0 mx-auto"
       variants={fadeInScale}
       style={{ 
         backgroundColor: ColorTheme.bgCard,
@@ -99,14 +99,13 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
       }}
       whileHover={{ 
         boxShadow: `0 8px 30px rgba(0,0,0,0.12), 0 4px 15px ${ColorTheme.primaryGlow}`,
-        // borderColor: `${ColorTheme.primary}50`
       }}
     >
       {/* Image Section with Slider */}
-      <div className="h-64 relative overflow-hidden group">
+      <div className="h-48 sm:h-56  md:h-64 lg:h-64 xl:h-64 relative overflow-hidden group">
         <Slider {...sliderSettings} className="h-full">
           {previewImages.map((image, index) => (
-            <div key={index} className="h-64">
+            <div key={index} className="h-48 sm:h-56 md:h-64  lg:h-64 xl:h-64">
               <img
                 src={image}
                 alt={`${theme.name} theme preview ${index + 1}`}
@@ -132,13 +131,13 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
       </div>
       
       {/* Content Section */}
-      <div className="p-6">
-        <h3 className="text-2xl font-bold mb-2" style={{ color: ColorTheme.textPrimary }}>{theme.name}</h3>
-        <p className="mb-4" style={{ color: ColorTheme.textSecondary }}>{theme.description}</p>
+      <div className="p-4 sm:p-6 md:p-6 lg:p-6 xl:p-6">
+        <h3 className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl font-bold mb-2 md:mb-2" style={{ color: ColorTheme.textPrimary }}>{theme.name}</h3>
+        <p className="mb-4 text-sm sm:text-base md:text-base lg:text-lg xl:text-lg" style={{ color: ColorTheme.textSecondary }}>{theme.description}</p>
         
         {/* Features Section */}
-        <div className="mb-6">
-          <h4 className="text-sm font-semibold mb-2" style={{ color: ColorTheme.textPrimary }}>Features:</h4>
+        <div className="mb-4 sm:mb-6 md:mb-6 lg:mb-6 xl:mb-6">
+          <h4 className="text-xs sm:text-sm md:text-sm lg:text-sm xl:text-sm font-semibold mb-2" style={{ color: ColorTheme.textPrimary }}>Features:</h4>
           <div className="flex flex-wrap gap-2">
             {theme.features.map((feature, index) => (
               <span 
@@ -157,9 +156,9 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
         </div>
         
         {/* Buttons */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-center md:items-center">
           <motion.button 
-            className="flex items-center cursor-pointer gap-2 px-4 py-2 rounded-lg font-medium transition-all"
+            className="flex items-center cursor-pointer gap-2 px-3 sm:px-4 md:px-4 py-2 md:py-2 rounded-lg font-medium transition-all w-full md:w-auto justify-center md:justify-start"
             style={{ 
               backgroundColor: 'rgba(38, 38, 42, 0.8)',
               color: ColorTheme.textPrimary
@@ -176,7 +175,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
           </motion.button>
           
           <motion.button 
-            className="flex items-center cursor-pointer gap-2 px-4 py-2 rounded-lg font-medium transition-all"
+            className="flex items-center cursor-pointer gap-2 px-3 sm:px-4 md:px-4 py-2 md:py-2 rounded-lg font-medium transition-all w-full md:w-auto justify-center md:justify-start"
             style={{ 
               background: `linear-gradient(to right, ${ColorTheme.primary}, ${ColorTheme.primaryDark})`,
               color: '#000',

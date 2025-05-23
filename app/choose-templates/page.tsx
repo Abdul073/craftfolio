@@ -24,7 +24,7 @@ const PortfolioThemePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [creationMethod, setCreationMethod] = useState("");
   const [scrolled, setScrolled] = useState(false);
-  const [redirectLoading, setRedirectLoading] = useState(true);
+  const [isLoadingThemes, setIsLoadingThemes] = useState(true);
   const [selectedThemeName, setSelectedThemeName] = useState("");
 
   const router = useRouter();
@@ -47,16 +47,20 @@ const PortfolioThemePage = () => {
 
   useEffect(() => {
     fetchThemes();
-  }, []);
+  }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const fetchThemes = async () => {
+    setIsLoadingThemes(true);
     try {
       const response = await fetchThemesApi();
+      console.log(response.data);
       if (response.success) {
         setThemes(response.data);
       }
     } catch (error) {
       console.error("Error fetching themes:", error);
+    } finally {
+      setIsLoadingThemes(false);
     }
   };
 
@@ -107,19 +111,11 @@ const PortfolioThemePage = () => {
     [key: string]: string;
   }
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setRedirectLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (themes.length === 0 && redirectLoading) {
+  if (isLoadingThemes) {
     const chooseTemplatesMessages: LoadingMessage[] = [
-      { text: 'Loading themes', icon: Palette },
-      { text: 'Fetching templates', icon: Layout },
-      { text: 'Preparing your experience', icon: CheckCircle }
+      { text: "Loading themes", icon: Palette },
+      { text: "Fetching templates", icon: Layout },
+      { text: "Preparing your experience", icon: CheckCircle },
     ];
     return <LoadingSpinner loadingMessages={chooseTemplatesMessages} />;
   }
@@ -134,16 +130,19 @@ const PortfolioThemePage = () => {
           backgroundImage: `radial-gradient(circle at 50% 0%, ${ColorTheme.primaryGlow}, transparent 50%)`,
         }}
       >
-        <div className="container mx-auto max-w-[75%] pt-24 px-4 pb-24">
+        <div className="container mx-auto max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl pt-16 sm:pt-20 md:pt-24 px-2 sm:px-4 pb-16 sm:pb-20 md:pb-24">
           {/* Hero section */}
           <motion.div
-            className="pt-16 text-center mb-16"
+            className="pt-10 sm:pt-14 md:pt-16 text-center mb-10 sm:mb-12 md:mb-16"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
           >
-            <motion.h1 className="text-5xl font-bold mb-6" variants={fadeIn}>
+            <motion.h1
+              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-5 md:mb-6"
+              variants={fadeIn}
+            >
               Select Your{" "}
               <span
                 style={{
@@ -157,7 +156,7 @@ const PortfolioThemePage = () => {
               Theme
             </motion.h1>
             <motion.p
-              className="text-xl max-w-2xl mx-auto"
+              className="text-base sm:text-lg md:text-xl max-w-xs sm:max-w-xl md:max-w-2xl mx-auto"
               style={{ color: ColorTheme.textSecondary }}
               variants={fadeIn}
             >
@@ -168,14 +167,19 @@ const PortfolioThemePage = () => {
 
           {/* Themes grid */}
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-14"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 lg:gap-14"
             initial="hidden"
-            whileInView="visible"
+            animate={themes.length > 0 ? "visible" : "hidden"}
             viewport={{ once: true }}
-            // variants={staggerContainer}
+            variants={staggerContainer}
           >
-            {themes?.map((theme: any) => (
-              <div key={theme.id}>
+            {themes?.map((theme: any, index: number) => (
+              <motion.div
+                key={theme.id}
+                className="max-w-full sm:max-w-md md:max-w-lg mx-auto"
+                variants={fadeIn}
+                custom={index}
+              >
                 <ThemeCard
                   theme={theme}
                   handleSelectTheme={() =>
@@ -183,13 +187,13 @@ const PortfolioThemePage = () => {
                   }
                   selectedTheme={selectedTheme}
                 />
-              </div>
+              </motion.div>
             ))}
           </motion.div>
 
           {/* Floating decoration */}
           <motion.div
-            className="fixed bottom-8 right-8 px-4 py-2 rounded-full text-sm font-medium"
+            className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium"
             style={{
               backgroundColor: "rgba(16, 185, 129, 0.2)",
               border: `1px solid ${ColorTheme.primary}`,

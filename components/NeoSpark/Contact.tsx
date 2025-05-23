@@ -65,15 +65,15 @@ const Contact = ({ currentPortTheme, customCSS }: any) => {
   }
 
   return (
-    <div id="contact" className="py-16 px-4 relative text-white">
+    <div id="contact" className="py-8 sm:py-12 md:py-16 px-2 sm:px-4 md:px-8 relative text-white">
       <style>{customCSS}</style>
       <div className="mx-auto">
        <div className='max-w-4xl mx-auto'>
        <div 
-          className="my-16 transition-all duration-700 relative"
+          className="my-8 sm:my-12 md:my-16 transition-all duration-700 relative"
         >
-          <h1 className="text-5xl section-title font-bold mb-4 text-center" style={{ color: titleColor }}>Let's Work Together!</h1>
-          <p className="text-xl section-description text-gray-300 text-center mb-16">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl section-title font-bold mb-2 sm:mb-4 text-center" style={{ color: titleColor }}>Let's Work Together!</h1>
+          <p className="text-base sm:text-lg md:text-xl section-description text-gray-300 text-center mb-6 sm:mb-10 md:mb-16">
             Interested in collaborating, hiring, or just having a chat? Reach out to me on your favorite platform!
           </p>
           <EditButton sectionName='contact'/>
@@ -84,22 +84,22 @@ const Contact = ({ currentPortTheme, customCSS }: any) => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-3 max-w-[90%] md:max-w-[70%] mx-auto gap-4 md:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 max-w-full sm:max-w-[90%] md:max-w-[70%] mx-auto gap-4 md:gap-8"
         >
           {contactData.email && (
             <motion.a 
               href={`mailto:${contactData.email}`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-stone-900/60 cursor-pointer p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 transition-all duration-300 shadow-lg"
+              className="bg-stone-900/60 cursor-pointer p-6 sm:p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 transition-all duration-300 shadow-lg"
               style={{ 
                 borderColor: `${titleColor}30`,
                 boxShadow: `0 10px 15px -3px ${titleColor}10, 0 4px 6px -4px ${titleColor}10`
               }}
             >
-              <Mail className="w-8 h-8 mb-3" style={{ color: titleColor }} />
-              <div className="text-white text-xl font-bold mb-2">Email</div>
-              <p className="text-gray-300 text-center break-all">{contactData.email}</p>
+              <Mail className="w-7 h-7 sm:w-8 sm:h-8 mb-2 sm:mb-3" style={{ color: titleColor }} />
+              <div className="text-white text-base sm:text-xl font-bold mb-1 sm:mb-2">Email</div>
+              <p className="text-gray-300 text-center break-all text-xs sm:text-base">{contactData.email}</p>
             </motion.a>
           )}
 
@@ -110,15 +110,15 @@ const Contact = ({ currentPortTheme, customCSS }: any) => {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-stone-900/60 cursor-pointer p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 transition-all duration-300 shadow-lg"
+              className="bg-stone-900/60 cursor-pointer p-6 sm:p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 transition-all duration-300 shadow-lg"
               style={{ 
                 borderColor: `${titleColor}30`,
                 boxShadow: `0 10px 15px -3px ${titleColor}10, 0 4px 6px -4px ${titleColor}10`
               }}
             >
-              <Linkedin className="w-8 h-8 mb-3" style={{ color: titleColor }} />
-              <div className="text-white text-xl font-bold mb-2">LinkedIn</div>
-              <p className="text-gray-300 text-center">
+              <Linkedin className="w-7 h-7 sm:w-8 sm:h-8 mb-2 sm:mb-3" style={{ color: titleColor }} />
+              <div className="text-white text-base sm:text-xl font-bold mb-1 sm:mb-2">LinkedIn</div>
+              <p className="text-gray-300 text-center text-xs sm:text-base">
                 {contactData.linkedin.includes('/') 
                   ? '@' + contactData.linkedin.split('/').filter(Boolean).pop() 
                   : contactData.linkedin}
@@ -133,15 +133,15 @@ const Contact = ({ currentPortTheme, customCSS }: any) => {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-stone-900/60 cursor-pointer p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 transition-all duration-300 shadow-lg"
+              className="bg-stone-900/60 cursor-pointer p-6 sm:p-8 rounded-lg flex flex-col items-center justify-center border border-gray-700 transition-all duration-300 shadow-lg"
               style={{ 
                 borderColor: `${titleColor}30`,
                 boxShadow: `0 10px 15px -3px ${titleColor}10, 0 4px 6px -4px ${titleColor}10`
               }}
             >
-              <Github className="w-8 h-8 mb-3" style={{ color: titleColor }} />
-              <div className="text-white text-xl font-bold mb-2">GitHub</div>
-              <p className="text-gray-300 text-center">
+              <Github className="w-7 h-7 sm:w-8 sm:h-8 mb-2 sm:mb-3" style={{ color: titleColor }} />
+              <div className="text-white text-base sm:text-xl font-bold mb-1 sm:mb-2">GitHub</div>
+              <p className="text-gray-300 text-center text-xs sm:text-base">
                 {contactData.github.includes('/') 
                   ? '@' + contactData.github.split('/').filter(Boolean).pop() 
                   : contactData.github}

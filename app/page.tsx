@@ -17,8 +17,10 @@ import MainNavbar from "@/components/MainNavbar";
 import { ColorTheme } from "@/lib/colorThemes";
 import BgShapes from "@/components/BgShapes";
 import { testimonials, features, benefitsList } from "@/lib/data";
+import ArrowLottie from "@/components/ArrowLottie";
 
 export default function Page() {
+  const [isMounted, setIsMounted] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [resumeUploaded, setResumeUploaded] = useState(false);
 
@@ -32,6 +34,14 @@ export default function Page() {
   };
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null; // Or a minimal loading spinner
+  }
 
   return (
     <div className="relative min-h-screen scrollbar main-bg-noise  custom-scrollbar">
@@ -55,16 +65,15 @@ export default function Page() {
       </Head>
 
       <MainNavbar />
-
-      <main>
-        <section className="pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
+ <main>
+        <section className="pt-40 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
           <motion.div
             className="absolute top-0 left-0 w-full h-full -z-10"
             style={{
               backgroundImage: `radial-gradient(circle at 50% 0%, ${ColorTheme.primaryGlow}, transparent 70%)`,
             }}
             animate={{
-              opacity: [0.5, 0.7, 0.5],
+              opacity: [1, 1, 1],
             }}
             transition={{
               duration: 4,
@@ -115,7 +124,7 @@ export default function Page() {
                 >
                   <motion.p
                     onClick={() => router.push("/choose-templates")}
-                    className="px-8 py-4 rounded-lg flex items-center cursor-pointer group font-medium transition-all"
+                    className="px-8 py-4 rounded-lg flex items-center justify-center cursor-pointer group font-medium transition-all"
                     style={{
                       color: ColorTheme.textPrimary,
                       background: `linear-gradient(to right, ${ColorTheme.primary}, ${ColorTheme.primaryDark})`,
@@ -126,7 +135,7 @@ export default function Page() {
                     }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Start Creating{" "}
+                    Build My Portfolio{" "}
                     <ArrowRight className="h-5 w-5 ml-2 group-hover:ml-5    transition-all duration-300 ease" />
                   </motion.p>
                   <motion.a
@@ -210,9 +219,12 @@ export default function Page() {
                       </div>
                     </motion.div>
 
-                    {/* {isInView && <div className="flex flex-col items-center justify-center py-4">
+                    {/* {isInView ? <div className="flex flex-col items-center justify-center py-4">
                         <span className="lg:rotate-[-180deg] rotate-[55deg] lg:scale-x-[-1] w-32 overflow-hidden block arrow-animation ">
                           <ArrowLottie />
+                        </span>
+                    </div> : <div className="flex flex-col items-center justify-center py-4">
+                        <span className="lg:rotate-[-180deg] rotate-[55deg] lg:scale-x-[-1] w-32 overflow-hidden block arrow-animation ">
                         </span>
                     </div> } */}
 
@@ -1065,6 +1077,7 @@ export default function Page() {
           </div>
         </footer>
       </main>
+     
     </div>
   );
 }

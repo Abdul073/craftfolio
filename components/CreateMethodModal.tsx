@@ -1,10 +1,6 @@
 import { motion } from "framer-motion";
 import { FileText, PlusCircle, ArrowRight, ArrowLeft } from 'lucide-react';
-import {
-    Dialog,
-    DialogContent, DialogHeader,
-    DialogTitle
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { fadeInScale, pulseAnimation, staggerContainer } from '@/lib/animations';
 import { useState, useEffect } from 'react';
 import toast from "react-hot-toast";
@@ -279,14 +275,12 @@ const CreateMethodModal = ({ isModalOpen,selectedTheme,setIsModalOpen, isCreatin
          
 
             <DialogContent
-                className="backdrop-blur-xl rounded-xl overflow-hidden"
+                className="backdrop-blur-xl rounded-xl overflow-hidden w-full max-w-[95vw] p-2 sm:p-6 md:p-12 h-[90vh] sm:max-w-4xl sm:h-auto flex flex-col"
                 style={{
                     backgroundColor: 'rgba(18, 18, 18, 0.95)',
                     border: '1px solid rgba(75, 85, 99, 0.3)',
                     color: '#f3f4f6',
                     boxShadow: '0 25px 50px rgba(0,0,0,0.3), 0 10px 30px rgba(16, 185, 129, 0.15)',
-                    maxWidth: '900px',
-                    padding: '48px',
                 }}
             >
                    {confettiActive && (
@@ -316,7 +310,7 @@ const CreateMethodModal = ({ isModalOpen,selectedTheme,setIsModalOpen, isCreatin
   </div>
 )}
                 {!showResumeImport ? (
-                    <>
+                    <div className="flex-1 min-h-0 overflow-y-auto">
                         <DialogHeader className="mb-4">
                             <DialogTitle className='text-3xl text-center md:text-4xl font-bold'>
                                 How would you like to build your <span style={{
@@ -330,6 +324,7 @@ const CreateMethodModal = ({ isModalOpen,selectedTheme,setIsModalOpen, isCreatin
 
                         <motion.div
                             className="flex flex-col md:flex-row gap-6 mt-6"
+                            style={{ maxHeight: 'calc(90vh - 200px)' }}
                             initial="hidden"
                             animate="visible"
                             variants={staggerContainer}
@@ -392,6 +387,7 @@ const CreateMethodModal = ({ isModalOpen,selectedTheme,setIsModalOpen, isCreatin
 
                         <motion.div
                             className="flex justify-center mt-8"
+                            style={{ maxHeight: '100px' }}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
@@ -430,9 +426,9 @@ const CreateMethodModal = ({ isModalOpen,selectedTheme,setIsModalOpen, isCreatin
                                 </motion.button>
                             )}
                         </motion.div>
-                    </>
+                    </div>
                 ) : (
-                    <div className="py-4 relative overflow-hidden">
+                    <div className="py-4 relative overflow-hidden flex-1 min-h-0 overflow-y-auto">
                         {/* Back button */}
                         <motion.button
                             className="absolute top-0 left-0 flex items-center text-gray-400 hover:text-white transition-colors"

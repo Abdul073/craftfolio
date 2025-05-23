@@ -1573,7 +1573,7 @@ const PortfolioChatbot = ({
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.3 }}
           onClick={() => handleOpenChange(true)}
-          className="fixed bottom-6 right-6 p-4 cursor-pointer rounded-full shadow-lg transition-colors"
+          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 p-4 cursor-pointer rounded-full shadow-lg transition-colors z-[100]"
           style={{
             backgroundColor: themeColors.primary,
             color: themeColors.textPrimary,

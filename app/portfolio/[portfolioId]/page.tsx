@@ -111,7 +111,7 @@ const Page = () => {
   const selectedFontClass = fontClassMap[fontName] || fontClassMap["raleway"];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       {hasSpotlight && (
         <div className="absolute inset-0">
           <Spotlight
@@ -121,25 +121,27 @@ const Page = () => {
         </div>
       )}
 
-      <motion.div
-        className={cn("custom-bg min-h-screen w-[80%]", selectedFontClass)}
-        animate={{
-          width: isChatOpen ? "80%" : "100%",
-          marginRight: isChatOpen ? "20%" : "0",
-        }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-      >
-        {NavbarComponent && <NavbarComponent customCSS={customCSSState} currentPortTheme={themeName}/>}
-        <Sidebar />
+      {/* Responsive layout: on md+ if chat is open, add right margin to main content */}
+      <div className={isChatOpen ? "w-full md:w-[80%] md:mr-[20%] transition-all duration-300" : "w-full transition-all duration-300"}>
+        <motion.div
+          className={cn(
+            "custom-bg min-h-screen w-full",
+            selectedFontClass
+          )}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          {NavbarComponent && <NavbarComponent customCSS={customCSSState} currentPortTheme={themeName}/>} 
+          <Sidebar />
 
-        {allSections && allSections.length > 0 ? (
-          allSections.map((section: string) => getComponentForSection(section))
-        ) : (
-          <div className={cn("flex items-center justify-center h-screen")}>
-            <p className="text-xl">Portfolio content not found</p>
-          </div>
-        )}
-      </motion.div>
+          {allSections && allSections.length > 0 ? (
+            allSections.map((section: string) => getComponentForSection(section))
+          ) : (
+            <div className={cn("flex items-center justify-center h-screen")}> 
+              <p className="text-xl">Portfolio content not found</p>
+            </div>
+          )}
+        </motion.div>
+      </div>
       
       {/* Only render Chatbot after data is loaded */}
       {dataLoaded && (

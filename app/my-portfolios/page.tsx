@@ -52,22 +52,22 @@ export default function MyPortfoliosPage() {
         style={{
           backgroundImage: `radial-gradient(circle at 50% 0%, ${ColorTheme.primaryGlow}, transparent 50%)`,
         }}
-        className="flex flex-col items-center justify-center min-h-screen text-xl w-full"
+        className="flex flex-col items-center justify-center min-h-screen pt-24 w-full px-2 sm:px-4"
       >
-        <h1 className="text-3xl mb-6">My Portfolios</h1>
+        <h1 className="text-xl sm:text-2xl md:text-3xl mb-4 sm:mb-6 text-center font-bold">My Portfolios</h1>
         {portfolios.length === 0 ? (
           <div>No portfolios found.</div>
         ) : (
-          <ul className="w-full max-w-2xl space-y-4">
+          <ul className="w-full max-w-full sm:max-w-2xl space-y-3 sm:space-y-4">
             {portfolios.map((portfolio) => (
               <li
                 key={portfolio.id}
-                className="border rounded-xl p-4 flex flex-col cursor-pointer bg-[var(--bg-card)] shadow-sm transition-all duration-200 hover:shadow-lg"
+                className="border rounded-xl p-3 sm:p-4 flex flex-col cursor-pointer bg-[var(--bg-card)] shadow-sm transition-all duration-200 hover:shadow-lg"
                 style={{ borderColor: "var(--border-light)" }}
                 onClick={() => router.push(`/portfolio/${portfolio.id}`)}
               >
                 <span
-                  className="font-semibold transition-colors"
+                  className="font-semibold text-base sm:text-lg transition-colors"
                   style={{ color: "inherit" }}
                 >
                   Template:{" "}
@@ -75,7 +75,7 @@ export default function MyPortfoliosPage() {
                     {portfolio.templateName}
                   </span>
                 </span>
-                <span className="text-gray-500 text-sm">
+                <span className="text-gray-500 text-xs sm:text-sm">
                   Created:{" "}
                   {portfolio.createdAt
                     ? new Date(portfolio.createdAt).toLocaleString()

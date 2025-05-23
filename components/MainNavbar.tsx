@@ -54,37 +54,21 @@ const MainNavbar = () => {
   return (
     <header
       className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? "backdrop-blur-lg shadow-lg py-5" : "bg-transparent py-4"
+        scrolled ? "backdrop-blur-md shadow-lg py-5" : "transparent py-4"
       }`}
-      style={{
-        backgroundColor: scrolled ? "rgba(13, 13, 18, 0.75)" : "transparent",
-      }}
+     
     >
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <motion.span
-              className="text-2xl font-bold cursor-pointer"
-              onClick={() => router.push("/")}
-              style={{
-                background: `linear-gradient(to right, ${ColorTheme.primary}, ${ColorTheme.primaryDark})`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-              whileHover={{ scale: 1.05 }}
-            >
-              CraftFolio
-              <span className="relative">
-                <motion.span
-                  className="absolute -top-2 -right-4 text-xs font-normal"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  style={{ color: ColorTheme.primary }}
-                >
-                  ✦
-                </motion.span>
-              </span>
-            </motion.span>
+            
+              <img
+                src="/craftfolio.png"
+                alt="CraftFolio"
+                onClick={() => router.push("/")}
+                className="w-40 cursor-pointer"
+              />
+            {/* </motion.span> */}
           </div>
 
           {/* Desktop Navigation */}
@@ -94,7 +78,7 @@ const MainNavbar = () => {
                 key={item.href}
                 href={item.href}
                 className={`relative hover:text-opacity-100 transition-colors text-lg${
-                  pathname === item.href ? ' font-bold text-emerald-400' : ''
+                  pathname === item.href ? " font-bold text-emerald-400" : ""
                 }`}
                 style={{
                   color:
@@ -102,7 +86,9 @@ const MainNavbar = () => {
                       ? ColorTheme.primary
                       : ColorTheme.textSecondary,
                   borderBottom:
-                    pathname === item.href && (pathname === '/choose-templates' || pathname === '/my-portfolios')
+                    pathname === item.href &&
+                    (pathname === "/choose-templates" ||
+                      pathname === "/my-portfolios")
                       ? `2px solid ${ColorTheme.primary}`
                       : undefined,
                 }}
@@ -223,7 +209,7 @@ const MainNavbar = () => {
                 key={item.href}
                 href={item.href}
                 className={`block py-3 hover:text-opacity-100 transition-colors${
-                  pathname === item.href ? ' font-bold text-emerald-400' : ''
+                  pathname === item.href ? " font-bold text-emerald-400" : ""
                 }`}
                 style={{
                   color:
@@ -231,7 +217,9 @@ const MainNavbar = () => {
                       ? ColorTheme.primary
                       : ColorTheme.textSecondary,
                   borderBottom:
-                    pathname === item.href && (pathname === '/choose-templates' || pathname === '/my-portfolios')
+                    pathname === item.href &&
+                    (pathname === "/choose-templates" ||
+                      pathname === "/my-portfolios")
                       ? `2px solid ${ColorTheme.primary}`
                       : undefined,
                 }}

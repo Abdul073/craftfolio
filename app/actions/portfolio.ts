@@ -145,6 +145,7 @@ export async function updatePortfolio({
 export async function fetchThemesApi(){
   try {
     const themes = await prisma.template.findMany();
+    console.log(themes)
     return { success: true, data: themes };
   }catch(error){
     console.error("Error fetching themes:", error);

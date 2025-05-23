@@ -73,17 +73,17 @@ const Technologies = ({ currentPortTheme, customCSS }: any) => {
   }
 
   return (
-    <div className={`py-16 text-white`}>
+    <div className={`py-8 sm:py-12 md:py-16 text-white`}>
       <style>{customCSS}</style>
       <div className="max-w-4xl mx-auto">
         <div className="container block relative mx-auto">
           <h1
-            className="text-5xl section-title font-bold mb-4 text-center"
+            className="text-3xl sm:text-5xl md:text-6xl section-title font-bold mb-2 sm:mb-4 text-center"
             style={{ color: titleColor }}
           >
             My Tech Stack
           </h1>
-          <p className="text-xl section-description text-gray-300 text-center mb-16">
+          <p className="text-base sm:text-lg md:text-xl section-description text-gray-300 text-center mb-6 sm:mb-10 md:mb-16">
             Technologies I Worked On.
           </p>
           <EditButton sectionName="technologies" />
@@ -91,11 +91,11 @@ const Technologies = ({ currentPortTheme, customCSS }: any) => {
       </div>
 
       <div
-        className="relative overflow-hidden"
+        className="relative overflow-hidden px-2 sm:px-4"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        <div className="flex flex-nowrap overflow-hidden max-w-[80%] mx-auto">
+        <div className="flex flex-nowrap overflow-hidden max-w-full sm:max-w-[80%] mx-auto">
           <Marquee
             pauseOnHover={isPaused}
             loop={0}
@@ -103,14 +103,9 @@ const Technologies = ({ currentPortTheme, customCSS }: any) => {
             direction="left"
           >
             {technologiesData.map((tech, index) => (
-              <div key={`tech-${index}`} className="flex-none mx-4">
+              <div key={`tech-${index}`} className="flex-none mx-2 sm:mx-4 w-24 sm:w-32 md:w-40">
                 <div
-                  className="bg-stone-800/80 peer cursor-pointer
-                     hover:bg-gradient-to-br from-stone-900 to-stone-900
-                      rounded-xl py-6 px-8 border border-transparent
-                       hover:border-current flex flex-col items-center
-                        justify-center transition-all duration-300 ease-in shadow${index+1}
-                        shadow-lg hover:shadow-xl"
+                  className="bg-stone-800/80 peer cursor-pointer hover:bg-gradient-to-br from-stone-900 to-stone-900 rounded-xl py-4 sm:py-6 px-4 sm:px-8 border border-transparent hover:border-current flex flex-col items-center justify-center transition-all duration-300 ease-in shadow-lg hover:shadow-xl"
                   style={{
                     boxShadow: `0 10px 15px -3px ${titleColor}10, 0 4px 6px -4px ${titleColor}10`,
                     borderColor: `${titleColor}30`,
@@ -119,14 +114,14 @@ const Technologies = ({ currentPortTheme, customCSS }: any) => {
                   <img
                     src={
                       tech.logo ||
-                      "https://placehold.co/100x100?text=${searchValue}&font=montserrat&fontsize=18"
+                      `https://placehold.co/100x100?text=${tech.name}&font=montserrat&fontsize=18`
                     }
                     alt={tech.name}
-                    className="w-12 h-12"
+                    className="w-10 h-10 sm:w-12 sm:h-12"
                   />
                 </div>
                 <p
-                  className="font-medium text-center mt-2 text-white peer-hover:font-semibold"
+                  className="font-medium text-center mt-2 text-xs sm:text-base text-white peer-hover:font-semibold"
                   style={{ color: titleColor }}
                 >
                   {tech.name}
