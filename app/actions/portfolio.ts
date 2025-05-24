@@ -227,11 +227,76 @@ export async function fetchPortfoliosByUserId(userId: string) {
   try {
     const portfolios = await prisma.portfolio.findMany({
       where: { userId },
+      include:{
+        PortfolioLinks : true
+      },
       orderBy: { createdAt: 'desc' }, // Optional: order by creation date
     });
     return { success: true, data: portfolios };
   } catch (error) {
     console.error("Error fetching portfolios by userId:", error);
     return { success: false, error: "Failed to fetch portfolios" };
+  }
+}
+
+export async function deployPortfolio(userId: string, portfolioId: string, slug: string) {
+  try {
+    if (slug.length < 3 || slug.length > 30) {
+      return { success: false, error: "Portfolio Slug must be between 3 and 30 characters" };
+    }
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      return { success: false, error: "Portfolio Slug can only contain lowercase letters, numbers, and hyphens" };
+    }
+    if (slug.startsWith('-') || slug.endsWith('-')) {
+      return { success: false, error: "Portfolio Slug cannot start or end with a hyphen" };
+    }
+
+    const existingPortfolio = await prisma.portfolioLinks.findFirst({
+      where: {
+        slug: slug
+      }
+    });
+
+    if (existingPortfolio) {
+      return { success: false, error: "This Portfolio Slug is already taken" };
+    }
+
+    console.log(slug,portfolioId,userId)
+    const updatedPortfolio = await prisma.portfolioLinks.create({
+      data: {
+        slug: slug,
+        portfolioId: portfolioId,
+        userId : userId
+      }
+    });
+
+    return { 
+      success: true, 
+      data: {
+        ...updatedPortfolio,
+        url: `https://craft-folio-three-vercel.app/p/${slug}`
+      }
+    };
+  } catch (error) {
+    console.error("Error deploying portfolio:", error);
+    return { success: false, error: "Failed to deploy portfolio" };
+  }
+}
+
+export async function getIdThroughSlug({slug} : {slug : string}){
+  try {
+    const existingPortfolio = await prisma.portfolioLinks.findFirst({
+      where: {
+        slug: slug
+      }
+    });
+
+    if (!existingPortfolio) {
+      return { success: false, error: "This Portfolio does not exists !!" };
+    }
+
+    return {success : true, portfolioId : existingPortfolio.portfolioId}
+  } catch (error) {
+    return { success: false, error: "Failed to fetch portfolio" };
   }
 }

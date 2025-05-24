@@ -2,8 +2,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
-import { fetchContent, getThemeNameApi } from "@/app/actions/portfolio";
-import { useParams } from "next/navigation";
+import { fetchContent, getIdThroughSlug, getThemeNameApi } from "@/app/actions/portfolio";
+import { redirect, useParams } from "next/navigation";
 import { setCustomCSSState, setFontName, setPortfolioData, setTemplateName, setThemeName } from "@/slices/dataSlice";
 import { templatesConfig } from "@/lib/templateConfig";
 import Sidebar from "../Sidebar";
@@ -12,11 +12,19 @@ import Chatbot from "@/components/Chatbot/Chatbot";
 import { motion } from "framer-motion";
 import { fontClassMap } from "@/lib/font";
 import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
+import PortfolioNotFound from "@/components/PortfolioNotFound";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { CheckCircle, Layout, Palette } from "lucide-react";
 
 const Page = () => {
   const dispatch = useDispatch();
   const params = useParams();
-  const portfolioId = params.portfolioId as string;
+  let portfolioId = params.portfolioId as string;
+
+  const isUUID = (str: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+
   const { portfolioData, templateName, themeName, fontName,customCSSState } = useSelector(
     (state: RootState) => state.data
   );
@@ -24,7 +32,8 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [customCSS, setCustomCSS] = useState("");
+  const [finalPortfolioId, setFinalPortfolioId] = useState<string>(portfolioId);
+  const [portfolioNotFound, setPortfolioNotFound] = useState<boolean>(false);
 
   type TemplateType = {
     navbar: React.ComponentType;
@@ -34,22 +43,39 @@ const Page = () => {
     };
   };
 
-  // Only access portfolio data after it's loaded
   const allSections = dataLoaded ? portfolioData?.map((item: any) => item.type) : [];
   
   const themes = dataLoaded 
     ? portfolioData?.find((item: any) => item.type === "themes")?.data 
     : undefined;
 
-  // Initialize portfolio data
   useEffect(() => {
     const initializePortfolio = async () => {
       setIsLoading(true);
       setDataLoaded(false);
 
       try {
+        // Check if portfolioId is UUID, if not fetch the actual ID
+        if (!isUUID(portfolioId)) {
+          const response = await getIdThroughSlug({ slug: portfolioId });
+          if(!response.success && response.error){
+            toast.error(response.error)
+            setPortfolioNotFound(true);
+            return;
+          }
+          if (response.success && response.portfolioId) {
+            setFinalPortfolioId(response.portfolioId);
+          }
+        } else {
+          setFinalPortfolioId(portfolioId);
+        }
+
         // Fetch theme data
-        const themeResult = await getThemeNameApi({ portfolioId });
+        const themeResult = await getThemeNameApi({ portfolioId: finalPortfolioId });
+        if (!themeResult.success) {
+          setPortfolioNotFound(true);
+          return;
+        }
         if (themeResult.success) {
           dispatch(setTemplateName(themeResult?.data?.templateName || "default"));
           dispatch(setThemeName(themeResult?.data?.themeName || "default"));
@@ -58,7 +84,11 @@ const Page = () => {
         }
 
         // Fetch content data
-        const contentResult: any = await fetchContent({ portfolioId });
+        const contentResult: any = await fetchContent({ portfolioId: finalPortfolioId });
+        if (!contentResult.success) {
+          setPortfolioNotFound(true);
+          return;
+        }
         if (contentResult.success) {
           dispatch(setPortfolioData(contentResult?.data?.sections));
         }
@@ -96,14 +126,22 @@ const Page = () => {
     ) : null;
   };
 
-  // Show loading state until both API calls complete and data is processed
+  if (portfolioNotFound) {
+    return <PortfolioNotFound />;
+  }
+
   if (isLoading || !dataLoaded || !Template) {
+    const portfolioMessages: any = [
+      { text: "Loading the portfolio", icon: Palette },
+      { text: "Fetching data", icon: Layout },
+      { text: "Almost there", icon: CheckCircle },
+    ];
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-xl">Loading portfolio...</p>
-      </div>
+      <LoadingSpinner loadingMessages={portfolioMessages} />
     );
   }
+
+ 
 
   // By this point, we guarantee the data is loaded
   const NavbarComponent : any = Template.navbar;
@@ -150,7 +188,7 @@ const Page = () => {
           themeOptions={themes}
           setCurrentFont={(font) => dispatch(setFontName(font))}
           setCurrentPortTheme={(theme) => dispatch(setThemeName(theme))}
-          portfolioId={portfolioId}
+          portfolioId={finalPortfolioId}
           currentPortTheme={themeName}
           currentFont={fontName}
           onOpenChange={setIsChatOpen}

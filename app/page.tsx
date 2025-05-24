@@ -44,7 +44,7 @@ export default function Page() {
   }
 
   return (
-    <div className="relative min-h-screen scrollbar main-bg-noise  custom-scrollbar">
+    <div className="relative  scrollbar main-bg-noise  custom-scrollbar">
       <BgShapes />
 
       <Head>
@@ -65,7 +65,6 @@ export default function Page() {
       </Head>
 
       <MainNavbar />
- <main>
         <section className="pt-40 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
           <motion.div
             className="absolute top-0 left-0 w-full h-full -z-10"
@@ -1076,7 +1075,6 @@ export default function Page() {
             </div>
           </div>
         </footer>
-      </main>
      
     </div>
   );

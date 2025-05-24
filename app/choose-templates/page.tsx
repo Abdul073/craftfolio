@@ -89,9 +89,9 @@ const PortfolioThemePage = () => {
         );
         if (result.success) {
           if (creationMethod === "import") {
-            router.push(`/portfolio/${result?.data?.id}`);
+            router.push(`/p/${result?.data?.id}`);
           } else {
-            router.push(`/portfolio/${result?.data?.id}`);
+            router.push(`/p/${result?.data?.id}`);
           }
         } else {
           toast.error("Failed to create portfolio");

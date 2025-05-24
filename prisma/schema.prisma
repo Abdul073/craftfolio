@@ -21,14 +21,23 @@ model Portfolio {
   themeName    String   @default("default")
   fontName     String   @default("Raleway")
   customCSS    String?
+  PortfolioLinks  PortfolioLinks[]
 }
 
 model Template {
-  id              String   @id @default(uuid())
+  id              String           @id @default(uuid())
   name            String
   description     String
   features        String[]
   defaultContent  Json
-  createdAt       DateTime @default(now())
+  createdAt       DateTime         @default(now())
   previewImageUrl String[]
+}
+
+model PortfolioLinks {
+  id            String   @id @default(uuid())
+  portfolioId    String
+  userId        String
+  slug String   @unique
+  template      Portfolio @relation(fields: [portfolioId], references: [id])
 }
