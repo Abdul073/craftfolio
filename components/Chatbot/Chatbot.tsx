@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, GripVertical, Sun, Moon } from "lucide-react";
+import { MessageSquare, X, Send, GripVertical, Sun, Moon, Rocket } from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import axios from "axios";
 import {
@@ -8,8 +8,10 @@ import {
   updatePortfolio,
   updateTheme,
 } from "@/app/actions/portfolio";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { newPortfolioData } from "@/slices/dataSlice";
+import { RootState } from "@/store/store";
+import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 import { fontClassMap, fontOptions } from "@/lib/font";
 import { Button } from "../ui/button";
@@ -18,6 +20,7 @@ import Editor from "react-simple-code-editor";
 import Prism from "prismjs";
 import "prismjs/components/prism-css";
 import "prismjs/themes/prism-tomorrow.css";
+import DeployModal from "../DeployModal";
 
 interface Message {
   id: number;
@@ -125,6 +128,14 @@ const PortfolioChatbot = ({
   setCustomCSS,
   customCSSState,
 }: ChatbotProps) => {
+  const {user} = useUser();
+  const {portfolioUserId} = useSelector((state: RootState) => state.data);
+
+  // If user is not the portfolio owner, don't show the chatbot
+  if (user === null || !user?.id || user.id !== portfolioUserId) {
+    return null;
+  }
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -148,6 +159,7 @@ const PortfolioChatbot = ({
     }
     return "dark";
   });
+  const [showDeployModal, setShowDeployModal] = useState(false);
 
   const themeColors = CHATBOT_THEMES[chatbotTheme];
 
@@ -1420,6 +1432,21 @@ const PortfolioChatbot = ({
                   >
                     Custom CSS
                   </motion.button>
+                  <motion.button
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    onClick={() => setShowDeployModal(true)}
+                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors col-span-2"
+                    style={{
+                      backgroundColor: themeColors.bgCard,
+                      borderColor: themeColors.borderLight,
+                      color: themeColors.textPrimary,
+                    }}
+                  >
+                    <Rocket className="w-4 h-4 inline-block mr-2" />
+                    Deploy Portfolio
+                  </motion.button>
                 </div>
               </motion.div>
             )}
@@ -1564,6 +1591,14 @@ const PortfolioChatbot = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <DeployModal
+        isOpen={showDeployModal}
+        onClose={() => setShowDeployModal(false)}
+        portfolioId={portfolioId}
+        portfolioData={portfolioData}
+      />
+
       {!isOpen && (
         <motion.button
           variants={buttonVariants}

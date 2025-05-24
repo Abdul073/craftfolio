@@ -2,9 +2,20 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useEffect, useState } from "react";
-import { fetchContent, getIdThroughSlug, getThemeNameApi } from "@/app/actions/portfolio";
+import {
+  fetchContent,
+  getIdThroughSlug,
+  getThemeNameApi,
+} from "@/app/actions/portfolio";
 import { redirect, useParams } from "next/navigation";
-import { setCustomCSSState, setFontName, setPortfolioData, setTemplateName, setThemeName } from "@/slices/dataSlice";
+import {
+  setCustomCSSState,
+  setFontName,
+  setPortfolioData,
+  setPortFolioUserId,
+  setTemplateName,
+  setThemeName,
+} from "@/slices/dataSlice";
 import { templatesConfig } from "@/lib/templateConfig";
 import Sidebar from "../Sidebar";
 import { Spotlight } from "@/components/NeoSpark/Spotlight";
@@ -23,12 +34,13 @@ const Page = () => {
   let portfolioId = params.portfolioId as string;
 
   const isUUID = (str: string) =>
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      str
+    );
 
-  const { portfolioData, templateName, themeName, fontName,customCSSState } = useSelector(
-    (state: RootState) => state.data
-  );
-  
+  const { portfolioData, templateName, themeName, fontName, customCSSState } =
+    useSelector((state: RootState) => state.data);
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -43,10 +55,12 @@ const Page = () => {
     };
   };
 
-  const allSections = dataLoaded ? portfolioData?.map((item: any) => item.type) : [];
-  
-  const themes = dataLoaded 
-    ? portfolioData?.find((item: any) => item.type === "themes")?.data 
+  const allSections = dataLoaded
+    ? portfolioData?.map((item: any) => item.type)
+    : [];
+
+  const themes = dataLoaded
+    ? portfolioData?.find((item: any) => item.type === "themes")?.data
     : undefined;
 
   useEffect(() => {
@@ -55,44 +69,59 @@ const Page = () => {
       setDataLoaded(false);
 
       try {
-        // Check if portfolioId is UUID, if not fetch the actual ID
-        if (!isUUID(portfolioId)) {
+        let currentPortfolioId = portfolioId;
+        
+        // First check if it's a UUID
+        if (isUUID(portfolioId)) {
+          currentPortfolioId = portfolioId;
+        } else {
+          // If not UUID, try to get ID through slug
           const response = await getIdThroughSlug({ slug: portfolioId });
-          if(!response.success && response.error){
-            toast.error(response.error)
+          if (!response.success && response.error) {
+            toast.error(response.error);
             setPortfolioNotFound(true);
             return;
           }
           if (response.success && response.portfolioId) {
-            setFinalPortfolioId(response.portfolioId);
+            currentPortfolioId = response.portfolioId;
           }
-        } else {
-          setFinalPortfolioId(portfolioId);
         }
 
+        setFinalPortfolioId(currentPortfolioId);
+
         // Fetch theme data
-        const themeResult = await getThemeNameApi({ portfolioId: finalPortfolioId });
+        const themeResult = await getThemeNameApi({
+          portfolioId: currentPortfolioId,
+        });
         if (!themeResult.success) {
           setPortfolioNotFound(true);
+          console.log("true form theme")
           return;
         }
         if (themeResult.success) {
-          dispatch(setTemplateName(themeResult?.data?.templateName || "default"));
+          dispatch(setPortFolioUserId(themeResult?.data?.userId || ""));
+          dispatch(
+            setTemplateName(themeResult?.data?.templateName || "default")
+          );
           dispatch(setThemeName(themeResult?.data?.themeName || "default"));
           dispatch(setFontName(themeResult?.data?.fontName || "Raleway"));
           dispatch(setCustomCSSState(themeResult?.data?.customCSS || ""));
         }
 
         // Fetch content data
-        const contentResult: any = await fetchContent({ portfolioId: finalPortfolioId });
+        const contentResult: any = await fetchContent({
+          portfolioId: currentPortfolioId,
+        });
+        console.log(currentPortfolioId)
         if (!contentResult.success) {
           setPortfolioNotFound(true);
+          console.log("true form content")
           return;
         }
         if (contentResult.success) {
           dispatch(setPortfolioData(contentResult?.data?.sections));
         }
-        
+
         // Mark data as loaded only after both fetches complete
         setDataLoaded(true);
       } catch (error) {
@@ -103,20 +132,21 @@ const Page = () => {
     };
 
     initializePortfolio();
-  }, [portfolioId, dispatch]);
+  }, [portfolioId, dispatch,finalPortfolioId]);
 
   // Don't try to access template config until we have template name
-  const Template = (dataLoaded && templateName)
-    ? (templatesConfig[
-        templateName as keyof typeof templatesConfig
-      ] as TemplateType)
-    : null;
+  const Template =
+    dataLoaded && templateName
+      ? (templatesConfig[
+          templateName as keyof typeof templatesConfig
+        ] as TemplateType)
+      : null;
 
   const getComponentForSection = (sectionType: string) => {
     if (!Template || !Template.sections || !Template.sections[sectionType]) {
       return null;
     }
-    const SectionComponent : any = Template.sections[sectionType];
+    const SectionComponent: any = Template.sections[sectionType];
     return SectionComponent ? (
       <SectionComponent
         currentPortTheme={themeName}
@@ -125,6 +155,7 @@ const Page = () => {
       />
     ) : null;
   };
+
 
   if (portfolioNotFound) {
     return <PortfolioNotFound />;
@@ -136,15 +167,11 @@ const Page = () => {
       { text: "Fetching data", icon: Layout },
       { text: "Almost there", icon: CheckCircle },
     ];
-    return (
-      <LoadingSpinner loadingMessages={portfolioMessages} />
-    );
+    return <LoadingSpinner loadingMessages={portfolioMessages} />;
   }
 
- 
-
   // By this point, we guarantee the data is loaded
-  const NavbarComponent : any = Template.navbar;
+  const NavbarComponent: any = Template.navbar;
   const hasSpotlight = Template.spotlight;
   const selectedFontClass = fontClassMap[fontName] || fontClassMap["raleway"];
 
@@ -160,27 +187,37 @@ const Page = () => {
       )}
 
       {/* Responsive layout: on md+ if chat is open, add right margin to main content */}
-      <div className={isChatOpen ? "w-full md:w-[80%] md:mr-[20%] transition-all duration-300" : "w-full transition-all duration-300"}>
+      <div
+        className={
+          isChatOpen
+            ? "w-full md:w-[80%] md:mr-[20%] transition-all duration-300"
+            : "w-full transition-all duration-300"
+        }
+      >
         <motion.div
-          className={cn(
-            "custom-bg min-h-screen w-full",
-            selectedFontClass
-          )}
+          className={cn("custom-bg min-h-screen w-full", selectedFontClass)}
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-          {NavbarComponent && <NavbarComponent customCSS={customCSSState} currentPortTheme={themeName}/>} 
+          {NavbarComponent && (
+            <NavbarComponent
+              customCSS={customCSSState}
+              currentPortTheme={themeName}
+            />
+          )}
           <Sidebar />
 
           {allSections && allSections.length > 0 ? (
-            allSections.map((section: string) => getComponentForSection(section))
+            allSections.map((section: string) =>
+              getComponentForSection(section)
+            )
           ) : (
-            <div className={cn("flex items-center justify-center h-screen")}> 
+            <div className={cn("flex items-center justify-center h-screen")}>
               <p className="text-xl">Portfolio content not found</p>
             </div>
           )}
         </motion.div>
       </div>
-      
+
       {/* Only render Chatbot after data is loaded */}
       {dataLoaded && (
         <Chatbot

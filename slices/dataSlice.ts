@@ -6,6 +6,7 @@ interface PortfolioState {
   themeName: string;
   fontName: string;
   customCSSState : string;
+  portfolioUserId : string;
 }
 
 const initialState: PortfolioState = {
@@ -14,6 +15,7 @@ const initialState: PortfolioState = {
   themeName: "",
   fontName: "",
   customCSSState : "",
+  portfolioUserId : "",
 };
 
 export const dataSlice = createSlice({
@@ -23,7 +25,9 @@ export const dataSlice = createSlice({
     setPortfolioData: (state, action: PayloadAction<any[]>) => {
       state.portfolioData = action.payload;
     },
-    
+    setPortFolioUserId: (state, action: PayloadAction<string>) => {
+      state.portfolioUserId = action.payload;
+    },
     setTemplateName: (state, action: PayloadAction<string>) => {
       state.templateName = action.payload;
     },
@@ -66,6 +70,7 @@ export const {
   setTemplateName, 
   setThemeName,
   setFontName,
+  setPortFolioUserId,
   updatePortfolioData, 
   newPortfolioData,
   setCustomCSSState
