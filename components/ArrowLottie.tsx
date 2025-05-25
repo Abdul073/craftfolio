@@ -5,11 +5,12 @@ import { useEffect, useRef } from "react";
 
 const ArrowLottie = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<any>(null);
 
   useEffect(() => {
-    // Only run this effect when the ref is available and we're in the browser
     if (containerRef.current) {
-      const animation = lottie.loadAnimation({
+      // Load the animation
+      animationRef.current = lottie.loadAnimation({
         container: containerRef.current,
         renderer: "svg",
         autoplay: false,
@@ -17,18 +18,38 @@ const ArrowLottie = () => {
         path: "/arrow-lottie2.json",
       });
 
-      setTimeout(() => {
-        animation.play();
-      }, 1000);
+      // Set up intersection observer
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && animationRef.current) {
+            // Reset and play animation when in view
+            animationRef.current.goToAndPlay(0);
+          }
+        },
+        {
+          threshold: 0.1, // Trigger when 10% of the element is visible
+          rootMargin: '50px' // Start a bit earlier
+        }
+      );
 
-      return () => animation.destroy();
+      // Start observing
+      observer.observe(containerRef.current);
+
+      // Cleanup
+      return () => {
+        observer.disconnect();
+        if (animationRef.current) {
+          animationRef.current.destroy();
+        }
+      };
     }
   }, []);
 
   return (
     <div
       ref={containerRef}
-      className="h-40 w-full max-w-32 lg:scale-150 scale-125"
+      className="h-40 w-full max-w-32 lg:scale-150 scale-125 opacity-100"
+      style={{ visibility: 'visible' }}
     ></div>
   );
 };

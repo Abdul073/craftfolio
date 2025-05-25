@@ -22,11 +22,12 @@ import {
   updateFont,
   updatePortfolio,
   updateTheme,
+  updatePortfolioUserId,
 } from "@/app/actions/portfolio";
 import { useDispatch, useSelector } from "react-redux";
 import { newPortfolioData } from "@/slices/dataSlice";
 import { RootState } from "@/store/store";
-import { useUser } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 import { fontClassMap, fontOptions } from "@/lib/font";
 import { Button } from "../ui/button";
@@ -38,6 +39,8 @@ import "prismjs/themes/prism-tomorrow.css";
 import DeployModal from "../DeployModal";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface Message {
   id: number;
@@ -147,8 +150,9 @@ const PortfolioChatbot = ({
   customCSSState,
   portfolioLink,
 }: ChatbotProps) => {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const { portfolioUserId } = useSelector((state: RootState) => state.data);
+  const pathname = usePathname();
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -181,6 +185,7 @@ const PortfolioChatbot = ({
   const [seoDescription, setSeoDescription] = useState("");
   const [isGeneratingSEO, setIsGeneratingSEO] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [hasUpdatedUserId, setHasUpdatedUserId] = useState(false);
 
   const themeColors = CHATBOT_THEMES[chatbotTheme];
 
@@ -232,6 +237,59 @@ const PortfolioChatbot = ({
     setCustomCSSState(customCSSState);
   }, [customCSSState]);
 
+  const isFirstTime = useRef(true);
+
+  useEffect(() => {
+    const updateUserId = async () => {
+      if (
+        isLoaded &&
+        user &&
+        !isFirstTime.current &&
+        portfolioUserId === "guest" &&
+        !hasUpdatedUserId
+      ) {
+        try {
+          const result = await updatePortfolioUserId({
+            portfolioId,
+            newUserId: user.id,
+          });
+
+          if (result.success) {
+            dispatch(
+              newPortfolioData(
+                portfolioData.map((item: any) =>
+                  item.type === "userInfo"
+                    ? { ...item, data: { ...item.data, userId: user.id } }
+                    : item
+                )
+              )
+            );
+            toast.success("Portfolio linked to your account!");
+            setHasUpdatedUserId(true);
+          } else {
+            toast.error("Failed to link portfolio to your account");
+            setHasUpdatedUserId(true);
+          }
+        } catch (error) {
+          console.error("Error updating portfolio userId:", error);
+          toast.error("Failed to link portfolio to your account");
+          setHasUpdatedUserId(true);
+        }
+      }
+    };
+
+    updateUserId();
+    isFirstTime.current = false;
+  }, [
+    isLoaded,
+    user,
+    portfolioId,
+    portfolioUserId,
+    portfolioData,
+    dispatch,
+    hasUpdatedUserId,
+  ]);
+
   const handleThemeToggle = () => {
     setChatbotTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
@@ -252,6 +310,16 @@ const PortfolioChatbot = ({
   };
 
   const handleSendMessage = async (messageText = inputValue) => {
+    if (!user) {
+      toast.error("Please sign up to use the chatbot and save your portfolio", {
+        duration: 2500,
+        style: {
+          zIndex: 999999,
+        },
+      });
+      return;
+    }
+
     if (!messageText.trim() || isProcessing) return;
 
     const userMessage: Message = {
@@ -358,15 +426,102 @@ const PortfolioChatbot = ({
   };
 
   const handleShowThemeOptions = () => {
+    if (!user) {
+      toast.error("Please sign up to customize your portfolio", {
+        duration: 2500,
+        style: {
+          zIndex: 999999,
+        },
+      });
+      return;
+    }
     setShowHelpPanel(false);
     setShowFontOptions(false);
     setShowThemeOptions(true);
   };
 
   const handleShowFontOptions = () => {
+    if (!user) {
+      toast.error("Please sign up to customize your portfolio", {
+        duration: 2500,
+        style: {
+          zIndex: 999999,
+        },
+      });
+      return;
+    }
     setShowHelpPanel(false);
     setShowThemeOptions(false);
     setShowFontOptions(true);
+  };
+
+  const handleShowSectionReorder = () => {
+    if (!user) {
+      toast.error("Please sign up to customize your portfolio", {
+        duration: 2500,
+        style: {
+          zIndex: 999999,
+        },
+      });
+      return;
+    }
+    setShowHelpPanel(false);
+    setShowThemeOptions(false);
+    setShowFontOptions(false);
+    setShowSectionReorder(true);
+    setReorderedSections([...sections]);
+  };
+
+  const handleShowAdvanced = () => {
+    if (!user) {
+      toast.error("Please sign up to customize your portfolio", {
+        duration: 2500,
+        style: {
+          zIndex: 999999,
+        },
+      });
+      return;
+    }
+    setShowHelpPanel(false);
+    setShowThemeOptions(false);
+    setShowFontOptions(false);
+    setShowSectionReorder(false);
+    setShowAdvanced(true);
+  };
+
+  const handleShowCSSOptions = () => {
+    if (!user) {
+      toast.error("Please sign up to customize your portfolio", {
+        duration: 2500,
+        style: {
+          zIndex: 999999,
+        },
+      });
+      return;
+    }
+    setShowHelpPanel(false);
+    setShowThemeOptions(false);
+    setShowFontOptions(false);
+    setShowSectionReorder(false);
+    setShowCSSOptions(true);
+  };
+
+  const handleShowSEOSettings = () => {
+    if (!user) {
+      toast.error("Please sign up to customize your portfolio", {
+        duration: 2500,
+        style: {
+          zIndex: 999999,
+        },
+      });
+      return;
+    }
+    setShowHelpPanel(false);
+    setShowThemeOptions(false);
+    setShowFontOptions(false);
+    setShowSectionReorder(false);
+    setShowCSSOptions(false);
+    setShowSEOSettings(true);
   };
 
   const handleFontSelect = (font: string) => {
@@ -392,14 +547,6 @@ const PortfolioChatbot = ({
     setShowThemeOptions(false);
     setShowFontOptions(false);
     setShowHelpPanel(true);
-  };
-
-  const handleShowSectionReorder = () => {
-    setShowHelpPanel(false);
-    setShowThemeOptions(false);
-    setShowFontOptions(false);
-    setShowSectionReorder(true);
-    setReorderedSections([...sections]);
   };
 
   const handleSectionReorder = async () => {
@@ -539,23 +686,6 @@ const PortfolioChatbot = ({
     onOpenChange(newIsOpen);
   };
 
-  const handleShowCSSOptions = () => {
-    setShowHelpPanel(false);
-    setShowThemeOptions(false);
-    setShowFontOptions(false);
-    setShowSectionReorder(false);
-    setShowCSSOptions(true);
-  };
-
-  const handleShowSEOSettings = () => {
-    setShowHelpPanel(false);
-    setShowThemeOptions(false);
-    setShowFontOptions(false);
-    setShowSectionReorder(false);
-    setShowCSSOptions(false);
-    setShowSEOSettings(true);
-  };
-
   const handleApplyCSS = async () => {
     if (setCustomCSS) {
       setCustomCSS(customCSS);
@@ -647,14 +777,6 @@ const PortfolioChatbot = ({
     }
   };
 
-  const handleShowAdvanced = () => {
-    setShowHelpPanel(false);
-    setShowThemeOptions(false);
-    setShowFontOptions(false);
-    setShowSectionReorder(false);
-    setShowAdvanced(true);
-  };
-
   const handleAdvancedOption = (option: "seo" | "css") => {
     setShowAdvanced(false);
     if (option === "seo") {
@@ -664,9 +786,25 @@ const PortfolioChatbot = ({
     }
   };
 
-  if (user === null || !user?.id || user.id !== portfolioUserId) {
+  const handleDeployClick = () => {
+    console.log(portfolioUserId);
+    if (!user) {
+      toast.error("Please sign up to save and deploy your portfolio", {
+        duration: 2500,
+        style: {
+          zIndex: 999999,
+        },
+      });
+      return;
+    }
+    setShowDeployModal(true);
+  };
+
+  if (portfolioUserId !== "guest" && (!user || user.id !== portfolioUserId)) {
     return null;
   }
+
+  console.log(user);
 
   return (
     <div
@@ -690,6 +828,36 @@ const PortfolioChatbot = ({
               borderLeft: `1px solid ${themeColors.borderLight}`,
             }}
           >
+            {(portfolioUserId === "guest" && !isLoaded) ||
+            (portfolioUserId === "guest" && isLoaded && !user) ? (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3 text-center border-b"
+                style={{
+                  backgroundColor: themeColors.bgCard,
+                  borderColor: themeColors.borderLight,
+                }}
+              >
+                <p
+                  className="text-sm"
+                  style={{ color: themeColors.textSecondary }}
+                >
+                  ⚠️ You are in guest mode. Sign up to save your portfolio and
+                  unlock all features including the AI chatbot, theme
+                  customization, and more.{" "}
+                  <SignInButton 
+                    mode="modal"
+                    fallbackRedirectUrl={pathname}
+                    signUpFallbackRedirectUrl={pathname}
+                  >
+                    <div className="underline inline-block cursor-pointer text-blue-300">Sign up</div>
+                  </SignInButton>{" "}
+                  to get started.
+                </p>
+              </motion.div>
+            ) : null}
+
             <div
               className="p-4 flex rounded-t-lg justify-between items-center"
               style={{ backgroundColor: themeColors.bgNav }}
@@ -887,84 +1055,92 @@ const PortfolioChatbot = ({
 
                     {showThemeOptions && (
                       <div className="grid grid-cols-2 gap-3">
-                        {themeOptionsArray.map((theme, index) => {
-                          const themeDetails = themeOptions[theme];
-                          const bgColor =
-                            themeDetails?.colors?.primary || "#f0f0f0";
-                          const textColor =
-                            themeDetails?.colors?.text?.primary || "#333333";
+                        {themeOptionsArray.length === 0 ? (
+                          <div className="col-span-2 p-4 rounded-lg text-center" style={{ backgroundColor: themeColors.bgCard }}>
+                            <p className="text-sm" style={{ color: themeColors.textSecondary }}>
+                              No themes available for this template.
+                            </p>
+                          </div>
+                        ) : (
+                          themeOptionsArray.map((theme, index) => {
+                            const themeDetails = themeOptions[theme];
+                            const bgColor =
+                              themeDetails?.colors?.primary || "#f0f0f0";
+                            const textColor =
+                              themeDetails?.colors?.text?.primary || "#333333";
 
-                          return (
-                            <motion.div
-                              key={index}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.1 * index }}
-                              onClick={() => handleThemeSelect(theme)}
-                              className={`p-4 rounded-lg border cursor-pointer transition-all text-center relative ${
-                                currentPortTheme === theme
-                                  ? "ring ring-opacity-50"
-                                  : ""
-                              }`}
-                              style={{
-                                backgroundColor: themeColors.bgCard,
-                                borderColor:
+                            return (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 * index }}
+                                onClick={() => handleThemeSelect(theme)}
+                                className={`p-4 rounded-lg border cursor-pointer transition-all text-center relative ${
                                   currentPortTheme === theme
-                                    ? themeColors.primary
-                                    : themeColors.borderLight,
-                                boxShadow:
-                                  currentPortTheme === theme
-                                    ? `0 0 20px ${themeColors.primaryGlow}`
-                                    : "none",
-                              }}
-                            >
-                              {(selectedTheme === theme ||
-                                currentPortTheme === theme) && (
-                                <div
-                                  className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
-                                  style={{
-                                    backgroundColor: themeColors.primary,
-                                  }}
-                                >
-                                  <svg
-                                    className="w-3 h-3 text-white"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+                                    ? "ring ring-opacity-50"
+                                    : ""
+                                }`}
+                                style={{
+                                  backgroundColor: themeColors.bgCard,
+                                  borderColor:
+                                    currentPortTheme === theme
+                                      ? themeColors.primary
+                                      : themeColors.borderLight,
+                                  boxShadow:
+                                    currentPortTheme === theme
+                                      ? `0 0 20px ${themeColors.primaryGlow}`
+                                      : "none",
+                                }}
+                              >
+                                {(selectedTheme === theme ||
+                                  currentPortTheme === theme) && (
+                                  <div
+                                    className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
+                                    style={{
+                                      backgroundColor: themeColors.primary,
+                                    }}
                                   >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={3}
-                                      d="M5 13l4 4L19 7"
-                                    />
-                                  </svg>
-                                </div>
-                              )}
-                              <div
-                                className="w-full h-16 rounded-md mb-3 flex flex-col items-center justify-center p-1 shadow-inner"
-                                style={{ backgroundColor: bgColor }}
-                              >
-                                <span
-                                  style={{ color: textColor }}
-                                  className="text-lg font-semibold"
-                                >
-                                  Aa
-                                </span>
+                                    <svg
+                                      className="w-3 h-3 text-white"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={3}
+                                        d="M5 13l4 4L19 7"
+                                      />
+                                    </svg>
+                                  </div>
+                                )}
                                 <div
-                                  className="w-10 h-3 mt-1 rounded-sm"
+                                  className="w-full h-16 rounded-md mb-3 flex flex-col items-center justify-center p-1 shadow-inner"
                                   style={{ backgroundColor: bgColor }}
-                                ></div>
-                              </div>
-                              <p
-                                className="font-medium capitalize"
-                                style={{ color: themeColors.textPrimary }}
-                              >
-                                {theme}
-                              </p>
-                            </motion.div>
-                          );
-                        })}
+                                >
+                                  <span
+                                    style={{ color: textColor }}
+                                    className="text-lg font-semibold"
+                                  >
+                                    Aa
+                                  </span>
+                                  <div
+                                    className="w-10 h-3 mt-1 rounded-sm"
+                                    style={{ backgroundColor: bgColor }}
+                                  ></div>
+                                </div>
+                                <p
+                                  className="font-medium capitalize"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
+                                  {theme}
+                                </p>
+                              </motion.div>
+                            );
+                          })
+                        )}
                       </div>
                     )}
 
@@ -1765,81 +1941,239 @@ const PortfolioChatbot = ({
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
-                  <motion.button
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={handleShowThemeOptions}
-                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
-                    style={{
-                      backgroundColor: themeColors.bgCard,
-                      borderColor: themeColors.borderLight,
-                      color: themeColors.textPrimary,
-                    }}
-                  >
-                    <Palette size={16} />
-                    Change Theme
-                  </motion.button>
-                  <motion.button
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={handleShowFontOptions}
-                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
-                    style={{
-                      backgroundColor: themeColors.bgCard,
-                      borderColor: themeColors.borderLight,
-                      color: themeColors.textPrimary,
-                    }}
-                  >
-                    <Type size={16} />
-                    Change Font
-                  </motion.button>
-                  <motion.button
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={handleShowSectionReorder}
-                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
-                    style={{
-                      backgroundColor: themeColors.bgCard,
-                      borderColor: themeColors.borderLight,
-                      color: themeColors.textPrimary,
-                    }}
-                  >
-                    <Layout size={16} />
-                    Reorder Sections
-                  </motion.button>
-                  <motion.button
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={handleShowAdvanced}
-                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
-                    style={{
-                      backgroundColor: themeColors.bgCard,
-                      borderColor: themeColors.borderLight,
-                      color: themeColors.textPrimary,
-                    }}
-                  >
-                    <Settings size={16} />
-                    Advanced
-                  </motion.button>
-                  <motion.button
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={() => setShowDeployModal(true)}
-                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2 col-span-2"
-                    style={{
-                      backgroundColor: themeColors.bgCard,
-                      borderColor: themeColors.borderLight,
-                      color: themeColors.textPrimary,
-                    }}
-                  >
-                    <Rocket size={16} />
-                    {portfolioLink ? "Already Deployed" : "Deploy Portfolio"}
-                  </motion.button>
+                  {user ? (
+                    <>
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={handleShowThemeOptions}
+                        className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
+                        style={{
+                          backgroundColor: themeColors.bgCard,
+                          borderColor: themeColors.borderLight,
+                          color: themeColors.textPrimary,
+                        }}
+                      >
+                        <Palette size={16} />
+                        Change Theme
+                      </motion.button>
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={handleShowFontOptions}
+                        className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
+                        style={{
+                          backgroundColor: themeColors.bgCard,
+                          borderColor: themeColors.borderLight,
+                          color: themeColors.textPrimary,
+                        }}
+                      >
+                        <Type size={16} />
+                        Change Font
+                      </motion.button>
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={handleShowSectionReorder}
+                        className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
+                        style={{
+                          backgroundColor: themeColors.bgCard,
+                          borderColor: themeColors.borderLight,
+                          color: themeColors.textPrimary,
+                        }}
+                      >
+                        <Layout size={16} />
+                        Reorder Sections
+                      </motion.button>
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={handleShowAdvanced}
+                        className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
+                        style={{
+                          backgroundColor: themeColors.bgCard,
+                          borderColor: themeColors.borderLight,
+                          color: themeColors.textPrimary,
+                        }}
+                      >
+                        <Settings size={16} />
+                        Advanced
+                      </motion.button>
+                    </>
+                  ) : (
+                    <>
+                      <SignInButton
+                        mode="modal"
+                        fallbackRedirectUrl={pathname}
+                        signUpFallbackRedirectUrl={pathname}
+                      >
+                        <motion.button
+                          variants={buttonVariants}
+                          whileHover="hover"
+                          whileTap="tap"
+                          onClick={() => {
+                            toast.error(
+                              "Please sign up to customize your portfolio",
+                              {
+                                duration: 2500,
+                                style: {
+                                  zIndex: 999999,
+                                },
+                              }
+                            );
+                          }}
+                          className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
+                          style={{
+                            backgroundColor: themeColors.bgCard,
+                            borderColor: themeColors.borderLight,
+                            color: themeColors.textPrimary,
+                          }}
+                        >
+                          <Palette size={16} />
+                          Change Theme
+                        </motion.button>
+                      </SignInButton>
+                      <SignInButton
+                        mode="modal"
+                        fallbackRedirectUrl={pathname}
+                        signUpFallbackRedirectUrl={pathname}
+                      >
+                        <motion.button
+                          variants={buttonVariants}
+                          whileHover="hover"
+                          whileTap="tap"
+                          onClick={() => {
+                            toast.error(
+                              "Please sign up to customize your portfolio",
+                              {
+                                duration: 2500,
+                                style: {
+                                  zIndex: 999999,
+                                },
+                              }
+                            );
+                          }}
+                          className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
+                          style={{
+                            backgroundColor: themeColors.bgCard,
+                            borderColor: themeColors.borderLight,
+                            color: themeColors.textPrimary,
+                          }}
+                        >
+                          <Type size={16} />
+                          Change Font
+                        </motion.button>
+                      </SignInButton>
+                      <SignInButton
+                        mode="modal"
+                        fallbackRedirectUrl={pathname}
+                        signUpFallbackRedirectUrl={pathname}
+                      >
+                        <motion.button
+                          variants={buttonVariants}
+                          whileHover="hover"
+                          whileTap="tap"
+                          onClick={() => {
+                            toast.error(
+                              "Please sign up to customize your portfolio",
+                              {
+                                duration: 2500,
+                                style: {
+                                  zIndex: 999999,
+                                },
+                              }
+                            );
+                          }}
+                          className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
+                          style={{
+                            backgroundColor: themeColors.bgCard,
+                            borderColor: themeColors.borderLight,
+                            color: themeColors.textPrimary,
+                          }}
+                        >
+                          <Layout size={16} />
+                          Reorder Sections
+                        </motion.button>
+                      </SignInButton>
+                      <SignInButton
+                        mode="modal"
+                        fallbackRedirectUrl={pathname}
+                        signUpFallbackRedirectUrl={pathname}
+                      >
+                        <motion.button
+                          variants={buttonVariants}
+                          whileHover="hover"
+                          whileTap="tap"
+                          onClick={() => {
+                            toast.error(
+                              "Please sign up to customize your portfolio",
+                              {
+                                duration: 2500,
+                                style: {
+                                  zIndex: 999999,
+                                },
+                              }
+                            );
+                          }}
+                          className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
+                          style={{
+                            backgroundColor: themeColors.bgCard,
+                            borderColor: themeColors.borderLight,
+                            color: themeColors.textPrimary,
+                          }}
+                        >
+                          <Settings size={16} />
+                          Advanced
+                        </motion.button>
+                      </SignInButton>
+                    </>
+                  )}
+                  {user && (
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      onClick={handleDeployClick}
+                      className="text-sm py-2 cursor-pointer px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2 col-span-2"
+                      style={{
+                        backgroundColor: themeColors.bgCard,
+                        borderColor: themeColors.borderLight,
+                        color: themeColors.textPrimary,
+                      }}
+                    >
+                      <Rocket size={16} />
+                      {portfolioLink ? "Already Deployed" : "Deploy Portfolio"}
+                    </motion.button>
+                  )}
+                  {!user && (
+                    <SignInButton
+                      mode="modal"
+                      fallbackRedirectUrl={pathname}
+                      signUpFallbackRedirectUrl={pathname}
+                    >
+                      <motion.button
+                        variants={buttonVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={handleDeployClick}
+                        className="text-sm py-2 cursor-pointer px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2 col-span-2"
+                        style={{
+                          backgroundColor: themeColors.bgCard,
+                          borderColor: themeColors.borderLight,
+                          color: themeColors.textPrimary,
+                        }}
+                      >
+                        <Rocket size={16} />
+                        {portfolioLink
+                          ? "Already Deployed"
+                          : "Deploy Portfolio"}
+                      </motion.button>
+                    </SignInButton>
+                  )}
                 </div>
               </motion.div>
             )}

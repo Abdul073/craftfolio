@@ -218,3 +218,13 @@ html {
   filter: drop-shadow(10px 10px 100px #c5ba20)
     drop-shadow(-10px -10px 50px #c5ba20);
 }
+
+/* Override Clerk modal z-index */
+.cl-modalContent {
+  margin-top: 150px !important;
+  z-index: 100 !important;
+}
+
+.cl-modalBackdrop {
+  z-index: 99 !important;
+}

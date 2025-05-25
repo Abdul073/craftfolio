@@ -6,19 +6,13 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 
 const EditButton = ({sectionName, styles} : {sectionName : string, styles? : string}) => {
-
     const dispatch = useDispatch();
-
     const {currentlyEditing} = useSelector((state: RootState) => state.editMode);
     const {portfolioUserId} = useSelector((state : RootState) => state.data)
     const {user} = useUser();
 
-    if(user === null || !user?.id){
-      return <div>loading..</div>
-    }
-
-    // If user is not the portfolio owner, don't show the edit button
-    if (user.id !== portfolioUserId) {
+    // Show edit button if portfolio is guest-owned or if user is the owner
+    if (portfolioUserId !== "guest" && (!user || user.id !== portfolioUserId)) {
       return null;
     }
 

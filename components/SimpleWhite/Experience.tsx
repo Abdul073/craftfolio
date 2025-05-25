@@ -149,8 +149,6 @@ const Experience: React.FC = ({ customCSS }: any) => {
   }
 
 
-  console.log(experienceData)
-
   return (
     <section
       id="experience"

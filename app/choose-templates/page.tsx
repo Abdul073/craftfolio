@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
 import { createPortfolio, fetchThemesApi } from "../actions/portfolio";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
@@ -16,9 +15,9 @@ import LoadingSpinner, { LoadingMessage } from "@/components/LoadingSpinner";
 import MainNavbar from "@/components/MainNavbar";
 import BgShapes from "@/components/BgShapes";
 import { Palette, Layout, CheckCircle } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 
 const PortfolioThemePage = () => {
-  const { user, isLoaded } = useUser();
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,21 +29,18 @@ const PortfolioThemePage = () => {
 
   const router = useRouter();
   const dispatch = useDispatch();
+  const { user, isSignedIn } = useUser();
 
   const [themes, setThemes] = useState<any>([]);
 
   useEffect(() => {
-    if (isLoaded && !user) {
-      router.push("/");
-    }
-
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [user, isLoaded, router]);
+  }, []);
 
   useEffect(() => {
     fetchThemes();
@@ -76,7 +72,7 @@ const PortfolioThemePage = () => {
   };
 
   const handleCreatePortfolio = async (customBodyResume: any) => {
-    if (selectedTheme && user && creationMethod) {
+    if (selectedTheme && creationMethod) {
       setIsCreating(true);
       try {
         const themeName = themes.find(
@@ -87,7 +83,7 @@ const PortfolioThemePage = () => {
           return;
         }
         const result = await createPortfolio(
-          user.id,
+          isSignedIn ? user.id : "guest",
           themeName,
           creationMethod,
           customBodyResume

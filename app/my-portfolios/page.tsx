@@ -1,5 +1,5 @@
 "use client";
-import { useUser } from "@clerk/nextjs";
+import { useUser, SignInButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { fetchPortfoliosByUserId } from "../actions/portfolio";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast";
 import DeployModal from "@/components/DeployModal";
 
 export default function MyPortfoliosPage() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const [portfolios, setPortfolios] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,13 +37,50 @@ export default function MyPortfoliosPage() {
     }
   }, [user]);
 
-  if (user === undefined || loading) {
+  if (!isLoaded) {
     const myPortfoliosMessages: LoadingMessage[] = [
       { text: "Loading your portfolios", icon: Palette },
       { text: "Fetching data", icon: Layout },
       { text: "Almost there", icon: CheckCircle },
     ];
     return <LoadingSpinner loadingMessages={myPortfoliosMessages} />;
+  }
+
+  if (!user) {
+    return (
+      <div className="main-bg-noise">
+        <MainNavbar />
+        <div
+          style={{
+            backgroundImage: `radial-gradient(circle at 50% 0%, ${ColorTheme.primaryGlow}, transparent 50%)`,
+          }}
+          className="flex flex-col items-center justify-center min-h-screen pt-24 w-full px-2 sm:px-4"
+        >
+          <div className="w-full max-w-md p-6 rounded-xl bg-[var(--bg-card)] shadow-lg border" style={{ borderColor: "var(--border-light)" }}>
+            <h1 className="text-2xl font-bold mb-4 text-center">My Portfolios</h1>
+            <p className="text-sm text-gray-500 mb-6 text-center">
+              Sign in to view and manage your portfolios
+            </p>
+            <SignInButton mode="modal" fallbackRedirectUrl="/my-portfolios">
+              <motion.button
+                className="w-full py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2"
+                style={{
+                  backgroundColor: ColorTheme.primary,
+                  color: "#000",
+                  boxShadow: `0 4px 10px ${ColorTheme.primaryGlow}`,
+                }}
+                whileHover={{
+                  boxShadow: `0 6px 14px ${ColorTheme.primaryGlow}`,
+                }}
+              >
+                <Rocket className="h-5 w-5" />
+                Sign in to Continue
+              </motion.button>
+            </SignInButton>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {

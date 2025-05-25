@@ -38,7 +38,7 @@ const Page = () => {
       str
     );
 
-  const { portfolioData, templateName, themeName, fontName, customCSSState } =
+  const { portfolioData,portfolioUserId, templateName, themeName, fontName, customCSSState } =
     useSelector((state: RootState) => state.data);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -63,6 +63,7 @@ const Page = () => {
   const themes = dataLoaded
     ? portfolioData?.find((item: any) => item.type === "themes")?.data
     : undefined;
+
 
   useEffect(() => {
     const initializePortfolio = async () => {
@@ -177,7 +178,6 @@ const Page = () => {
   const NavbarComponent: any = Template.navbar;
   const hasSpotlight = Template.spotlight;
   const selectedFontClass = fontClassMap[fontName] || fontClassMap["raleway"];
-  console.log(portfolioData)
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       {hasSpotlight && (

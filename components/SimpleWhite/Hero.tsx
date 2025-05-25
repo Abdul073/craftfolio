@@ -27,8 +27,6 @@ const Hero: NextPage = ({ customCSS }: any) => {
       const heroSectionData = portfolioData?.find((section: any) => section.type === "hero")?.data;
       const userInfoData = portfolioData?.find((section: any) => section.type === "userInfo")?.data;
 
-      console.log(heroSectionData,userInfoData)
-
       if (userInfoData) {
         setUserInfo(userInfoData);
       }

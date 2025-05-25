@@ -341,3 +341,33 @@ export async function getIdThroughSlug({ slug }: { slug: string }) {
     return { success: false, error: "Failed to fetch portfolio id slug" };
   }
 }
+
+export const updatePortfolioUserId = async ({
+  portfolioId,
+  newUserId,
+}: {
+  portfolioId: string;
+  newUserId: string;
+}) => {
+  try {
+    const updatedPortfolio = await prisma.portfolio.update({
+      where: {
+        id: portfolioId,
+      },
+      data: {
+        userId: newUserId,
+      },
+    });
+
+    return {
+      success: true,
+      data: updatedPortfolio,
+    };
+  } catch (error) {
+    console.error('Error updating portfolio userId:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to update portfolio userId',
+    };
+  }
+};
