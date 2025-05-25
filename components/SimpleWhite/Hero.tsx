@@ -27,19 +27,15 @@ const Hero: NextPage = ({ customCSS }: any) => {
       const heroSectionData = portfolioData?.find((section: any) => section.type === "hero")?.data;
       const userInfoData = portfolioData?.find((section: any) => section.type === "userInfo")?.data;
 
+      console.log(heroSectionData,userInfoData)
+
       if (userInfoData) {
         setUserInfo(userInfoData);
       }
 
       if (heroSectionData) {
+        console.log("yes")
         setHeroData(heroSectionData);
-      } else {
-        setHeroData({
-          name: "John Doe",
-          title: "Full Stack Developer",
-          summary: "I build exceptional and accessible digital experiences for the web.",
-          shortSummary: "I build exceptional and accessible digital experiences for the web.",
-        });
       }
       setIsLoading(false);
     }
@@ -117,7 +113,7 @@ const Hero: NextPage = ({ customCSS }: any) => {
                   delay: 0.1
                 }}
               >
-                {userInfo?.name || "John Doe"}
+                {heroData?.name || "John Doe"}
               </motion.h1>
 
               <motion.h2

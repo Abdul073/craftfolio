@@ -177,7 +177,7 @@ const Page = () => {
   const NavbarComponent: any = Template.navbar;
   const hasSpotlight = Template.spotlight;
   const selectedFontClass = fontClassMap[fontName] || fontClassMap["raleway"];
-
+  console.log(portfolioData)
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       {hasSpotlight && (

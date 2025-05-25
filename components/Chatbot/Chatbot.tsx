@@ -7,6 +7,13 @@ import {
   Sun,
   Moon,
   Rocket,
+  Cloud,
+  Search,
+  Palette,
+  Type,
+  Layout,
+  Code,
+  Settings,
 } from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import axios from "axios";
@@ -29,6 +36,8 @@ import Prism from "prismjs";
 import "prismjs/components/prism-css";
 import "prismjs/themes/prism-tomorrow.css";
 import DeployModal from "../DeployModal";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 
 interface Message {
   id: number;
@@ -156,6 +165,7 @@ const PortfolioChatbot = ({
   const [reorderedSections, setReorderedSections] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showCSSOptions, setShowCSSOptions] = useState(false);
+  const [showSEOSettings, setShowSEOSettings] = useState(false);
   const [customCSS, setCustomCSSState] = useState(customCSSState);
   const [chatbotTheme, setChatbotTheme] = useState<"dark" | "light">(() => {
     if (typeof window !== "undefined") {
@@ -165,6 +175,12 @@ const PortfolioChatbot = ({
     return "dark";
   });
   const [showDeployModal, setShowDeployModal] = useState(false);
+  const [faviconUrl, setFaviconUrl] = useState("");
+  const [isFaviconUploaded, setIsFaviconUploaded] = useState(false);
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [isGeneratingSEO, setIsGeneratingSEO] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const themeColors = CHATBOT_THEMES[chatbotTheme];
 
@@ -517,6 +533,8 @@ const PortfolioChatbot = ({
     setShowFontOptions(false);
     setShowSectionReorder(false);
     setShowCSSOptions(false);
+    setShowSEOSettings(false);
+    setShowAdvanced(false);
     setIsOpen(newIsOpen);
     onOpenChange(newIsOpen);
   };
@@ -527,6 +545,15 @@ const PortfolioChatbot = ({
     setShowFontOptions(false);
     setShowSectionReorder(false);
     setShowCSSOptions(true);
+  };
+
+  const handleShowSEOSettings = () => {
+    setShowHelpPanel(false);
+    setShowThemeOptions(false);
+    setShowFontOptions(false);
+    setShowSectionReorder(false);
+    setShowCSSOptions(false);
+    setShowSEOSettings(true);
   };
 
   const handleApplyCSS = async () => {
@@ -550,12 +577,91 @@ const PortfolioChatbot = ({
     setShowHelpPanel(false);
     setShowSectionReorder(false);
     setShowCSSOptions(false);
+    setShowSEOSettings(false);
+    setShowAdvanced(false);
     setCurrentFont(currentFont);
     setSelectedFont(currentFont);
     setCurrentPortTheme(currentPortTheme);
     setSelectedTheme(currentPortTheme);
     setCustomCSSState(customCSSState);
     handleOpenChange(false);
+  };
+
+  const handleFaviconUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!event.target.files) return;
+    const formData = new FormData();
+    formData.append("file", event.target.files[0]);
+    formData.append(
+      "upload_preset",
+      process.env.NEXT_PUBLIC_CLOUDINARY_PRESET as string
+    );
+
+    try {
+      toast.loading("Uploading favicon...", { id: "faviconUpload" });
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        toast.error("Upload failed", { id: "faviconUpload" });
+        return;
+      }
+
+      const data = await response.json();
+      setFaviconUrl(data.secure_url);
+      setIsFaviconUploaded(true);
+      toast.success("Favicon uploaded successfully!", { id: "faviconUpload" });
+    } catch (error) {
+      toast.error("An error occurred during upload", { id: "faviconUpload" });
+      console.error("Upload error:", error);
+    }
+  };
+
+  const removeFavicon = () => {
+    setFaviconUrl("");
+    setIsFaviconUploaded(false);
+  };
+
+  const handleGenerateSEO = async () => {
+    try {
+      setIsGeneratingSEO(true);
+      const response = await axios.post(
+        `http://localhost:3000/api/seo-settings`,
+        { portfolioData: portfolioData }
+      );
+      setSeoTitle(response.data.seoTitle);
+      setSeoDescription(response.data.seoDescription);
+      toast.success("SEO content generated successfully!");
+    } catch (error) {
+      console.error("Error generating SEO content:", error);
+      toast.error("Failed to generate SEO content");
+    } finally {
+      setIsGeneratingSEO(false);
+    }
+  };
+
+  const handleShowAdvanced = () => {
+    setShowHelpPanel(false);
+    setShowThemeOptions(false);
+    setShowFontOptions(false);
+    setShowSectionReorder(false);
+    setShowAdvanced(true);
+  };
+
+  const handleAdvancedOption = (option: "seo" | "css") => {
+    setShowAdvanced(false);
+    if (option === "seo") {
+      setShowSEOSettings(true);
+    } else {
+      setShowCSSOptions(true);
+    }
   };
 
   if (user === null || !user?.id || user.id !== portfolioUserId) {
@@ -635,7 +741,9 @@ const PortfolioChatbot = ({
                 showFontOptions ||
                 showHelpPanel ||
                 showSectionReorder ||
-                showCSSOptions ? (
+                showCSSOptions ||
+                showSEOSettings ||
+                showAdvanced ? (
                   <motion.div
                     key="options-panel"
                     variants={panelVariants}
@@ -658,13 +766,26 @@ const PortfolioChatbot = ({
                           ? "Reorder Sections"
                           : showCSSOptions
                           ? "Custom CSS Injection"
+                          : showSEOSettings
+                          ? "SEO Settings"
+                          : showAdvanced
+                          ? "Advanced Settings"
                           : "How Can I Help You?"}
                       </h4>
                       <motion.button
                         variants={buttonVariants}
                         whileHover="hover"
                         whileTap="tap"
-                        onClick={handleChatClose}
+                        onClick={() => {
+                          setShowThemeOptions(false);
+                          setShowHelpPanel(false);
+                          setShowFontOptions(false);
+                          setShowSectionReorder(false);
+                          setShowCSSOptions(false);
+                          setShowSEOSettings(false);
+                          setShowAdvanced(false);
+                          setSelectedTheme("");
+                        }}
                         className="ml-auto p-1 hover:bg-[#2c2c2e] rounded-full transition-colors"
                         style={{ color: themeColors.textPrimary }}
                       >
@@ -1176,6 +1297,307 @@ const PortfolioChatbot = ({
                         </div>
                       </div>
                     )}
+
+                    {showSEOSettings && (
+                      <div className="space-y-4">
+                        <div
+                          className="rounded-lg p-4"
+                          style={{ backgroundColor: themeColors.bgCard }}
+                        >
+                          <div className="flex justify-between items-center mb-4">
+                            <h5
+                              className="font-semibold"
+                              style={{ color: themeColors.primary }}
+                            >
+                              SEO Settings
+                            </h5>
+                            <motion.button
+                              variants={buttonVariants}
+                              whileHover="hover"
+                              whileTap="tap"
+                              onClick={handleGenerateSEO}
+                              disabled={isGeneratingSEO}
+                              className="text-sm py-2 px-4 rounded-lg border transition-colors flex items-center gap-2"
+                              style={{
+                                backgroundColor: isGeneratingSEO
+                                  ? themeColors.bgCardHover
+                                  : themeColors.primary,
+                                borderColor: themeColors.borderLight,
+                                color: themeColors.textPrimary,
+                                boxShadow: !isGeneratingSEO
+                                  ? `0 4px 14px ${themeColors.primaryGlow}`
+                                  : "none",
+                              }}
+                            >
+                              {isGeneratingSEO ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                  Generating...
+                                </>
+                              ) : (
+                                <>
+                                  <Rocket className="w-4 h-4" />
+                                  One-Click SEO
+                                </>
+                              )}
+                            </motion.button>
+                          </div>
+                          <div className="space-y-4">
+                            <div>
+                              <label
+                                className="block text-sm font-medium mb-2"
+                                style={{ color: themeColors.textSecondary }}
+                              >
+                                SEO Title
+                              </label>
+                              <input
+                                type="text"
+                                value={seoTitle}
+                                onChange={(e) => setSeoTitle(e.target.value)}
+                                placeholder="Enter SEO title"
+                                className="w-full px-3 py-2 rounded-lg outline-none"
+                                style={{
+                                  backgroundColor: themeColors.bgCardHover,
+                                  color: themeColors.textPrimary,
+                                  border: `1px solid ${themeColors.borderLight}`,
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <label
+                                className="block text-sm font-medium mb-2"
+                                style={{ color: themeColors.textSecondary }}
+                              >
+                                SEO Description
+                              </label>
+                              <textarea
+                                value={seoDescription}
+                                onChange={(e) =>
+                                  setSeoDescription(e.target.value)
+                                }
+                                placeholder="Enter SEO description"
+                                rows={3}
+                                className="w-full px-3 py-2 rounded-lg outline-none resize-none"
+                                style={{
+                                  backgroundColor: themeColors.bgCardHover,
+                                  color: themeColors.textPrimary,
+                                  border: `1px solid ${themeColors.borderLight}`,
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <label
+                                className="block text-sm font-medium mb-2"
+                                style={{ color: themeColors.textSecondary }}
+                              >
+                                Website Favicon
+                              </label>
+                              <div className="mt-1 flex flex-col items-center">
+                                {faviconUrl ? (
+                                  <div className="relative w-full">
+                                    <div className="flex items-center gap-3">
+                                      <div
+                                        className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden"
+                                        style={{
+                                          backgroundColor:
+                                            themeColors.bgCardHover,
+                                        }}
+                                      >
+                                        <img
+                                          src={faviconUrl}
+                                          alt="Favicon Preview"
+                                          className="w-full h-full object-contain"
+                                        />
+                                      </div>
+                                      <motion.button
+                                        variants={buttonVariants}
+                                        whileHover="hover"
+                                        whileTap="tap"
+                                        onClick={removeFavicon}
+                                        className="text-sm py-2 px-4 rounded-lg border transition-colors"
+                                        style={{
+                                          backgroundColor:
+                                            themeColors.bgCardHover,
+                                          borderColor: themeColors.borderLight,
+                                          color: themeColors.textPrimary,
+                                        }}
+                                      >
+                                        Remove
+                                      </motion.button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <label className="w-full cursor-pointer">
+                                    <div
+                                      className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center h-32 transition-colors"
+                                      style={{
+                                        borderColor: themeColors.borderLight,
+                                        color: themeColors.textSecondary,
+                                      }}
+                                    >
+                                      <Cloud
+                                        className="h-8 w-8"
+                                        style={{
+                                          color: themeColors.textSecondary,
+                                        }}
+                                      />
+                                      <p className="mt-2 text-sm">
+                                        Upload favicon
+                                      </p>
+                                      <p
+                                        className="mt-1 text-xs"
+                                        style={{
+                                          color: themeColors.textSecondary,
+                                        }}
+                                      >
+                                        PNG, ICO, SVG up to 2MB
+                                      </p>
+                                      <input
+                                        type="file"
+                                        accept="image/png,image/x-icon,image/svg+xml"
+                                        onChange={handleFaviconUpload}
+                                        className="hidden"
+                                      />
+                                    </div>
+                                  </label>
+                                )}
+                              </div>
+
+                              {!isFaviconUploaded && !faviconUrl && (
+                                <div className="mt-2">
+                                  <Label
+                                    htmlFor="faviconUrl"
+                                    className="text-sm font-medium"
+                                    style={{ color: themeColors.textPrimary }}
+                                  >
+                                    Or paste favicon URL
+                                  </Label>
+                                  <Input
+                                    id="faviconUrl"
+                                    value={faviconUrl}
+                                    onChange={(e) =>
+                                      setFaviconUrl(e.target.value)
+                                    }
+                                    placeholder="Enter favicon URL"
+                                    className="mt-1"
+                                    style={{
+                                      backgroundColor: themeColors.bgCardHover,
+                                      borderColor: themeColors.borderLight,
+                                      color: themeColors.textPrimary,
+                                    }}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {showAdvanced && (
+                      <div className="space-y-4">
+                        <div
+                          className="rounded-lg p-4"
+                          style={{ backgroundColor: themeColors.bgCard }}
+                        >
+                          <div className="flex justify-between items-center mb-4">
+                            <h5
+                              className="font-semibold"
+                              style={{ color: themeColors.primary }}
+                            >
+                              Advanced Settings
+                            </h5>
+                            <motion.button
+                              variants={buttonVariants}
+                              whileHover="hover"
+                              whileTap="tap"
+                              onClick={() => setShowAdvanced(false)}
+                              className="text-sm py-2 px-4 rounded-lg border transition-colors flex items-center gap-2"
+                              style={{
+                                backgroundColor: themeColors.bgCardHover,
+                                borderColor: themeColors.borderLight,
+                                color: themeColors.textPrimary,
+                              }}
+                            >
+                              <X size={18} className="cursor-pointer" />
+                            </motion.button>
+                          </div>
+                          <div className="grid grid-cols-1 gap-3">
+                            <motion.button
+                              variants={buttonVariants}
+                              whileHover="hover"
+                              whileTap="tap"
+                              onClick={() => handleAdvancedOption("seo")}
+                              className="p-4 rounded-lg border transition-colors flex items-center gap-3"
+                              style={{
+                                backgroundColor: themeColors.bgCard,
+                                borderColor: themeColors.borderLight,
+                                color: themeColors.textPrimary,
+                              }}
+                            >
+                              <div
+                                className="p-2 rounded-lg"
+                                style={{
+                                  backgroundColor: themeColors.bgCardHover,
+                                }}
+                              >
+                                <Search size={20} />
+                              </div>
+                              <div className="text-left">
+                                <h5
+                                  className="font-medium"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
+                                  SEO Settings
+                                </h5>
+                                <p
+                                  className="text-sm"
+                                  style={{ color: themeColors.textSecondary }}
+                                >
+                                  Optimize your portfolio for search engines
+                                </p>
+                              </div>
+                            </motion.button>
+
+                            <motion.button
+                              variants={buttonVariants}
+                              whileHover="hover"
+                              whileTap="tap"
+                              onClick={() => handleAdvancedOption("css")}
+                              className="p-4 rounded-lg border transition-colors flex items-center gap-3"
+                              style={{
+                                backgroundColor: themeColors.bgCard,
+                                borderColor: themeColors.borderLight,
+                                color: themeColors.textPrimary,
+                              }}
+                            >
+                              <div
+                                className="p-2 rounded-lg"
+                                style={{
+                                  backgroundColor: themeColors.bgCardHover,
+                                }}
+                              >
+                                <Code size={20} />
+                              </div>
+                              <div className="text-left">
+                                <h5
+                                  className="font-medium"
+                                  style={{ color: themeColors.textPrimary }}
+                                >
+                                  Custom CSS
+                                </h5>
+                                <p
+                                  className="text-sm"
+                                  style={{ color: themeColors.textSecondary }}
+                                >
+                                  Add custom styles to your portfolio
+                                </p>
+                              </div>
+                            </motion.button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 ) : (
                   <div className="space-y-4">
@@ -1289,7 +1711,9 @@ const PortfolioChatbot = ({
               showFontOptions ||
               showThemeOptions ||
               showSectionReorder ||
-              showCSSOptions
+              showCSSOptions ||
+              showSEOSettings ||
+              showAdvanced
             ) && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -1346,13 +1770,14 @@ const PortfolioChatbot = ({
                     whileHover="hover"
                     whileTap="tap"
                     onClick={handleShowThemeOptions}
-                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors"
+                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
                     style={{
                       backgroundColor: themeColors.bgCard,
                       borderColor: themeColors.borderLight,
                       color: themeColors.textPrimary,
                     }}
                   >
+                    <Palette size={16} />
                     Change Theme
                   </motion.button>
                   <motion.button
@@ -1360,13 +1785,14 @@ const PortfolioChatbot = ({
                     whileHover="hover"
                     whileTap="tap"
                     onClick={handleShowFontOptions}
-                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors"
+                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
                     style={{
                       backgroundColor: themeColors.bgCard,
                       borderColor: themeColors.borderLight,
                       color: themeColors.textPrimary,
                     }}
                   >
+                    <Type size={16} />
                     Change Font
                   </motion.button>
                   <motion.button
@@ -1374,52 +1800,45 @@ const PortfolioChatbot = ({
                     whileHover="hover"
                     whileTap="tap"
                     onClick={handleShowSectionReorder}
-                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors"
+                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
                     style={{
                       backgroundColor: themeColors.bgCard,
                       borderColor: themeColors.borderLight,
                       color: themeColors.textPrimary,
                     }}
                   >
+                    <Layout size={16} />
                     Reorder Sections
                   </motion.button>
                   <motion.button
                     variants={buttonVariants}
                     whileHover="hover"
                     whileTap="tap"
-                    onClick={handleShowCSSOptions}
-                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors"
+                    onClick={handleShowAdvanced}
+                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2"
                     style={{
                       backgroundColor: themeColors.bgCard,
                       borderColor: themeColors.borderLight,
                       color: themeColors.textPrimary,
                     }}
                   >
-                    Custom CSS
+                    <Settings size={16} />
+                    Advanced
                   </motion.button>
                   <motion.button
                     variants={buttonVariants}
                     whileHover="hover"
                     whileTap="tap"
                     onClick={() => setShowDeployModal(true)}
-                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors col-span-2"
+                    className="text-sm py-2 px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2 col-span-2"
                     style={{
                       backgroundColor: themeColors.bgCard,
                       borderColor: themeColors.borderLight,
                       color: themeColors.textPrimary,
                     }}
                   >
-                    {portfolioLink ? (
-                      <div className="flex items-center justify-center">
-                        <Rocket className="w-4 h-4 inline-block mr-2" />
-                        Already Deployed !!
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center">
-                        <Rocket className="w-4 h-4 inline-block mr-2" />
-                        Deploy Portfolio
-                      </div>
-                    )}
+                    <Rocket size={16} />
+                    {portfolioLink ? "Already Deployed" : "Deploy Portfolio"}
                   </motion.button>
                 </div>
               </motion.div>
@@ -1559,6 +1978,30 @@ const PortfolioChatbot = ({
                   }}
                 >
                   Apply Custom CSS
+                </Button>
+              </motion.div>
+            )}
+
+            {showSEOSettings && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 border-t"
+                style={{
+                  backgroundColor: themeColors.bgNav,
+                  borderColor: themeColors.borderLight,
+                }}
+              >
+                <Button
+                  onClick={() => {}}
+                  className="w-full font-medium py-2 px-4 rounded-lg transition-colors"
+                  style={{
+                    backgroundColor: themeColors.primary,
+                    color: themeColors.textPrimary,
+                    boxShadow: `0 4px 14px ${themeColors.primaryGlow}`,
+                  }}
+                >
+                  Save SEO Settings
                 </Button>
               </motion.div>
             )}
