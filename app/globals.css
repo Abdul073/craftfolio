@@ -7,7 +7,6 @@
 @import "tailwindcss";
 
 .main-bg-noise {
-  background-size: cover;
   background-repeat: repeat;
   z-index: 0;
   background-image: url("/noise-texture.svg");
