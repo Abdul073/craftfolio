@@ -9,9 +9,6 @@
 .main-bg-noise {
   background-size: cover;
   background-repeat: repeat;
-  margin: 0;
-  padding: 0;
-  height: 100vh!important;
   z-index: 0;
   background-image: url("/noise-texture.svg");
   scroll-behavior: smooth;

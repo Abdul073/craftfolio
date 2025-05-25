@@ -44,7 +44,7 @@ export default function Page() {
   }
 
   return (
-    <div className="relative  scrollbar main-bg-noise  custom-scrollbar">
+    <div className="relative  scrollbar   custom-scrollbar">
       <BgShapes />
 
       <Head>
@@ -65,7 +65,7 @@ export default function Page() {
       </Head>
 
       <MainNavbar />
-        <section className="pt-40 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
+        <section className="pt-40 main-bg-noise pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
           <motion.div
             className="absolute top-0 left-0 w-full h-full -z-10"
             style={{
@@ -307,9 +307,7 @@ export default function Page() {
         </section>
 
         {/* Resume Import Feature */}
-        <section
-          id="resume-import"
-          className="py-20 md:py-28 relative overflow-hidden"
+        <section id="resume-import" className="py-20 md:py-28 main-bg-noise relative overflow-hidden"
         >
           {/* Background decoration */}
           <motion.div
@@ -641,7 +639,7 @@ export default function Page() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-20 md:py-28 relative">
+        <section id="features" className="py-20 main-bg-noise md:py-28 relative">
           {/* Background pattern */}
           <div
             className="absolute inset-0 -z-10 opacity-10"
@@ -738,7 +736,7 @@ export default function Page() {
         {/* Testimonials Section (New) */}
         <section
           id="testimonials"
-          className="py-20 md:py-28 relative overflow-hidden"
+          className="py-20 md:py-28 main-bg-noise relative overflow-hidden"
         >
           {/* Background decoration */}
           <motion.div
@@ -935,7 +933,7 @@ export default function Page() {
         </section>
 
         {/* Footer */}
-        <footer className="py-12 relative overflow-hidden">
+        <footer className="py-12 relative main-bg-noise overflow-hidden">
           <div
             className="absolute inset-0 -z-10"
             style={{

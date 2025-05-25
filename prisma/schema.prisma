@@ -21,7 +21,7 @@ model Portfolio {
   themeName    String   @default("default")
   fontName     String   @default("Raleway")
   customCSS    String?
-  PortfolioLinks  PortfolioLinks[]
+  PortfolioLink  PortfolioLink?
 }
 
 model Template {
@@ -34,9 +34,9 @@ model Template {
   previewImageUrl String[]
 }
 
-model PortfolioLinks {
+model PortfolioLink {
   id            String   @id @default(uuid())
-  portfolioId    String
+  portfolioId    String  @unique
   userId        String
   slug String   @unique
   template      Portfolio @relation(fields: [portfolioId], references: [id])

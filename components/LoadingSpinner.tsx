@@ -60,7 +60,7 @@ export default function LoadingSpinner({
   const { text, icon: Icon } = messages[currentMessageIndex];
 
   return (
-    <div className="main-bg-noise">
+    <div className="main-bg-noise h-screen ">
       <div
       style={{
         backgroundImage: `radial-gradient(circle at 50% 0%, ${ColorTheme.primaryGlow}, transparent 50%)`,

@@ -10,6 +10,92 @@ interface MessageMemory {
   timestamp: Date;
 }
 
+// Dummy response templates based on intent and section
+const generateDummyResponse = (changes: any[], inputValue: string): string => {
+  if (changes.length === 0) {
+    return "I couldn't identify any specific changes to make. Could you please be more specific about what you'd like to update in your portfolio?";
+  }
+
+  const responseTemplates = {
+    add: {
+      projects: "Added a new project to your portfolio with the details you provided.",
+      experience: "Added new work experience to your professional background.",
+      skills: "Added new skills to your technical expertise.",
+      education: "Added educational background to your profile.",
+      default: "Added the requested information to your portfolio."
+    },
+    update: {
+      summary: "Updated your professional summary with fresh content.",
+      shortSummary: "Refreshed your brief introduction.",
+      name: "Updated your name in the portfolio.",
+      title: "Changed your professional title.",
+      email: "Updated your contact email address.",
+      phone: "Updated your phone number.",
+      location: "Updated your location information.",
+      linkedin: "Updated your LinkedIn profile link.",
+      github: "Updated your GitHub profile link.",
+      website: "Updated your personal website link.",
+      projects: "Updated project details as requested.",
+      experience: "Modified your work experience information.",
+      skills: "Updated your skills and technical expertise.",
+      education: "Updated your educational background.",
+      default: "Updated the requested section in your portfolio."
+    },
+    change: {
+      summary: "Modified your professional summary to better reflect your experience.",
+      projects: "Changed the project details as requested.",
+      experience: "Modified your work experience information.",
+      skills: "Updated your technical skills list.",
+      default: "Made the requested changes to your portfolio."
+    },
+    remove: {
+      projects: "Removed the specified project from your portfolio.",
+      experience: "Removed the work experience entry.",
+      skills: "Removed the specified skills from your list.",
+      default: "Removed the requested item from your portfolio."
+    },
+    delete: {
+      projects: "Deleted the specified project from your portfolio.",
+      experience: "Deleted the work experience entry.",
+      skills: "Deleted the specified skills.",
+      default: "Deleted the requested content from your portfolio."
+    }
+  };
+
+  // Generate response based on the first change (most common case)
+  const primaryChange = changes[0];
+  const intent = primaryChange.intent.toLowerCase();
+  const section = primaryChange.sectionName.toLowerCase();
+
+  let response = "";
+  
+  if (responseTemplates[intent as keyof typeof responseTemplates]) {
+    const intentTemplates = responseTemplates[intent as keyof typeof responseTemplates];
+    response = intentTemplates[section as keyof typeof intentTemplates] || intentTemplates.default;
+  } else {
+    response = "Made the requested changes to your portfolio.";
+  }
+
+  // Handle multiple changes
+  if (changes.length > 1) {
+    const additionalChanges = changes.length - 1;
+    response += ` I also made ${additionalChanges} other ${additionalChanges === 1 ? 'change' : 'changes'} as requested.`;
+  }
+
+  // Add contextual responses for common patterns
+  if (inputValue.toLowerCase().includes('shorter') || inputValue.toLowerCase().includes('brief')) {
+    response = "Made your content more concise while keeping the key information.";
+  } else if (inputValue.toLowerCase().includes('longer') || inputValue.toLowerCase().includes('detailed')) {
+    response = "Expanded your content with more detailed information.";
+  } else if (inputValue.toLowerCase().includes('professional') || inputValue.toLowerCase().includes('formal')) {
+    response = "Updated your content with a more professional tone.";
+  } else if (inputValue.toLowerCase().includes('casual') || inputValue.toLowerCase().includes('friendly')) {
+    response = "Adjusted your content to have a more approachable tone.";
+  }
+
+  return response;
+};
+
 export async function POST(req: NextRequest) {
   try {
     const { portfolioData, inputValue, messageMemory } = await req.json();
@@ -19,7 +105,7 @@ export async function POST(req: NextRequest) {
       model: "gemini-1.5-flash",
     });
 
-    // Schema for extracting user intentions
+    // Schema for the complete response
     const outputSchema = z.object({
       changes: z
         .array(
@@ -41,6 +127,10 @@ export async function POST(req: NextRequest) {
           })
         )
         .describe("Array of distinct changes requested by the user"),
+      updatedPortfolio: z
+        .object({})
+        .passthrough()
+        .describe("The complete updated portfolio JSON data"),
     });
 
     const outputParser = StructuredOutputParser.fromZodSchema(outputSchema);
@@ -58,8 +148,9 @@ export async function POST(req: NextRequest) {
             .join("\n")
         : "";
 
-    const getIntention = PromptTemplate.fromTemplate(`
-      You are a portfolio customization assistant analyzing a user request.
+    // Single comprehensive prompt that handles everything
+    const comprehensivePrompt = PromptTemplate.fromTemplate(`
+      You are a portfolio customization assistant that analyzes requests and updates portfolio data in a single step.
       
       # CONTEXT
       Previous messages (only consider these if directly referenced):
@@ -68,195 +159,166 @@ export async function POST(req: NextRequest) {
       # CURRENT REQUEST
       "{input_value}"
 
-      # PORTFOLIO DATA
+      # CURRENT PORTFOLIO DATA
       {portfolioData}
 
-      # INSTRUCTIONS
-      1. Identify ONLY the specific changes requested in the CURRENT message
-      2. For each change, determine if it's a new request or refers to a previous message
-      3. Do NOT repeat actions from previous messages unless explicitly requested again
-      4. If the user says "make it shorter" or similar, mark isNewRequest as false
-      
+      # AVAILABLE TECHNOLOGIES (for tech stack only)
+      {tech_list}
+
+      # TASK
+      1. Analyze the user request and identify specific changes needed
+      2. Generate appropriate content for vague requests (e.g., "improve my summary")
+      3. Apply ALL changes to the portfolio data
+      4. Return both the changes made and the complete updated portfolio
+
+      # INSTRUCTIONS FOR ANALYSIS
+      - Identify ONLY the specific changes requested in the CURRENT message
+      - For each change, determine if it's a new request or refers to a previous message
+      - Do NOT repeat actions from previous messages unless explicitly requested again
+      - If user says "make it shorter" or similar, mark isNewRequest as false
+
+      # INSTRUCTIONS FOR CONTENT GENERATION
+      - For specific values (e.g., "change name to John Smith"), use the provided value
+      - For vague requests (e.g., "improve my summary"), generate appropriate professional content
+      - Be professional and authentic - never use placeholders like "[Your text here]"
+      - Match the style and tone of existing content in the portfolio
+      - Be concise but complete
+      - For tech stack, ONLY use technologies from the provided list
+      - Generate distinct content for summary (2-3 lines) and shortSummary (1 line) fields
+
+      # INSTRUCTIONS FOR PORTFOLIO UPDATES
+      - Apply changes to the portfolio data systematically
+      - Preserve all other data exactly as is
+      - For projects or experience, use this image URL: https://placehold.co/600x400?text=Project+Image
+      - Ensure JSON structure remains valid
+      - Handle arrays (projects, experience, skills) appropriately
+
       # PARSING RULES
-      - Extract specific values when provided (e.g., "change name to John Smith" → value: "John Smith")
-      - For vague requests (e.g., "improve my summary"), set isNewRequest: true but leave value empty
+      - Extract specific values when provided
       - Each change must have a precise intent (add, update, remove, change) and clear sectionName
       - Do NOT infer additional changes beyond what's explicitly requested
-      - If the user mentions multiple sections, create separate change objects for each
-      
+      - If user mentions multiple sections, create separate change objects for each
+
+      # RESPONSE REQUIREMENTS
+      - Return valid JSON that matches the schema
+      - Include both the changes array and the complete updated portfolio
+      - Ensure updatedPortfolio contains the full portfolio structure with all modifications applied
+
       {format_instructions}
-      
-      Before responding, validate your JSON output has valid syntax.
+
+      IMPORTANT: 
+      - Return a valid JSON object with exactly these fields: "changes" and "updatedPortfolio"
+      - Ensure all JSON syntax is correct (no trailing commas, proper quotes, etc.)
+      - The "changes" field must be an array of objects
+      - The "updatedPortfolio" field must contain the complete modified portfolio data
+      - Do not include any explanations or markdown formatting, just the raw JSON
     `);
 
-    const finalIntention = await getIntention.format({
+    const finalPrompt = await comprehensivePrompt.format({
       input_value: inputValue,
       portfolioData: JSON.stringify(portfolioData, null, 2),
+      tech_list: JSON.stringify(techList),
       format_instructions: formatInstructions,
     });
 
-    const parsedResponse = await model.generateContent(finalIntention);
-    const parsedText = parsedResponse.response.text();
+    // Single API call to handle everything
+    const response = await model.generateContent(finalPrompt);
+    const responseText = response.response.text();
 
-    // Add error handling for parsing - extract JSON properly
+    // Parse the response with robust error handling
     let parsedOutput;
     try {
-      // Attempt to find and parse JSON from the response
-      const jsonRegex = /```(?:json)?\s*([\s\S]*?)```|(\{[\s\S]*\})/;
-      const match = parsedText.match(jsonRegex);
-
-      const jsonContent = match ? match[1] || match[2] : parsedText;
-      parsedOutput = await outputParser.parse(jsonContent.trim());
-
-      // Validate the output structure
-      if (!parsedOutput.changes || !Array.isArray(parsedOutput.changes)) {
-        throw new Error("Invalid output structure");
+      // First, try to extract JSON from the response
+      let jsonContent = responseText.trim();
+      
+      // Remove markdown code blocks if present
+      const codeBlockRegex = /```(?:json)?\s*([\s\S]*?)```/;
+      const codeBlockMatch = jsonContent.match(codeBlockRegex);
+      if (codeBlockMatch) {
+        jsonContent = codeBlockMatch[1].trim();
       }
+      
+      // Try to find JSON object in the response
+      const jsonObjectRegex = /\{[\s\S]*\}/;
+      const jsonMatch = jsonContent.match(jsonObjectRegex);
+      if (jsonMatch) {
+        jsonContent = jsonMatch[0];
+      }
+
+      // First try direct JSON parsing
+      let rawParsed;
+      try {
+        rawParsed = JSON.parse(jsonContent);
+      } catch (jsonError) {
+        console.error("Direct JSON parsing failed:", jsonError);
+        
+        // Fallback: try to clean common JSON issues
+        let cleanedJson = jsonContent
+          .replace(/,\s*}/g, '}')  // Remove trailing commas
+          .replace(/,\s*]/g, ']')  // Remove trailing commas in arrays
+          .replace(/[\r\n\t]/g, ' ')  // Replace newlines and tabs with spaces
+          .replace(/\s+/g, ' ')  // Collapse multiple spaces
+          .trim();
+        
+        rawParsed = JSON.parse(cleanedJson);
+      }
+
+      // Validate and structure the output
+      if (!rawParsed.changes) {
+        rawParsed.changes = [];
+      }
+      
+      if (!rawParsed.updatedPortfolio) {
+        // If updatedPortfolio is missing, use the original data
+        rawParsed.updatedPortfolio = portfolioData;
+      }
+
+      // Ensure changes is an array
+      if (!Array.isArray(rawParsed.changes)) {
+        rawParsed.changes = [];
+      }
+
+      // Validate each change object
+      rawParsed.changes = rawParsed.changes.filter((change : any) => 
+        change && 
+        typeof change === 'object' && 
+        change.intent && 
+        change.sectionName &&
+        typeof change.isNewRequest === 'boolean'
+      );
+
+      parsedOutput = rawParsed;
+
     } catch (error) {
       console.error("Parsing error:", error);
-      return NextResponse.json(
-        {
-          error:
-            "Failed to understand your request. Please try again with more specific instructions.",
-          details: error instanceof Error ? error.message : String(error),
-        },
-        { status: 400 }
-      );
+      console.error("Response text:", responseText);
+      
+      // Return a fallback response with no changes
+      return NextResponse.json({
+        originalData: portfolioData,
+        updatedData: portfolioData,
+        changes: [],
+        userReply: "I encountered an issue processing your request. Could you please try rephrasing your request more specifically?",
+        error: "Parsing failed",
+        details: error instanceof Error ? error.message : String(error)
+      });
     }
 
-    // Filter out changes that refer to previous requests but don't have specific values
+    // Filter out invalid changes
     const validChanges = parsedOutput.changes.filter(
-      (change) =>
-        change.isNewRequest || (change.value && change.value.trim() !== "")
+      (change : any) =>
+        change.intent && 
+        change.sectionName && 
+        (change.isNewRequest || (change.value && change.value.trim() !== ""))
     );
 
-    // Starting with the original portfolio data
-    let currentPortfolioData = JSON.parse(JSON.stringify(portfolioData));
-    const appliedChanges = [];
-
-    // Process each change sequentially
-    for (const change of validChanges) {
-      // For new requests without specific values, generate appropriate content
-      if (
-        change.isNewRequest &&
-        (!change.value || change.value.trim() === "")
-      ) {
-        const contentGeneratorPrompt = PromptTemplate.fromTemplate(`
-          Generate appropriate content for a portfolio update.
-          
-          # TASK
-          Generate content for: {intent} in section {sectionName}
-          
-          # CURRENT PORTFOLIO DATA
-          {portfolioData}
-          
-          # INSTRUCTIONS
-          1. Generate ONLY the specific content needed, nothing more
-          2. Be professional and authentic - never use placeholders
-          3. Match the style and tone of existing content
-          4. Be concise but complete
-          5. For tech stack, ONLY use technologies from this list: {tech_list}
-          
-          # RESPONSE FORMAT
-          Return ONLY the generated content as plain text, no explanations or formatting.
-        `);
-
-        const contentPrompt = await contentGeneratorPrompt.format({
-          intent: change.intent,
-          sectionName: change.sectionName,
-          portfolioData: JSON.stringify(currentPortfolioData, null, 2),
-          tech_list: JSON.stringify(techList),
-        });
-
-        const contentResponse = await model.generateContent(contentPrompt);
-        change.value = contentResponse.response.text().trim();
-      }
-
-      const updatePortfolioTemplate = PromptTemplate.fromTemplate(`
-        You are a specialized portfolio data updater that ONLY modifies JSON data.
-        
-        # TASK
-        Make exactly ONE change to the portfolio data based on:
-        - Intent: {intent}
-        - Section: {sectionName}
-        - Value: {value}
-        
-        # CURRENT PORTFOLIO DATA
-        {portfolioData}
-        
-        # RULES
-        1. ONLY modify the specified section
-        2. Preserve all other data exactly as is
-        3. For projects or experience, use this image URL: {image_link}
-        4. For tech stack, only use technologies from: {tech_list}
-        5. Generate distinct content for summary (2-3 lines) and shortSummary (1 line) fields
-        6. Never use placeholders like "[Your text here]" or "Example project"
-        
-        # IMPORTANT
-        Return ONLY the complete modified JSON data without any explanations, markdown, or code blocks.
-      `);
-
-      const updatePrompt = await updatePortfolioTemplate.format({
-        portfolioData: JSON.stringify(currentPortfolioData, null, 2),
-        intent: change.intent,
-        sectionName: change.sectionName,
-        value: change.value,
-        image_link: "https://placehold.co/600x400?text=Project+Image",
-        tech_list: JSON.stringify(techList),
-      });
-
-      const updatedResponse = await model.generateContent(updatePrompt);
-      const updatedText = updatedResponse.response.text();
-
-      try {
-        // Handle potential code blocks or raw JSON in the response
-        const cleanJson = updatedText
-          .replace(/```(?:json)?\s*([\s\S]*?)```/g, "$1")
-          .trim();
-        currentPortfolioData = JSON.parse(cleanJson);
-        appliedChanges.push(change);
-      } catch (error) {
-        console.error("Error parsing updated portfolio data:", error);
-        // Continue with other changes if possible instead of failing completely
-      }
-    }
-
-    // Generate a concise, specific response
-    const userResponseTemplate = PromptTemplate.fromTemplate(`
-      You are responding to a portfolio update request.
-      
-      # USER REQUEST
-      "{input_value}"
-      
-      # CHANGES APPLIED
-      {changes}
-      
-      # INSTRUCTIONS
-      1. Write a short, specific response (2-3 sentences max)
-      2. Mention exactly what was changed in which sections
-      3. Be conversational and helpful
-      4. DO NOT describe changes that weren't made
-      5. NEVER use generic phrases like "as requested" or "I've updated your portfolio"
-      
-      Write ONLY your response message, nothing else:
-    `);
-
-    const changesFormatted = appliedChanges
-      .map((change) => `- ${change.intent} in ${change.sectionName}`)
-      .join("\n");
-
-    const userResponsePrompt = await userResponseTemplate.format({
-      input_value: inputValue,
-      changes: changesFormatted || "No changes were applied",
-    });
-
-    const userResponseResult = await model.generateContent(userResponsePrompt);
-    const userResponse = userResponseResult.response.text();
+    // Generate dummy response based on applied changes
+    const userResponse = generateDummyResponse(validChanges, inputValue);
 
     return NextResponse.json({
       originalData: portfolioData,
-      updatedData: currentPortfolioData,
-      changes: appliedChanges,
+      updatedData: parsedOutput.updatedPortfolio,
+      changes: validChanges,
       userReply: userResponse,
     });
   } catch (error) {

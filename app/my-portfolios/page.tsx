@@ -50,6 +50,8 @@ export default function MyPortfoliosPage() {
     return <div className="text-red-500">{error}</div>;
   }
 
+  console.log(portfolios)
+
   return (
     <div className="main-bg-noise">
       <MainNavbar />
@@ -91,23 +93,23 @@ export default function MyPortfoliosPage() {
                       ? new Date(portfolio.createdAt).toLocaleString()
                       : "N/A"}
                   </span>
-                  {portfolio.PortfolioLinks && portfolio.PortfolioLinks.length > 0 && (
+                  {portfolio.PortfolioLink && (
                     <span className="text-green-500 text-xs sm:text-sm mt-1">
                       Deployed at:{" "}
                       <a 
-                        href={`https://craft-folio-three-vercel.app/p/${portfolio.PortfolioLinks[0].slug}`}
+                        href={`https://craft-folio-three.vercel.app/p/${portfolio.PortfolioLink.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline hover:text-green-600"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        craft-folio-three-vercel.app/p/{portfolio.PortfolioLinks[0].slug}
+                        craft-folio-three.vercel.app/p/{portfolio.PortfolioLink.slug}
                       </a>
                     </span>
                   )}
                 </div>
                 <div className="ml-4">
-                  {portfolio.PortfolioLinks && portfolio.PortfolioLinks.length > 0 ? (
+                  {portfolio.PortfolioLink ? (
                     <motion.div
                       className="px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
                       style={{

@@ -26,6 +26,7 @@ const PortfolioThemePage = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isLoadingThemes, setIsLoadingThemes] = useState(true);
   const [selectedThemeName, setSelectedThemeName] = useState("");
+  const [expandedId, setExpandedId] = useState<number | null>(null);
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -68,6 +69,10 @@ const PortfolioThemePage = () => {
     setSelectedThemeName(name);
     setSelectedTheme(id);
     setIsModalOpen(true);
+  };
+
+  const handleCardClick = (id: number) => {
+    setExpandedId(expandedId === id ? null : id);
   };
 
   const handleCreatePortfolio = async (customBodyResume: any) => {
@@ -121,7 +126,7 @@ const PortfolioThemePage = () => {
   }
 
   return (
-    <div className="min-h-screen main-bg-noise  relative">
+    <div className=" main-bg-noise  relative">
       <MainNavbar />
 
       <BgShapes />
@@ -176,7 +181,7 @@ const PortfolioThemePage = () => {
             {themes?.map((theme: any, index: number) => (
               <motion.div
                 key={theme.id}
-                className="max-w-full sm:max-w-md md:max-w-lg mx-auto"
+                className="max-w-full sm:max-w-md md:max-w-lg mx-auto self-start"
                 variants={fadeIn}
                 custom={index}
               >
@@ -186,6 +191,8 @@ const PortfolioThemePage = () => {
                     handleSelectTheme(theme.id, theme.name)
                   }
                   selectedTheme={selectedTheme}
+                  isExpanded={expandedId === theme.id}
+                  handleCardClick={handleCardClick}
                 />
               </motion.div>
             ))}

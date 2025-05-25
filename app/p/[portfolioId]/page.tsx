@@ -46,6 +46,7 @@ const Page = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [finalPortfolioId, setFinalPortfolioId] = useState<string>(portfolioId);
   const [portfolioNotFound, setPortfolioNotFound] = useState<boolean>(false);
+  const [portfolioLink, setPortfolioLink] = useState("");
 
   type TemplateType = {
     navbar: React.ComponentType;
@@ -99,6 +100,7 @@ const Page = () => {
           return;
         }
         if (themeResult.success) {
+          setPortfolioLink(themeResult?.data?.PortfolioLink?.slug || "")
           dispatch(setPortFolioUserId(themeResult?.data?.userId || ""));
           dispatch(
             setTemplateName(themeResult?.data?.templateName || "default")
@@ -107,12 +109,13 @@ const Page = () => {
           dispatch(setFontName(themeResult?.data?.fontName || "Raleway"));
           dispatch(setCustomCSSState(themeResult?.data?.customCSS || ""));
         }
+        console.log(themeResult)
 
         // Fetch content data
         const contentResult: any = await fetchContent({
           portfolioId: currentPortfolioId,
         });
-        console.log(currentPortfolioId)
+        console.log(contentResult,themeResult)
         if (!contentResult.success) {
           setPortfolioNotFound(true);
           console.log("true form content")
@@ -228,6 +231,7 @@ const Page = () => {
           portfolioId={finalPortfolioId}
           currentPortTheme={themeName}
           currentFont={fontName}
+          portfolioLink={portfolioLink}
           onOpenChange={setIsChatOpen}
           setCustomCSS={(css) => dispatch(setCustomCSSState(css))}
           customCSSState={customCSSState}

@@ -4,44 +4,49 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { maps } from "@/lib/templateThemeMaps";
 
-export async function createPortfolio(userId: string, templateName: string, creationMethod: string, customBodyResume: string) {
+export async function createPortfolio(
+  userId: string,
+  templateName: string,
+  creationMethod: string,
+  customBodyResume: string
+) {
   try {
     const template = await prisma.template.findFirst({
       where: {
         name: templateName,
       },
-      select: { defaultContent: true }
+      select: { defaultContent: true },
     });
 
     if (!template || !template.defaultContent) {
       return { success: false, error: "Template not found" };
     }
 
-    let content : any;
+    let content: any;
 
     if (creationMethod === "import" && customBodyResume) {
-      const templateContent : any = typeof template.defaultContent === 'string' 
-        ? JSON.parse(template.defaultContent) 
-        : template.defaultContent;
-      
-      const customContent : any = JSON.parse(customBodyResume);
-      const customSectionMap : any = {};
+      const templateContent: any =
+        typeof template.defaultContent === "string"
+          ? JSON.parse(template.defaultContent)
+          : template.defaultContent;
+
+      const customContent: any = JSON.parse(customBodyResume);
+      const customSectionMap: any = {};
       if (customContent.sections && Array.isArray(customContent.sections)) {
-        customContent.sections.forEach((section : any) => {
+        customContent.sections.forEach((section: any) => {
           if (section.type) {
             customSectionMap[section.type] = section;
           }
         });
       }
-      
+
       const newContent = {
         ...templateContent,
-        sections: templateContent.sections.map((section : any) => {
+        sections: templateContent.sections.map((section: any) => {
           return customSectionMap[section.type] || section;
-        })
+        }),
       };
 
-      
       content = newContent;
     } else {
       content = template.defaultContent;
@@ -54,8 +59,8 @@ export async function createPortfolio(userId: string, templateName: string, crea
         content: content,
         isPublished: false,
         templateName: templateName,
-        fontName : maps[templateName].fontName,
-        themeName : maps[templateName].themeName
+        fontName: maps[templateName].fontName,
+        themeName: maps[templateName].themeName,
       },
     });
 
@@ -113,12 +118,11 @@ export async function updateSection({
 
 export async function updatePortfolio({
   portfolioId,
-  newPortfolioData
+  newPortfolioData,
 }: {
-  portfolioId : string,
-  newPortfolioData : string
-}){
-
+  portfolioId: string;
+  newPortfolioData: string;
+}) {
   try {
     const portfolio = await prisma.portfolio.findUnique({
       where: { id: portfolioId },
@@ -127,43 +131,46 @@ export async function updatePortfolio({
       return { success: false, error: "Portfolio not found" };
     }
     const updatedData = {
-      "sections" : newPortfolioData
-    }
+      sections: newPortfolioData,
+    };
 
     await prisma.portfolio.update({
-      where : {id: portfolioId},
-      data : {content : updatedData}
-    })
+      where: { id: portfolioId },
+      data: { content: updatedData },
+    });
     return { success: true, data: updatedData };
-
   } catch (error) {
     return { success: false, error: "Failed to update hero" };
   }
-
 }
 
-export async function fetchThemesApi(){
+export async function fetchThemesApi() {
   try {
     const themes = await prisma.template.findMany();
-    console.log(themes)
+    console.log(themes);
     return { success: true, data: themes };
-  }catch(error){
+  } catch (error) {
     console.error("Error fetching themes:", error);
     return { success: false, error: error };
-
   }
 }
 
-export async function getThemeNameApi({portfolioId} : {portfolioId: string}){
+export async function getThemeNameApi({
+  portfolioId,
+}: {
+  portfolioId: string;
+}) {
   try {
     const theme = await prisma.portfolio.findUnique({
       where: { id: portfolioId },
+      include:{
+        PortfolioLink : true
+      },
     });
     return { success: true, data: theme };
-  }catch(error){
+  } catch (error) {
     console.error("Error fetching themes:", error);
     return { success: false, error: error };
-
   }
 }
 
@@ -171,6 +178,9 @@ export async function fetchContent({ portfolioId }: { portfolioId: string }) {
   try {
     const hero = await prisma.portfolio.findUnique({
       where: { id: portfolioId },
+      include: {
+        PortfolioLink: true,
+      },
     });
     if (!hero || !hero.content) {
       return { success: false, error: "Portfolio not found" };
@@ -182,42 +192,59 @@ export async function fetchContent({ portfolioId }: { portfolioId: string }) {
   }
 }
 
-
-export async function updateTheme({themeName,portfolioId} : {themeName : string,portfolioId : string}){
+export async function updateTheme({
+  themeName,
+  portfolioId,
+}: {
+  themeName: string;
+  portfolioId: string;
+}) {
   try {
     const theme = await prisma.portfolio.update({
-      where : {id: portfolioId},
-      data : {themeName : themeName}
-    })
+      where: { id: portfolioId },
+      data: { themeName: themeName },
+    });
     return { success: true, data: theme };
-  }catch(error){
+  } catch (error) {
     console.error("Error updating theme:", error);
     return { success: false, error: error };
   }
 }
 
-export async function updateFont({fontName,portfolioId} : {fontName : string,portfolioId : string}){
+export async function updateFont({
+  fontName,
+  portfolioId,
+}: {
+  fontName: string;
+  portfolioId: string;
+}) {
   try {
     const theme = await prisma.portfolio.update({
-      where : {id: portfolioId},
-      data : {fontName : fontName}
-    })
-    console.log({fontName,theme})
+      where: { id: portfolioId },
+      data: { fontName: fontName },
+    });
+    console.log({ fontName, theme });
     return { success: true, data: theme };
-  }catch(error){
+  } catch (error) {
     console.error("Error updating theme:", error);
     return { success: false, error: error };
   }
 }
 
-export async function updateCustomCSS({customCSS,portfolioId} : {customCSS : string,portfolioId : string}){
+export async function updateCustomCSS({
+  customCSS,
+  portfolioId,
+}: {
+  customCSS: string;
+  portfolioId: string;
+}) {
   try {
     const theme = await prisma.portfolio.update({
-      where : {id: portfolioId},
-      data : {customCSS : customCSS}
-    })
+      where: { id: portfolioId },
+      data: { customCSS: customCSS },
+    });
     return { success: true, data: theme };
-  }catch(error){
+  } catch (error) {
     console.error("Error updating theme:", error);
     return { success: false, error: error };
   }
@@ -227,10 +254,10 @@ export async function fetchPortfoliosByUserId(userId: string) {
   try {
     const portfolios = await prisma.portfolio.findMany({
       where: { userId },
-      include:{
-        PortfolioLinks : true
+      include: {
+        PortfolioLink: true,
       },
-      orderBy: { createdAt: 'desc' }, // Optional: order by creation date
+      orderBy: { createdAt: "desc" }, // Optional: order by creation date
     });
     return { success: true, data: portfolios };
   } catch (error) {
@@ -239,43 +266,57 @@ export async function fetchPortfoliosByUserId(userId: string) {
   }
 }
 
-export async function deployPortfolio(userId: string, portfolioId: string, slug: string) {
+export async function deployPortfolio(
+  userId: string,
+  portfolioId: string,
+  slug: string
+) {
   try {
     if (slug.length < 3 || slug.length > 30) {
-      return { success: false, error: "Portfolio Slug must be between 3 and 30 characters" };
+      return {
+        success: false,
+        error: "Portfolio Slug must be between 3 and 30 characters",
+      };
     }
     if (!/^[a-z0-9-]+$/.test(slug)) {
-      return { success: false, error: "Portfolio Slug can only contain lowercase letters, numbers, and hyphens" };
+      return {
+        success: false,
+        error:
+          "Portfolio Slug can only contain lowercase letters, numbers, and hyphens",
+      };
     }
-    if (slug.startsWith('-') || slug.endsWith('-')) {
-      return { success: false, error: "Portfolio Slug cannot start or end with a hyphen" };
+    if (slug.startsWith("-") || slug.endsWith("-")) {
+      return {
+        success: false,
+        error: "Portfolio Slug cannot start or end with a hyphen",
+      };
     }
 
-    const existingPortfolio = await prisma.portfolioLinks.findFirst({
+    const existingPortfolio = await prisma.portfolioLink.findFirst({
       where: {
-        slug: slug
-      }
+        slug: slug,
+      },
     });
 
     if (existingPortfolio) {
       return { success: false, error: "This Portfolio Slug is already taken" };
     }
 
-    console.log(slug,portfolioId,userId)
-    const updatedPortfolio = await prisma.portfolioLinks.create({
+    console.log(slug, portfolioId, userId);
+    const updatedPortfolio = await prisma.portfolioLink.create({
       data: {
         slug: slug,
         portfolioId: portfolioId,
-        userId : userId
-      }
+        userId: userId,
+      },
     });
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       data: {
         ...updatedPortfolio,
-        url: `https://craft-folio-three-vercel.app/p/${slug}`
-      }
+        url: `https://craft-folio-three.vercel.app/p/${slug}`,
+      },
     };
   } catch (error) {
     console.error("Error deploying portfolio:", error);
@@ -283,20 +324,20 @@ export async function deployPortfolio(userId: string, portfolioId: string, slug:
   }
 }
 
-export async function getIdThroughSlug({slug} : {slug : string}){
+export async function getIdThroughSlug({ slug }: { slug: string }) {
   try {
-    const existingPortfolio = await prisma.portfolioLinks.findFirst({
+    const existingPortfolio = await prisma.portfolioLink.findFirst({
       where: {
-        slug: slug
-      }
+        slug: slug,
+      },
     });
 
     if (!existingPortfolio) {
       return { success: false, error: "This Portfolio does not exists !!" };
     }
 
-    return {success : true, portfolioId : existingPortfolio.portfolioId}
+    return { success: true, portfolioId: existingPortfolio.portfolioId };
   } catch (error) {
-    return { success: false, error: "Failed to fetch portfolio" };
+    return { success: false, error: "Failed to fetch portfolio id slug" };
   }
 }

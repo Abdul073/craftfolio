@@ -1,5 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, GripVertical, Sun, Moon, Rocket } from "lucide-react";
+import {
+  MessageSquare,
+  X,
+  Send,
+  GripVertical,
+  Sun,
+  Moon,
+  Rocket,
+} from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import axios from "axios";
 import {
@@ -41,6 +49,7 @@ interface ChatbotProps {
   setCurrentPortTheme: (theme: string) => void;
   setCustomCSS: (css: string) => void;
   customCSSState: string;
+  portfolioLink: string;
 }
 
 interface MessageMemory {
@@ -127,14 +136,10 @@ const PortfolioChatbot = ({
   setCurrentFont,
   setCustomCSS,
   customCSSState,
+  portfolioLink,
 }: ChatbotProps) => {
-  const {user} = useUser();
-  const {portfolioUserId} = useSelector((state: RootState) => state.data);
-
-  // If user is not the portfolio owner, don't show the chatbot
-  if (user === null || !user?.id || user.id !== portfolioUserId) {
-    return null;
-  }
+  const { user } = useUser();
+  const { portfolioUserId } = useSelector((state: RootState) => state.data);
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -163,18 +168,14 @@ const PortfolioChatbot = ({
 
   const themeColors = CHATBOT_THEMES[chatbotTheme];
 
+  const dispatch = useDispatch();
+  const themeOptionsArray = Object.keys(themeOptions);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("chatbotTheme", chatbotTheme);
     }
   }, [chatbotTheme]);
-
-  const handleThemeToggle = () => {
-    setChatbotTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
-
-  const dispatch = useDispatch();
-  const themeOptionsArray = Object.keys(themeOptions);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -210,6 +211,14 @@ const PortfolioChatbot = ({
       setReorderedSections(mainSections);
     }
   }, [portfolioData]);
+
+  useEffect(() => {
+    setCustomCSSState(customCSSState);
+  }, [customCSSState]);
+
+  const handleThemeToggle = () => {
+    setChatbotTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
 
   const callGeminiAPI = async (inputValue: string) => {
     try {
@@ -549,53 +558,9 @@ const PortfolioChatbot = ({
     handleOpenChange(false);
   };
 
-  const CSS_TEMPLATES = {
-    "Hover Effects": `
-.section-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-}`,
-    "Gradient Text": `
-.section-title {
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}`,
-    "Custom Animation": `
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.section-content {
-  animation: fadeIn 0.5s ease-out;
-}`,
-    "Custom Border": `
-.section-container {
-  border: 2px solid #4ecdc4;
-  border-radius: 10px;
-  padding: 20px;
-  position: relative;
-}
-
-.section-container::before {
-  content: '';
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  right: -5px;
-  bottom: -5px;
-  border: 2px solid #ff6b6b;
-  border-radius: 12px;
-  z-index: -1;
-}`,
-  };
-
-  // Update local state when prop changes
-  useEffect(() => {
-    setCustomCSSState(customCSSState);
-  }, [customCSSState]);
+  if (user === null || !user?.id || user.id !== portfolioUserId) {
+    return null;
+  }
 
   return (
     <div
@@ -1444,8 +1409,17 @@ const PortfolioChatbot = ({
                       color: themeColors.textPrimary,
                     }}
                   >
-                    <Rocket className="w-4 h-4 inline-block mr-2" />
-                    Deploy Portfolio
+                    {portfolioLink ? (
+                      <div className="flex items-center justify-center">
+                        <Rocket className="w-4 h-4 inline-block mr-2" />
+                        Already Deployed !!
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center">
+                        <Rocket className="w-4 h-4 inline-block mr-2" />
+                        Deploy Portfolio
+                      </div>
+                    )}
                   </motion.button>
                 </div>
               </motion.div>
@@ -1597,6 +1571,7 @@ const PortfolioChatbot = ({
         onClose={() => setShowDeployModal(false)}
         portfolioId={portfolioId}
         portfolioData={portfolioData}
+        portfolioLink={portfolioLink}
       />
 
       {!isOpen && (
