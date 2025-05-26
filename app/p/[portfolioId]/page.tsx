@@ -27,6 +27,7 @@ import toast from "react-hot-toast";
 import PortfolioNotFound from "@/components/PortfolioNotFound";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { CheckCircle, Layout, Palette } from "lucide-react";
+import Head from "next/head";
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -38,8 +39,14 @@ const Page = () => {
       str
     );
 
-  const { portfolioData,portfolioUserId, templateName, themeName, fontName, customCSSState } =
-    useSelector((state: RootState) => state.data);
+  const {
+    portfolioData,
+    portfolioUserId,
+    templateName,
+    themeName,
+    fontName,
+    customCSSState,
+  } = useSelector((state: RootState) => state.data);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
@@ -64,7 +71,6 @@ const Page = () => {
     ? portfolioData?.find((item: any) => item.type === "themes")?.data
     : undefined;
 
-
   useEffect(() => {
     const initializePortfolio = async () => {
       setIsLoading(true);
@@ -72,7 +78,7 @@ const Page = () => {
 
       try {
         let currentPortfolioId = portfolioId;
-        
+
         // First check if it's a UUID
         if (isUUID(portfolioId)) {
           currentPortfolioId = portfolioId;
@@ -97,11 +103,11 @@ const Page = () => {
         });
         if (!themeResult.success) {
           setPortfolioNotFound(true);
-          console.log("true form theme")
+          console.log("true form theme");
           return;
         }
         if (themeResult.success) {
-          setPortfolioLink(themeResult?.data?.PortfolioLink?.slug || "")
+          setPortfolioLink(themeResult?.data?.PortfolioLink?.slug || "");
           dispatch(setPortFolioUserId(themeResult?.data?.userId || ""));
           dispatch(
             setTemplateName(themeResult?.data?.templateName || "default")
@@ -110,16 +116,16 @@ const Page = () => {
           dispatch(setFontName(themeResult?.data?.fontName || "Raleway"));
           dispatch(setCustomCSSState(themeResult?.data?.customCSS || ""));
         }
-        console.log(themeResult)
+        console.log(themeResult);
 
         // Fetch content data
         const contentResult: any = await fetchContent({
           portfolioId: currentPortfolioId,
         });
-        console.log(contentResult,themeResult)
+        console.log(contentResult, themeResult);
         if (!contentResult.success) {
           setPortfolioNotFound(true);
-          console.log("true form content")
+          console.log("true form content");
           return;
         }
         if (contentResult.success) {
@@ -136,7 +142,7 @@ const Page = () => {
     };
 
     initializePortfolio();
-  }, [portfolioId, dispatch,finalPortfolioId]);
+  }, [portfolioId, dispatch, finalPortfolioId]);
 
   // Don't try to access template config until we have template name
   const Template =
@@ -160,7 +166,6 @@ const Page = () => {
     ) : null;
   };
 
-
   if (portfolioNotFound) {
     return <PortfolioNotFound />;
   }
@@ -180,6 +185,8 @@ const Page = () => {
   const selectedFontClass = fontClassMap[fontName] || fontClassMap["raleway"];
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
+      
+
       {hasSpotlight && (
         <div className="absolute inset-0">
           <Spotlight

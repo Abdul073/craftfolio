@@ -48,22 +48,7 @@ export default function Page() {
     <div className="relative  scrollbar   custom-scrollbar">
       <BgShapes />
 
-      <Head>
-        <title>
-          CraftFolio | Create Professional Portfolio Websites Instantly from
-          Your Resume
-        </title>
-        <meta
-          name="description"
-          content="Build stunning portfolio websites without code. Import your resume and get an instant portfolio or create from scratch with CraftFolio's easy-to-use builder."
-        />
-        <style jsx global>{`
-          body {
-            background-color: ${ColorTheme.bgMain};
-            color: ${ColorTheme.textPrimary};
-          }
-        `}</style>
-      </Head>
+     
 
       <MainNavbar />
 

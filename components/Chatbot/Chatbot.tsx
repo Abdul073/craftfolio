@@ -14,6 +14,10 @@ import {
   Layout,
   Code,
   Settings,
+  Twitter,
+  Linkedin,
+  Facebook,
+  Link2,
 } from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import axios from "axios";
@@ -23,6 +27,8 @@ import {
   updatePortfolio,
   updateTheme,
   updatePortfolioUserId,
+  updateSection,
+  getThemeNameApi,
 } from "@/app/actions/portfolio";
 import { useDispatch, useSelector } from "react-redux";
 import { newPortfolioData } from "@/slices/dataSlice";
@@ -225,7 +231,8 @@ const PortfolioChatbot = ({
           !(
             item.type === "userInfo" ||
             item.type === "themes" ||
-            item.type === "hero"
+            item.type === "hero" ||
+            item.type === "seo"
           ) && mainSections.push(item.type)
       );
       setSections(mainSections);
@@ -560,7 +567,8 @@ const PortfolioChatbot = ({
         if (
           section === "hero" ||
           section === "userInfo" ||
-          section === "themes"
+          section === "themes" ||
+          section === "seo"
         ) {
           updatedOrder.push(section);
         } else {
@@ -800,6 +808,85 @@ const PortfolioChatbot = ({
     setShowDeployModal(true);
   };
 
+  const handleSaveSEOSettings = async () => {
+    try {
+      const result = await updateSection({
+        sectionName: "seo",
+        portfolioId,
+        sectionContent: {
+          title: seoTitle,
+          description: seoDescription,
+          favicon: faviconUrl
+        },
+        sectionTitle: "SEO Settings",
+        sectionDescription: "SEO settings for your portfolio"
+      });
+
+      if (result.success) {
+        toast.success("SEO settings saved. Refresh to see changes.");
+        setShowSEOSettings(false);
+      } else {
+        toast.error(result.error || "Failed to save SEO settings");
+      }
+    } catch (error) {
+      console.error("Error saving SEO settings:", error);
+      toast.error("Failed to save SEO settings");
+    }
+  };
+
+  // Fetch and prefill SEO settings when panel opens
+  useEffect(() => {
+    const fetchSEOSettings = async () => {
+      if (showSEOSettings && portfolioId) {
+        try {
+          const themeResult = await getThemeNameApi({ portfolioId });
+          if (themeResult.success && themeResult.data?.content) {
+            const content = themeResult.data.content as any;
+            const seoSection = content.sections?.find((section: any) => section.type === "seo");
+            if (seoSection?.data) {
+              setSeoTitle(seoSection.data.title || "");
+              setSeoDescription(seoSection.data.description || "");
+              setFaviconUrl(seoSection.data.favicon || "");
+            } else {
+              setSeoTitle("");
+              setSeoDescription("");
+              setFaviconUrl("");
+            }
+          }
+        } catch (error) {
+          setSeoTitle("");
+          setSeoDescription("");
+          setFaviconUrl("");
+        }
+      }
+    };
+    fetchSEOSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showSEOSettings, portfolioId]);
+
+  const handleCopyUrl = () => {
+    const url = `https://craft-folio-three.vercel.app/p/${portfolioLink}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Portfolio URL copied to clipboard!');
+  };
+
+  const handleShare = (platform: string) => {
+    const url = `https://craft-folio-three.vercel.app/p/${portfolioLink}`;
+    const text = "Check out my portfolio!";
+    
+    switch (platform) {
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'linkedin':
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        break;
+    }
+  };
+
   if (portfolioUserId !== "guest" && (!user || user.id !== portfolioUserId)) {
     return null;
   }
@@ -880,7 +967,9 @@ const PortfolioChatbot = ({
                   className="font-bold text-lg"
                   style={{ color: themeColors.textPrimary }}
                 >
-                  Portfolio Assistant
+                  <Link href="/" className="hover:opacity-80 transition-opacity">
+                    CraftFolio Portfolio Assistant
+                  </Link>
                 </motion.h3>
               </div>
               <motion.button
@@ -2149,30 +2238,62 @@ const PortfolioChatbot = ({
                       {portfolioLink ? "Already Deployed" : "Deploy Portfolio"}
                     </motion.button>
                   )}
-                  {!user && (
-                    <SignInButton
-                      mode="modal"
-                      fallbackRedirectUrl={pathname}
-                      signUpFallbackRedirectUrl={pathname}
-                    >
-                      <motion.button
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                        onClick={handleDeployClick}
-                        className="text-sm py-2 cursor-pointer px-3 text-center rounded-lg border transition-colors flex items-center justify-center gap-2 col-span-2"
-                        style={{
-                          backgroundColor: themeColors.bgCard,
-                          borderColor: themeColors.borderLight,
-                          color: themeColors.textPrimary,
-                        }}
-                      >
-                        <Rocket size={16} />
-                        {portfolioLink
-                          ? "Already Deployed"
-                          : "Deploy Portfolio"}
-                      </motion.button>
-                    </SignInButton>
+                  {portfolioLink && (
+                    <div className="flex flex-col gap-2 mt-2">
+                      <p className="text-sm font-medium text-center" style={{ color: themeColors.textSecondary }}>
+                        Share your portfolio:
+                      </p>
+                      <div className="flex justify-center gap-2">
+                        <motion.button
+                          className="p-2 rounded-lg"
+                          style={{
+                            backgroundColor: themeColors.bgCard,
+                            color: themeColors.textPrimary,
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleShare('twitter')}
+                        >
+                          <Twitter className="h-5 w-5" />
+                        </motion.button>
+                        <motion.button
+                          className="p-2 rounded-lg"
+                          style={{
+                            backgroundColor: themeColors.bgCard,
+                            color: themeColors.textPrimary,
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleShare('linkedin')}
+                        >
+                          <Linkedin className="h-5 w-5" />
+                        </motion.button>
+                        <motion.button
+                          className="p-2 rounded-lg"
+                          style={{
+                            backgroundColor: themeColors.bgCard,
+                            color: themeColors.textPrimary,
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleShare('facebook')}
+                        >
+                          <Facebook className="h-5 w-5" />
+                        </motion.button>
+                        <motion.button
+                          className="p-2 rounded-lg"
+                          style={{
+                            backgroundColor: themeColors.bgCard,
+                            color: themeColors.textPrimary,
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={handleCopyUrl}
+                        >
+                          <Link2 className="h-5 w-5" />
+                        </motion.button>
+                      </div>
+                    </div>
                   )}
                 </div>
               </motion.div>
@@ -2327,7 +2448,7 @@ const PortfolioChatbot = ({
                 }}
               >
                 <Button
-                  onClick={() => {}}
+                  onClick={handleSaveSEOSettings}
                   className="w-full font-medium py-2 px-4 rounded-lg transition-colors"
                   style={{
                     backgroundColor: themeColors.primary,

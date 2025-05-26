@@ -6,12 +6,19 @@ import React, { useState, useEffect } from "react";
 import { motion, LayoutGroup, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useParams } from "next/navigation";
+import { supabase } from "@/lib/supabase-client";
+import toast from "react-hot-toast";
+import EditButton from "./EditButton";
 
 const Navbar = ({ currentPortTheme, customCSS }: any) => {
+  const params = useParams();
+  const portfolioId = params.portfolioId as string;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [heroData, setHeroData] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<any>(null);
   const { portfolioData } = useSelector((state: RootState) => state.data);
 
   const inTheme = portfolioData?.find((item: any) => item.type === "themes");
@@ -33,12 +40,58 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
       const heroSectionData = portfolioData.find(
         (section: any) => section.type === "hero"
       )?.data;
+      const userInfoData = portfolioData.find(
+        (section: any) => section.type === "userInfo"
+      )?.data;
+      
       if (heroSectionData) {
         setHeroData(heroSectionData);
-        setIsLoading(false);
       }
+      if (userInfoData) {
+        setUserInfo(userInfoData);
+      }
+      setIsLoading(false);
     }
   }, [portfolioData]);
+
+  useEffect(() => {
+    if (!portfolioId || isLoading) return;
+
+    const subscription = supabase
+      .channel(`portfolio-navbar-${portfolioId}`)
+      .on('postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'Portfolio',
+          filter: `id=eq.${portfolioId}`
+        },
+        (payload) => {
+          console.log('Portfolio update detected!', payload);
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Supabase subscription status: ${status}`);
+      });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [portfolioId, isLoading]);
+
+  const handleResumeDownload = () => {
+    if (userInfo?.resumeFile) {
+      window.open(userInfo.resumeFile, '_blank');
+      return;
+    }
+
+    if (userInfo?.resumeLink) {
+      window.open(userInfo.resumeLink, '_blank');
+      return;
+    }
+
+    toast.error('No resume available. Please upload a resume in the contact section.');
+  };
 
   const spring = {
     type: "spring",
@@ -117,6 +170,8 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
             transition={spring}
             className="flex items-center justify-center gap-4 md:gap-8"
           >
+              <EditButton sectionName="contact" divStyles={" "} styles="relative top-0 right-0" />
+
             <motion.div
               layout
               transition={spring}
@@ -125,7 +180,7 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
               <motion.a
                 layout
                 transition={spring}
-                href="https://github.com"
+                href={userInfo?.github}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -137,7 +192,7 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
               <motion.a
                 layout
                 transition={spring}
-                href="https://linkedin.com"
+                href={userInfo?.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -147,8 +202,9 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
                 />
               </motion.a>
             </motion.div>
-            <motion.div layout transition={spring}>
+            <motion.div layout transition={spring} className="flex items-center gap-4">
               <Button
+                onClick={handleResumeDownload}
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = buttonHoverBgColor;
                   e.currentTarget.style.color = buttonHoverTextColor;

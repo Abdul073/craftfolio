@@ -10,7 +10,7 @@ import EditButton from './EditButton';
 
 interface ProjectType {
   id: string;
-  projectTitle: string;
+  projectName: string;
   projectDescription: string;
   projectImage: string;
   techStack: [{
@@ -142,7 +142,7 @@ const Projects: NextPage = ({ customCSS }: any) => {
                     <div className="absolute inset-0 bg-primary-900/20 group-hover:bg-primary-900/0 transition-all duration-500" />
                     <img
                       src={project.projectImage}
-                      alt={project.projectTitle}
+                      alt={project.projectName}
                       className="w-full h-full section-image object-cover transform transition-all duration-700"
                     />
                   </div>
@@ -150,7 +150,7 @@ const Projects: NextPage = ({ customCSS }: any) => {
                   {/* Project Info */}
                   <div className="w-full lg:w-1/2 space-y-6">
                     <h3 className="text-3xl section-sub-title font-bold text-primary-900 hover:text-primary-700 transition-all duration-300 cursor-pointer">
-                      {project.projectTitle}
+                      {project.projectName}
                     </h3>
 
                     <p className="text-lg section-sub-description leading-relaxed">

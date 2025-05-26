@@ -341,17 +341,19 @@ const CreateMethodModal = ({
         }}
       >
         <DialogContent
-          className="backdrop-blur-xl rounded-xl overflow-hidden w-full max-w-[95vw] p-2 sm:p-6 md:p-12 h-[90vh] sm:max-w-4xl sm:h-auto flex flex-col"
+          className="backdrop-blur-xl rounded-xl w-full max-w-[95vw] p-2 sm:p-6 md:p-12 h-[90vh] sm:max-w-4xl sm:h-auto flex flex-col"
           style={{
             backgroundColor: "rgba(18, 18, 18, 0.95)",
             border: "1px solid rgba(75, 85, 99, 0.3)",
             color: "#f3f4f6",
             boxShadow:
               "0 25px 50px rgba(0,0,0,0.3), 0 10px 30px rgba(16, 185, 129, 0.15)",
+            maxHeight: "90vh",
+            overflow: "hidden"
           }}
         >
           {!showResumeImport ? (
-            <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden">
               <DialogHeader className="mb-4">
                 <DialogTitle className="text-3xl text-center md:text-4xl font-bold">
                   How would you like to build your{" "}
@@ -554,7 +556,7 @@ const CreateMethodModal = ({
               </motion.div>
             </div>
           ) : (
-            <div className="py-4 relative overflow-hidden flex-1 min-h-0 overflow-y-auto">
+            <div className="py-4 relative flex-1 overflow-y-auto overflow-x-hidden">
               {/* Back button */}
               <motion.button
                 className="absolute top-0 left-0 flex items-center text-gray-400 hover:text-white transition-colors"

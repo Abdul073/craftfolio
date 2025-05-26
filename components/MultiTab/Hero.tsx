@@ -1,14 +1,18 @@
-import React, { useState } from "react";
 import {
-  Mail,
-  Github,
-  Twitter,
-  Linkedin,
-  MapPin,
   Download,
+  Github,
+  Linkedin,
+  Mail,
+  MapPin,
+  Twitter,
 } from "lucide-react";
-import Navbar from "./Navbar";
 import Projects from "./Projects";
+import Navbar from "./Navbar";
+import Technologies from "./Technologies";
+import Experience from "./Experience";
+import Contact from "./Contact";
+import Education from "./Education";
+import { useState } from "react";
 
 const Hero = () => {
   const [activeTab, setActiveTab] = useState("home");
@@ -44,7 +48,7 @@ const Hero = () => {
     },
     {
       icon: () => (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.18 0 2.31-.21 3.38-.6.39-.14.62-.52.62-.94 0-.41-.23-.79-.62-.94C14.31 19.79 13.18 20 12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83-.31.4-.31.98 0 1.38.4.31.98.31 1.38 0C20.38 16.49 22 14.32 22 12c0-5.52-4.48-10-10-10z" />
         </svg>
       ),
@@ -59,127 +63,20 @@ const Hero = () => {
       case "projects":
         return <Projects />;
       case "work":
-        return (
-          <div className="space-y-8 max-w-4xl">
-            <h2 className="text-4xl font-bold text-white mb-8">
-              Work Experience
-            </h2>
-            <div className="space-y-6">
-              <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Senior Software Engineer
-                </h3>
-                <p className="text-orange-400 mb-3">
-                  Tech Company • 2023 - Present
-                </p>
-                <p className="text-gray-300">
-                  Led development of scalable web applications, mentored junior
-                  developers, and improved system performance by 40%.
-                </p>
-              </div>
-              <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Full-Stack Developer
-                </h3>
-                <p className="text-orange-400 mb-3">
-                  Startup Inc • 2022 - 2023
-                </p>
-                <p className="text-gray-300">
-                  Built end-to-end applications using React, Node.js, and cloud
-                  technologies. Delivered projects to thousands of users.
-                </p>
-              </div>
-            </div>
-          </div>
-        );
+        return <Experience />;
       case "learning":
-        return (
-          <div className="space-y-8 max-w-4xl">
-            <h2 className="text-4xl font-bold text-white mb-8">
-              Learning Journey
-            </h2>
-            <div className="grid grid-cols-2 gap-6">
-              {[
-                "Machine Learning",
-                "Cloud Architecture",
-                "DevOps",
-                "System Design",
-              ].map((skill) => (
-                <div
-                  key={skill}
-                  className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 hover:border-orange-400 transition-colors"
-                >
-                  <h3 className="text-white font-semibold">{skill}</h3>
-                  <p className="text-gray-400 text-sm mt-2">
-                    Currently exploring and building projects
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
+        return <Education />;
       case "technologies":
-        return (
-          <div className="space-y-8 max-w-4xl">
-            <h2 className="text-4xl font-bold text-white mb-8">Technologies</h2>
-            <div className="grid grid-cols-3 gap-4">
-              {[
-                "React",
-                "Node.js",
-                "TypeScript",
-                "Python",
-                "AWS",
-                "Docker",
-                "PostgreSQL",
-                "GraphQL",
-                "MongoDB",
-              ].map((tech) => (
-                <div
-                  key={tech}
-                  className="bg-gray-800/50 rounded-lg p-4 text-center border border-gray-700 hover:border-orange-400 transition-colors"
-                >
-                  <span className="text-white font-medium">{tech}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
+        return <Technologies />;
       case "links":
-        return (
-          <div className="space-y-8 max-w-4xl">
-            <h2 className="text-4xl font-bold text-white mb-8">
-              Links & Contact
-            </h2>
-            <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
-              <p className="text-gray-300 mb-6">
-                Feel free to reach out for collaborations or opportunities!
-              </p>
-              <div className="space-y-4">
-                {socialLinks.map((link, index) => {
-                  const IconComponent =
-                    typeof link.icon === "function" ? link.icon : link.icon;
-                  return (
-                    <a
-                      key={index}
-                      href={link.href}
-                      className={`flex items-center space-x-3 text-base transition-all duration-300 p-3 rounded-lg hover:bg-gray-700/50 ${link.color}`}
-                    >
-                      <IconComponent size={20} />
-                      <span>{link.label}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        );
+        return <Contact />;
       case "home":
       default:
         return (
-          <div className="space-y-8 max-w-4xl">
-            <h2 className="text-4xl font-bold text-white mb-8">About me</h2>
+          <div className="space-y-8">
+            <h2 className="text-5xl font-bold text-white mb-8">About me</h2>
 
-            <div className="text-gray-300 text-base leading-relaxed space-y-6">
+            <div className="text-gray-300 text-base leading-relaxed space-y-5">
               <p>
                 Hi, this is{" "}
                 <span className="text-white font-semibold">Sayantan Paul</span>{" "}
@@ -211,7 +108,7 @@ const Hero = () => {
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-5 pt-3">
               <p className="text-gray-300 text-base leading-relaxed">
                 <span className="text-white font-semibold">
                   Interested in collaborating?
@@ -222,9 +119,9 @@ const Hero = () => {
                 too). Let's create impactful tech solutions together!
               </p>
 
-              <button className="inline-flex items-center space-x-2 bg-white text-black px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors duration-300">
+              <button className="inline-flex items-center space-x-3 bg-white text-black px-6 py-3 rounded-xl font-semibold text-sm hover:bg-gray-100 transition-all duration-300 hover:shadow-lg">
                 <span>Download CV</span>
-                <Download size={16} />
+                <Download size={18} />
               </button>
             </div>
           </div>
@@ -233,41 +130,56 @@ const Hero = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
-      <Navbar onTabChange={handleTabChange} activeTab={activeTab} />
-
-      <div className="flex px-8 py-12 gap-16">
-        {/* Left Sidebar - Profile */}
-        <div className="w-80 flex flex-col items-center text-center space-y-6 sticky top-8 h-fit">
+    <div className="relative  max-h-screen overflow-y-none bg-gradient-to-b from-[#2d193c] via-[#18181b] to-black">
+      {/* Grid overlay */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          backgroundImage: "url('/grid5.png')",
+          backgroundRepeat: "repeat",
+          backgroundPosition: "top",
+          opacity: 0.15,
+        }}
+      />
+      {/* Hanging Navbar */}
+      <div className="relative z-10 w-full flex justify-center pt-8">
+        <div className="max-w-4xl w-full">
+          <Navbar onTabChange={handleTabChange} activeTab={activeTab} />
+        </div>
+      </div>
+      {/* Main content area, centered, 80% width */}
+      <div className="relative z-10 max-w-6xl mx-auto w-full flex gap-12 mt-12">
+        {/* Sidebar sticky card */}
+        <div className="w-64 sticky top-32 self-start h-fit bg-gray-800/20 backdrop-blur-md rounded-2xl shadow-xl p-6 flex flex-col items-center text-center space-y-6 border border-gray-700/50">
           {/* Profile Image */}
           <div className="relative">
-            <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-gray-700">
+            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-600/50 shadow-2xl">
               <img
                 src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
                 alt="Sayantan Paul"
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="absolute bottom-4 right-4 w-6 h-6 bg-green-500 rounded-full border-4 border-gray-900"></div>
+            <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-gray-900 shadow-lg"></div>
           </div>
 
           {/* Name and Title */}
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-white">Sayantan Paul</h1>
-            <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
+          <div className="space-y-1">
+            <h1 className="text-xl font-bold text-white">Sayantan Paul</h1>
+            <p className="text-gray-300 text-xs leading-relaxed max-w-xs">
               Full-Stack Software Engineer | Product Design | Cross-Platform
               Development
             </p>
           </div>
 
           {/* Location */}
-          <div className="flex items-center space-x-2 text-gray-400 text-sm">
+          <div className="flex items-center space-x-2 text-gray-400 text-xs">
             <MapPin size={16} />
             <span>Kolkata, West Bengal, India</span>
           </div>
 
           {/* Social Links */}
-          <div className="space-y-3 w-full">
+          <div className="space-y-1 w-full pt-1">
             {socialLinks.map((link, index) => {
               const IconComponent =
                 typeof link.icon === "function" ? link.icon : link.icon;
@@ -275,17 +187,17 @@ const Hero = () => {
                 <a
                   key={index}
                   href={link.href}
-                  className={`flex items-center space-x-3 text-sm transition-all duration-300 p-2 rounded-lg hover:bg-gray-800/50 ${link.color}`}
+                  className={`flex items-center space-x-1 text-xs transition-all duration-300 p-2 rounded-xl hover:bg-gray-800/50 ${link.color}`}
                 >
                   <IconComponent size={16} />
-                  <span>{link.label}</span>
+                  <span className="font-medium">{link.label}</span>
                 </a>
               );
             })}
           </div>
         </div>
 
-        {/* Right Content Area */}
+        {/* Main Content */}
         <div className="flex-1">{renderContent()}</div>
       </div>
     </div>

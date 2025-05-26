@@ -107,7 +107,7 @@ const Projects = () => {
   ];
 
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-8 max-h-screen overflow-y-auto scrollbar-none max-w-6xl">
       <div className="flex items-center justify-between">
         <h2 className="text-4xl font-bold text-white">Projects</h2>
         <div className="text-gray-400 text-sm">{projects.length} projects</div>
@@ -217,26 +217,6 @@ const Projects = () => {
         ))}
       </div>
 
-      {/* Call to Action */}
-      <div className="text-center py-8">
-        <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
-          <h3 className="text-2xl font-bold text-white mb-4">
-            Interested in working together?
-          </h3>
-          <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-            I'm always open to discussing new opportunities, creative projects,
-            or potential collaborations. Let's build something amazing together!
-          </p>
-          <div className="flex items-center justify-center space-x-4">
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300">
-              Get In Touch
-            </button>
-            <button className="border border-gray-600 hover:border-orange-400 text-gray-300 hover:text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300">
-              View Resume
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

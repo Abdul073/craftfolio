@@ -22,7 +22,6 @@ interface DeployModalProps {
 const DeployModal = ({ isOpen, onClose, portfolioId, portfolioData, portfolioLink }: DeployModalProps) => {
   const { user } = useUser();
   const dispatch = useDispatch();
-  const { portfolioUserId } = useSelector((state: RootState) => state.data);
   const [isDeploying, setIsDeploying] = useState(false);
   const [portfolioSlug, setPortfolioSlug] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
@@ -46,8 +45,8 @@ const DeployModal = ({ isOpen, onClose, portfolioId, portfolioData, portfolioLin
   };
 
   const handleDeploy = async () => {
-    if (!user || user.id !== portfolioUserId) {
-      toast.error("You must be the portfolio owner to deploy");
+
+    if(!user){
       return;
     }
 
@@ -80,6 +79,29 @@ const DeployModal = ({ isOpen, onClose, portfolioId, portfolioData, portfolioLin
       toast.error("Failed to deploy portfolio");
     } finally {
       setIsDeploying(false);
+    }
+  };
+
+  const handleCopyUrl = () => {
+    const url = `https://craft-folio-three.vercel.app/p/${portfolioLink}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Portfolio URL copied to clipboard!');
+  };
+
+  const handleShare = (platform: string) => {
+    const url = `https://craft-folio-three.vercel.app/p/${portfolioLink}`;
+    const text = "Check out my portfolio!";
+    
+    switch (platform) {
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'linkedin':
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        break;
     }
   };
 
@@ -158,7 +180,7 @@ const DeployModal = ({ isOpen, onClose, portfolioId, portfolioData, portfolioLin
                 }}
               >
                 <Rocket className="h-4 w-4" />
-                 Visit Portfolio 
+                Visit Portfolio
               </motion.button>
 
               <div className="flex flex-col gap-2">
@@ -174,11 +196,7 @@ const DeployModal = ({ isOpen, onClose, portfolioId, portfolioData, portfolioLin
                     }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      const url = `https://craft-folio-three.vercel.app/p/${portfolioLink}`;
-                      const text = "Check out my portfolio!";
-                      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-                    }}
+                    onClick={() => handleShare('twitter')}
                   >
                     <Twitter className="h-5 w-5" />
                   </motion.button>
@@ -190,11 +208,7 @@ const DeployModal = ({ isOpen, onClose, portfolioId, portfolioData, portfolioLin
                     }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      const url = `https://craft-folio-three.vercel.app/p/${portfolioLink}`;
-                      const text = "Check out my portfolio!";
-                      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
-                    }}
+                    onClick={() => handleShare('linkedin')}
                   >
                     <Linkedin className="h-5 w-5" />
                   </motion.button>
@@ -206,11 +220,7 @@ const DeployModal = ({ isOpen, onClose, portfolioId, portfolioData, portfolioLin
                     }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      const url = `https://craft-folio-three.vercel.app/p/${portfolioLink}`;
-                      const text = "Check out my portfolio!";
-                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-                    }}
+                    onClick={() => handleShare('facebook')}
                   >
                     <Facebook className="h-5 w-5" />
                   </motion.button>
@@ -222,11 +232,7 @@ const DeployModal = ({ isOpen, onClose, portfolioId, portfolioData, portfolioLin
                     }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      const url = `https://craft-folio-three.vercel.app/p/${portfolioLink}`;
-                      navigator.clipboard.writeText(url);
-                      toast.success('Portfolio URL copied to clipboard!');
-                    }}
+                    onClick={handleCopyUrl}
                   >
                     <Link2 className="h-5 w-5" />
                   </motion.button>
