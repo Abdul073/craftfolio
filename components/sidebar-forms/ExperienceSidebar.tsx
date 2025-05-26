@@ -42,6 +42,7 @@ const ExperienceSidebar = () => {
 
   const { portfolioData } = useSelector((state: RootState) => state.data)
   const experienceData = portfolioData?.find((item: any) => item.type === "experience")?.data || [];
+  const experienceSection = portfolioData?.find((item: any) => item.type === "experience");
   
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [currentExperience, setCurrentExperience] = useState<Experience>(emptyExperience);
@@ -49,6 +50,9 @@ const ExperienceSidebar = () => {
   const [techInput, setTechInput] = useState<string>("");
   const [suggestions, setSuggestions] = useState<Technology[]>([]);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [sectionTitle, setSectionTitle] = useState(experienceSection?.sectionTitle || "");
+  const [sectionDescription, setSectionDescription] = useState(experienceSection?.sectionDescription || "");
+  const [hasHeaderChanges, setHasHeaderChanges] = useState(false);
   const params = useParams();
   const portfolioId = params.portfolioId as string;
 
@@ -59,6 +63,13 @@ const ExperienceSidebar = () => {
       setExperiences(experienceData);
     }
   }, [experienceData]);
+
+  useEffect(() => {
+    setHasHeaderChanges(
+      sectionTitle !== (experienceSection?.sectionTitle || "") ||
+      sectionDescription !== (experienceSection?.sectionDescription || "")
+    );
+  }, [sectionTitle, sectionDescription, experienceSection]);
 
   const handleTechInputChange = (value: string) => {
     setTechInput(value);
@@ -108,14 +119,36 @@ const ExperienceSidebar = () => {
     if (editingIndex !== null) {
       const updatedExperiences = [...experiences];
       updatedExperiences[editingIndex] = currentExperience;
-      dispatch(updatePortfolioData({ sectionType: "experience", newData: updatedExperiences }));
-      await updateSection({ portfolioId: portfolioId,sectionName : "experience", sectionContent: updatedExperiences });
+      dispatch(updatePortfolioData({ 
+        sectionType: "experience", 
+        newData: updatedExperiences,
+        sectionTitle,
+        sectionDescription
+      }));
+      await updateSection({ 
+        portfolioId: portfolioId,
+        sectionName: "experience", 
+        sectionContent: updatedExperiences,
+        sectionTitle,
+        sectionDescription
+      });
       setExperiences(updatedExperiences);
       setEditingIndex(null);
     } else {
       const updatedExperiences = [...experiences, currentExperience];
-      dispatch(updatePortfolioData({ sectionType: "experience", newData: updatedExperiences }));
-      await updateSection({ portfolioId: portfolioId, sectionName : "experience", sectionContent: updatedExperiences  });
+      dispatch(updatePortfolioData({ 
+        sectionType: "experience", 
+        newData: updatedExperiences,
+        sectionTitle,
+        sectionDescription
+      }));
+      await updateSection({ 
+        portfolioId: portfolioId, 
+        sectionName: "experience", 
+        sectionContent: updatedExperiences,
+        sectionTitle,
+        sectionDescription
+      });
       setExperiences(updatedExperiences);
     }
     setCurrentExperience(emptyExperience);
@@ -131,11 +164,45 @@ const ExperienceSidebar = () => {
   const deleteExperience = async(index: number) => {
     const updatedExperiences = [...experiences];
     updatedExperiences.splice(index, 1);
-    dispatch(updatePortfolioData({ sectionType: "experience", newData: updatedExperiences }));
-    await updateSection({ portfolioId: portfolioId, sectionName : "experience", sectionContent: updatedExperiences  });
+    dispatch(updatePortfolioData({ 
+      sectionType: "experience", 
+      newData: updatedExperiences,
+      sectionTitle,
+      sectionDescription
+    }));
+    await updateSection({ 
+      portfolioId: portfolioId, 
+      sectionName: "experience", 
+      sectionContent: updatedExperiences,
+      sectionTitle,
+      sectionDescription
+    });
     setExperiences(updatedExperiences);
     toast.success('Experience deleted!');
   }
+
+  const handleSaveHeader = async () => {
+    try {
+      dispatch(updatePortfolioData({ 
+        sectionType: "experience", 
+        newData: experiences,
+        sectionTitle,
+        sectionDescription
+      }));
+      await updateSection({ 
+        portfolioId: portfolioId, 
+        sectionName: "experience",
+        sectionContent: experiences,
+        sectionTitle,
+        sectionDescription
+      });
+      setHasHeaderChanges(false);
+      toast.success("Section header updated successfully");
+    } catch (error) {
+      console.error("Error saving section header:", error);
+      toast.error("Failed to update section header");
+    }
+  };
 
   return (
     <div className="custom-scrollbar">
@@ -146,6 +213,55 @@ const ExperienceSidebar = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-5">
+            {experienceSection?.sectionTitle && (
+              <div className="space-y-2">
+                <Label htmlFor="sectionTitle" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Section Title</Label>
+                <Input 
+                  id="sectionTitle" 
+                  value={sectionTitle} 
+                  onChange={(e) => setSectionTitle(e.target.value)} 
+                  placeholder="Enter section title" 
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
+                />
+              </div>
+            )}
+
+            {experienceSection?.sectionDescription && (
+              <div className="space-y-2">
+                <Label htmlFor="sectionDescription" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Section Description</Label>
+                <Textarea 
+                  id="sectionDescription" 
+                  value={sectionDescription} 
+                  onChange={(e) => setSectionDescription(e.target.value)} 
+                  placeholder="Enter section description" 
+                  className="resize-none h-20"
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
+                />
+              </div>
+            )}
+
+            {hasHeaderChanges && (
+              <Button 
+                onClick={handleSaveHeader}
+                className="w-full"
+                style={{ 
+                  backgroundColor: ColorTheme.primary,
+                  color: ColorTheme.textPrimary,
+                  boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
+                }}
+              >
+                Save Section Header
+              </Button>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="company" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Company</Label>
               <Input 

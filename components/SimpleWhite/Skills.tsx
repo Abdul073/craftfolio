@@ -25,6 +25,7 @@ const Skills: NextPage = ({ customCSS }: any) => {
   useEffect(() => {
     if (portfolioData) {
       const technologiesSectionData = portfolioData?.find((section: any) => section.type === "technologies")?.data;
+      const technologiesSection = portfolioData?.find((section: any) => section.type === "technologies");
 
       if (technologiesSectionData) {
         setTechnologiesData(technologiesSectionData);
@@ -99,10 +100,10 @@ const Skills: NextPage = ({ customCSS }: any) => {
         <div className="text-center mb-16 relative">
         <EditButton styles="right-96 -top-18" sectionName="technologies" />
           <h2 className="text-3xl md:text-4xl section-title font-bold text-gray-800 dark:text-white mb-4">
-            Technical Skills
+            {portfolioData?.find((section: any) => section.type === "technologies")?.sectionTitle || "Technical Skills"}
           </h2>
           <p className="text-lg section-description text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            A comprehensive list of technologies and tools I work with
+            {portfolioData?.find((section: any) => section.type === "technologies")?.sectionDescription || "A comprehensive list of technologies and tools I work with"}
           </p>
         </div>
 

@@ -6,5 +6,10 @@ export const maps : any = {
     "MonoEdge":{
         "themeName" : "",
         "fontName" : "Raleway"
-    }
+    },
+    "MultiTab":{
+        "themeName" : "",
+        "fontName" : "Raleway"
+    },
+    
 }

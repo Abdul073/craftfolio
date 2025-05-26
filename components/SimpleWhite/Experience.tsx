@@ -61,6 +61,7 @@ const Experience: React.FC = ({ customCSS }: any) => {
   useEffect(() => {
     if (portfolioData) {
       const experienceSectionData = portfolioData.find((section: any) => section.type === "experience")?.data;
+      const experienceSection = portfolioData.find((section: any) => section.type === "experience");
       if (experienceSectionData) {
         setExperienceData(experienceSectionData || []);
         setIsLoading(false);
@@ -164,10 +165,10 @@ const Experience: React.FC = ({ customCSS }: any) => {
           className="text-center mb-20"
         >
           <h2 className={`font-display section-title text-4xl md:text-5xl font-medium tracking-tight text-gray-900 mb-4 transition-all duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}>
-            Professional Experience
+            {portfolioData?.find((section: any) => section.type === "experience")?.sectionTitle || "Professional Experience"}
           </h2>
           <p className={`font-sans text-lg section-description md:text-xl font-normal text-gray-600 tracking-normal leading-relaxed max-w-2xl mx-auto transition-all duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}>
-            My journey in the industry
+            {portfolioData?.find((section: any) => section.type === "experience")?.sectionDescription || "My journey in the industry"}
           </p>
           <div className="mt-6">
           <EditButton styles="right-64 -top-18" sectionName="experience" />

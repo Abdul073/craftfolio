@@ -13,6 +13,10 @@ const Technologies = ({ currentPortTheme, customCSS }: any) => {
   const theme = inTheme.data[currentPortTheme];
   const titleColor = theme.colors.primary;
 
+  const techSection = portfolioData?.find((item: any) => item.type === "technologies");
+  const sectionTitle = techSection?.sectionTitle || "My Tech Stack";
+  const sectionDescription = techSection?.sectionDescription || "Technologies I Worked On.";
+
   interface Technology {
     name: string;
     logo: string;
@@ -81,10 +85,10 @@ const Technologies = ({ currentPortTheme, customCSS }: any) => {
             className="text-3xl sm:text-5xl md:text-6xl section-title font-bold mb-2 sm:mb-4 text-center"
             style={{ color: titleColor }}
           >
-            My Tech Stack
+            {sectionTitle}
           </h1>
           <p className="text-base sm:text-lg md:text-xl section-description text-gray-300 text-center mb-6 sm:mb-10 md:mb-16">
-            Technologies I Worked On.
+            {sectionDescription}
           </p>
           <EditButton sectionName="technologies" />
         </div>

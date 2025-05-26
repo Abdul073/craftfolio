@@ -29,6 +29,10 @@ const ProfessionalJourney = ({ currentPortTheme, customCSS }: any) => {
   const theme = inTheme.data[currentPortTheme];
   const titleColor = theme.colors.primary;
 
+  const experienceSection = portfolioData?.find((item: any) => item.type === "experience");
+  const sectionTitle = experienceSection?.sectionTitle || "Professional Journey";
+  const sectionDescription = experienceSection?.sectionDescription || "Building real-world experience through innovative projects";
+
   const [experienceData, setExperienceData] = useState<Experience[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
@@ -118,9 +122,9 @@ const ProfessionalJourney = ({ currentPortTheme, customCSS }: any) => {
         <div 
           className={`mb-10 sm:mb-16 transition-all relative duration-700 ${isHeadingVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-6'}`}
         >
-          <h1 className="text-2xl sm:text-4xl md:text-5xl section-title font-bold mb-2 sm:mb-4 text-center" style={{ color: titleColor }}>Professional Journey</h1>
+          <h1 className="text-2xl sm:text-4xl md:text-5xl section-title font-bold mb-2 sm:mb-4 text-center" style={{ color: titleColor }}>{sectionTitle}</h1>
           <p className="text-base sm:text-lg md:text-xl section-description text-gray-300 text-center mb-2 sm:mb-0">
-            Building real-world experience through innovative projects
+            {sectionDescription}
           </p>
         <EditButton  sectionName="experience"/>
         </div>

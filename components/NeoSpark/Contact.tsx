@@ -21,6 +21,11 @@ const Contact = ({ currentPortTheme, customCSS }: any) => {
   const theme = inTheme.data[currentPortTheme];
   const titleColor = theme.colors.primary;
   
+  const contactSection = portfolioData?.find((item: any) => item.type === "userInfo");
+  const sectionTitle = contactSection?.sectionTitle || "Let's Work Together!";
+  const sectionDescription = contactSection?.sectionDescription || "Interested in collaborating, hiring, or just having a chat? Reach out to me on your favorite platform!";
+  console.log(contactSection);
+
   const [isLoading, setIsLoading] = useState(true);
   const [contactData, setContactData] = useState<any>(null);
   
@@ -72,9 +77,9 @@ const Contact = ({ currentPortTheme, customCSS }: any) => {
        <div 
           className="my-8 sm:my-12 md:my-16 transition-all duration-700 relative"
         >
-          <h1 className="text-3xl sm:text-5xl md:text-6xl section-title font-bold mb-2 sm:mb-4 text-center" style={{ color: titleColor }}>Let's Work Together!</h1>
+          <h1 className="text-3xl sm:text-5xl md:text-6xl section-title font-bold mb-2 sm:mb-4 text-center" style={{ color: titleColor }}>{sectionTitle}</h1>
           <p className="text-base sm:text-lg md:text-xl section-description text-gray-300 text-center mb-6 sm:mb-10 md:mb-16">
-            Interested in collaborating, hiring, or just having a chat? Reach out to me on your favorite platform!
+            {sectionDescription}
           </p>
           <EditButton sectionName='contact'/>
         </div>

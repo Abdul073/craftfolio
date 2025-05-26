@@ -21,6 +21,9 @@ const ContactSidebar = () => {
   const { portfolioData } = useSelector((state: RootState) => state.data);
   const contactSectionData = portfolioData?.find((section: any) => section.type === "userInfo");
   const contactData = contactSectionData?.data || {};
+  const [sectionTitle, setSectionTitle] = useState(contactSectionData?.sectionTitle || "");
+  const [sectionDescription, setSectionDescription] = useState(contactSectionData?.sectionDescription || "");
+  const [hasHeaderChanges, setHasHeaderChanges] = useState(false);
 
   const emptyContent = {
     email: "",
@@ -53,6 +56,13 @@ const ContactSidebar = () => {
     }
   }, [contactData]);
 
+  useEffect(() => {
+    setHasHeaderChanges(
+      sectionTitle !== (contactSectionData?.sectionTitle || "") ||
+      sectionDescription !== (contactSectionData?.sectionDescription || "")
+    );
+  }, [sectionTitle, sectionDescription, contactSectionData]);
+
   if (!portfolioId) {
     return redirect("/choose-templates");
   }
@@ -60,8 +70,19 @@ const ContactSidebar = () => {
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      dispatch(updatePortfolioData({ sectionType: "userInfo", newData: content }));
-      const result = await updateSection({ sectionName: "userInfo", portfolioId: portfolioId, sectionContent: content });
+      dispatch(updatePortfolioData({ 
+        sectionType: "userInfo", 
+        newData: content,
+        sectionTitle,
+        sectionDescription
+      }));
+      const result = await updateSection({ 
+        sectionName: "userInfo", 
+        portfolioId: portfolioId, 
+        sectionContent: content,
+        sectionTitle,
+        sectionDescription
+      });
       setOriginalContent(content);
       toast.success("Contact information updated successfully");
     } catch (error) {
@@ -112,6 +133,29 @@ const ContactSidebar = () => {
     setIsUploaded(false);
   };
 
+  const handleSaveHeader = async () => {
+    try {
+      dispatch(updatePortfolioData({ 
+        sectionType: "userInfo", 
+        newData: content,
+        sectionTitle,
+        sectionDescription
+      }));
+      await updateSection({ 
+        portfolioId: portfolioId, 
+        sectionName: "userInfo",
+        sectionContent: content,
+        sectionTitle,
+        sectionDescription
+      });
+      setHasHeaderChanges(false);
+      toast.success("Section header updated successfully");
+    } catch (error) {
+      console.error("Error saving section header:", error);
+      toast.error("Failed to update section header");
+    }
+  };
+
   return (
     <div className="flex-1 custom-scrollbar h-full">
       <Card className='min-h-screen rounded-none' style={{ backgroundColor: ColorTheme.bgMain, borderColor: ColorTheme.borderLight }}>
@@ -121,161 +165,213 @@ const ContactSidebar = () => {
         </CardHeader>
 
         <CardContent className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Email Address</Label>
-            <Input
-              id="email"
-              type="email"
-              value={content.email}
-              onChange={(e) => setContent({ ...content, email: e.target.value })}
-              placeholder="Enter your email address"
-              style={{ 
-                backgroundColor: ColorTheme.bgCard,
-                borderColor: ColorTheme.borderLight,
-                color: ColorTheme.textPrimary
-              }}
-            />
-          </div>
+          {contactSectionData?.sectionTitle && (
+            <div className="space-y-2">
+              <Label htmlFor="sectionTitle" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Section Title</Label>
+              <Input 
+                id="sectionTitle" 
+                value={sectionTitle} 
+                onChange={(e) => setSectionTitle(e.target.value)} 
+                placeholder="Enter section title" 
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
+              />
+            </div>
+          )}
 
-          <div className="space-y-2">
-            <Label htmlFor="linkedin" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>LinkedIn Profile</Label>
-            <Input
-              id="linkedin"
-              value={content.linkedin}
-              onChange={(e) => setContent({ ...content, linkedin: e.target.value })}
-              placeholder="Enter your LinkedIn URL"
-              style={{ 
-                backgroundColor: ColorTheme.bgCard,
-                borderColor: ColorTheme.borderLight,
-                color: ColorTheme.textPrimary
-              }}
-            />
-            <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>e.g. https://linkedin.com/in/username</p>
-          </div>
+          {contactSectionData?.sectionDescription && (
+            <div className="space-y-2">
+              <Label htmlFor="sectionDescription" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Section Description</Label>
+              <Textarea 
+                id="sectionDescription" 
+                value={sectionDescription} 
+                onChange={(e) => setSectionDescription(e.target.value)} 
+                placeholder="Enter section description" 
+                className="resize-none h-20"
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
+              />
+            </div>
+          )}
 
-          <div className="space-y-2">
-            <Label htmlFor="github" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>GitHub Profile</Label>
-            <Input
-              id="github"
-              value={content.github}
-              onChange={(e) => setContent({ ...content, github: e.target.value })}
-              placeholder="Enter your GitHub URL"
+          {hasHeaderChanges && (
+            <Button 
+              onClick={handleSaveHeader}
+              className="w-full"
               style={{ 
-                backgroundColor: ColorTheme.bgCard,
-                borderColor: ColorTheme.borderLight,
-                color: ColorTheme.textPrimary
+                backgroundColor: ColorTheme.primary,
+                color: ColorTheme.textPrimary,
+                boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
               }}
-            />
-            <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>e.g. https://github.com/username</p>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="location" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Location</Label>
-            <Input
-              id="location"
-              value={content.location}
-              onChange={(e) => setContent({ ...content, location: e.target.value })}
-              placeholder="Enter your location"
-              style={{ 
-                backgroundColor: ColorTheme.bgCard,
-                borderColor: ColorTheme.borderLight,
-                color: ColorTheme.textPrimary
-              }}
-            />
-            <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>e.g. New York, USA </p>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="shortSummary" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Short Summary</Label>
-            <Textarea
-              id="shortSummary"
-              value={content.shortSummary}
-              onChange={(e) => setContent({ ...content, shortSummary: e.target.value })}
-              placeholder="Enter a short summary about yourself"
-              style={{ 
-                backgroundColor: ColorTheme.bgCard,
-                borderColor: ColorTheme.borderLight,
-                color: ColorTheme.textPrimary
-              }}
-              className="resize-none custom-scrollbar h-32"
-            />
-            <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>Use new lines to create multiple paragraphs</p>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="resumeUpload" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Resume</Label>
-            <div className="mt-1 flex flex-col items-center">
-              {content.resumeFile ? (
-                <div className="relative w-full">
-                  <div className="flex items-center justify-between w-full p-3 rounded-md" style={{ 
-                    backgroundColor: ColorTheme.bgCard,
-                    borderColor: ColorTheme.borderLight
-                  }}>
-                    <div className="flex items-center">
-                      <div className="mr-3 p-2 rounded" style={{ backgroundColor: ColorTheme.bgCardHover }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: ColorTheme.textPrimary }}>
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14 2 14 8 20 8"></polyline>
-                          <line x1="16" y1="13" x2="8" y2="13"></line>
-                          <line x1="16" y1="17" x2="8" y2="17"></line>
-                          <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                      </div>
-                      <span style={{ color: ColorTheme.textPrimary }} className="truncate max-w-xs">Resume.pdf</span>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={removeResume}
-                      style={{ 
-                        backgroundColor: ColorTheme.bgCardHover,
-                        color: ColorTheme.textPrimary
-                      }}
-                      className="h-8 w-8 p-0 hover:bg-opacity-50 rounded-full"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <label className="w-full cursor-pointer">
-                  <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center h-32 hover:border-opacity-50 transition-colors" style={{ 
-                    borderColor: ColorTheme.borderLight
-                  }}>
-                    <Cloud className="h-8 w-8" style={{ color: ColorTheme.textSecondary }} />
-                    <p className="mt-2 text-sm" style={{ color: ColorTheme.textSecondary }}>Upload resume</p>
-                    <p className="mt-1 text-xs" style={{ color: ColorTheme.textMuted }}>PDF up to 10MB</p>
-                    <input
-                      type="file"
-                      id="resumeUpload"
-                      accept="application/pdf"
-                      onChange={handleResumeUpload}
-                      className="hidden"
-                    />
-                  </div>
-                </label>
-              )}
+            >
+              Save Section Header
+            </Button>
+          )}
+
+          <div className="border-t pt-4" style={{ borderColor: ColorTheme.borderLight }}>
+            <h3 className="text-lg font-medium mb-4" style={{ color: ColorTheme.textPrimary }}>Contact Information</h3>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={content.email}
+                onChange={(e) => setContent({ ...content, email: e.target.value })}
+                placeholder="Enter your email address"
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="linkedin" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>LinkedIn Profile</Label>
+              <Input
+                id="linkedin"
+                value={content.linkedin}
+                onChange={(e) => setContent({ ...content, linkedin: e.target.value })}
+                placeholder="Enter your LinkedIn URL"
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
+              />
+              <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>e.g. https://linkedin.com/in/username</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="github" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>GitHub Profile</Label>
+              <Input
+                id="github"
+                value={content.github}
+                onChange={(e) => setContent({ ...content, github: e.target.value })}
+                placeholder="Enter your GitHub URL"
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
+              />
+              <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>e.g. https://github.com/username</p>
             </div>
             
-            {!isUploaded && !content.resumeFile && (
-              <div className="mt-2">
-                <Label htmlFor="resumeLink" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Or paste resume URL</Label>
-                <Input
-                  id="resumeLink"
-                  value={content.resumeLink}
-                  onChange={(e) => setContent({ ...content, resumeLink: e.target.value })}
-                  placeholder="Enter your resume link"
-                  style={{ 
-                    backgroundColor: ColorTheme.bgCard,
-                    borderColor: ColorTheme.borderLight,
-                    color: ColorTheme.textPrimary
-                  }}
-                  className="mt-2"
-                />
-                <p className="text-xs mt-2" style={{ color: ColorTheme.textSecondary }}>Link to your resume (PDF recommended)</p>
+            <div className="space-y-2">
+              <Label htmlFor="location" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Location</Label>
+              <Input
+                id="location"
+                value={content.location}
+                onChange={(e) => setContent({ ...content, location: e.target.value })}
+                placeholder="Enter your location"
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
+              />
+              <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>e.g. New York, USA </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="shortSummary" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Short Summary</Label>
+              <Textarea
+                id="shortSummary"
+                value={content.shortSummary}
+                onChange={(e) => setContent({ ...content, shortSummary: e.target.value })}
+                placeholder="Enter a short summary about yourself"
+                style={{ 
+                  backgroundColor: ColorTheme.bgCard,
+                  borderColor: ColorTheme.borderLight,
+                  color: ColorTheme.textPrimary
+                }}
+                className="resize-none custom-scrollbar h-32"
+              />
+              <p className="text-xs" style={{ color: ColorTheme.textSecondary }}>Use new lines to create multiple paragraphs</p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="resumeUpload" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Resume</Label>
+              <div className="mt-1 flex flex-col items-center">
+                {content.resumeFile ? (
+                  <div className="relative w-full">
+                    <div className="flex items-center justify-between w-full p-3 rounded-md" style={{ 
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight
+                    }}>
+                      <div className="flex items-center">
+                        <div className="mr-3 p-2 rounded" style={{ backgroundColor: ColorTheme.bgCardHover }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: ColorTheme.textPrimary }}>
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                          </svg>
+                        </div>
+                        <span style={{ color: ColorTheme.textPrimary }} className="truncate max-w-xs">Resume.pdf</span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={removeResume}
+                        style={{ 
+                          backgroundColor: ColorTheme.bgCardHover,
+                          color: ColorTheme.textPrimary
+                        }}
+                        className="h-8 w-8 p-0 hover:bg-opacity-50 rounded-full"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <label className="w-full cursor-pointer">
+                    <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center h-32 hover:border-opacity-50 transition-colors" style={{ 
+                      borderColor: ColorTheme.borderLight
+                    }}>
+                      <Cloud className="h-8 w-8" style={{ color: ColorTheme.textSecondary }} />
+                      <p className="mt-2 text-sm" style={{ color: ColorTheme.textSecondary }}>Upload resume</p>
+                      <p className="mt-1 text-xs" style={{ color: ColorTheme.textMuted }}>PDF up to 10MB</p>
+                      <input
+                        type="file"
+                        id="resumeUpload"
+                        accept="application/pdf"
+                        onChange={handleResumeUpload}
+                        className="hidden"
+                      />
+                    </div>
+                  </label>
+                )}
               </div>
-            )}
+              
+              {!isUploaded && !content.resumeFile && (
+                <div className="mt-2">
+                  <Label htmlFor="resumeLink" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Or paste resume URL</Label>
+                  <Input
+                    id="resumeLink"
+                    value={content.resumeLink}
+                    onChange={(e) => setContent({ ...content, resumeLink: e.target.value })}
+                    placeholder="Enter your resume link"
+                    style={{ 
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                      color: ColorTheme.textPrimary
+                    }}
+                    className="mt-2"
+                  />
+                  <p className="text-xs mt-2" style={{ color: ColorTheme.textSecondary }}>Link to your resume (PDF recommended)</p>
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
 

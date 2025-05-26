@@ -7,6 +7,8 @@ interface PortfolioState {
   fontName: string;
   customCSSState : string;
   portfolioUserId : string;
+  sectionTitle: string;
+  sectionDescription: string;
 }
 
 const initialState: PortfolioState = {
@@ -16,6 +18,8 @@ const initialState: PortfolioState = {
   fontName: "",
   customCSSState : "",
   portfolioUserId : "",
+  sectionTitle: "",
+  sectionDescription: "",
 };
 
 export const dataSlice = createSlice({
@@ -46,13 +50,13 @@ export const dataSlice = createSlice({
 
     updatePortfolioData: (
       state,
-      action: PayloadAction<{ sectionType: string; newData: any }>
+      action: PayloadAction<{ sectionType: string; newData: any; sectionTitle: string; sectionDescription: string }>
     ) => {
       if (!state.portfolioData) return;
 
-      const { sectionType, newData } = action.payload;
+      const { sectionType, newData, sectionTitle, sectionDescription } = action.payload;
       state.portfolioData = state.portfolioData.map((section: any) => 
-        section.type === sectionType ? {...section, data: newData} : section
+        section.type === sectionType ? {...section, data: newData, sectionTitle: sectionTitle, sectionDescription: sectionDescription } : section
       );
     },
     

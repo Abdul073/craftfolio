@@ -44,11 +44,15 @@ const ProjectSidebar = () => {
 
   const { portfolioData } = useSelector((state: RootState) => state.data)
   const projectsData = portfolioData?.find((item: any) => item.type === "projects")?.data || [];
+  const projectsSection = portfolioData?.find((item: any) => item.type === "projects");
   
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentProject, setCurrentProject] = useState<Project>(emptyProject);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isUploaded, setIsUploaded] = useState<boolean>(false);
+  const [sectionTitle, setSectionTitle] = useState(projectsSection?.sectionTitle || "");
+  const [sectionDescription, setSectionDescription] = useState(projectsSection?.sectionDescription || "");
+  const [hasHeaderChanges, setHasHeaderChanges] = useState(false);
   
   // Tech search state
   const [techSearchValue, setTechSearchValue] = useState<string>("");
@@ -65,6 +69,36 @@ const ProjectSidebar = () => {
       setProjects(projectsData);
     }
   }, [projectsData]);
+
+  useEffect(() => {
+    setHasHeaderChanges(
+      sectionTitle !== (projectsSection?.sectionTitle || "") ||
+      sectionDescription !== (projectsSection?.sectionDescription || "")
+    );
+  }, [sectionTitle, sectionDescription, projectsSection]);
+
+  const handleSaveHeader = async () => {
+    try {
+      dispatch(updatePortfolioData({ 
+        sectionType: "projects", 
+        newData: projects,
+        sectionTitle,
+        sectionDescription
+      }));
+      await updateSection({ 
+        portfolioId: portfolioId, 
+        sectionName: "projects",
+        sectionContent: projects,
+        sectionTitle,
+        sectionDescription
+      });
+      setHasHeaderChanges(false);
+      toast.success("Section header updated successfully");
+    } catch (error) {
+      console.error("Error saving section header:", error);
+      toast.error("Failed to update section header");
+    }
+  };
 
   useEffect(() => {
     if (currentProject.projectImage === "") {
@@ -119,14 +153,36 @@ const ProjectSidebar = () => {
     if (editingIndex !== null) {
       const updatedProjects = [...projects];
       updatedProjects[editingIndex] = currentProject;
-      dispatch(updatePortfolioData({ sectionType: "projects", newData: updatedProjects }));
-      await updateSection({ portfolioId: portfolioId, sectionName : "projects",sectionContent: updatedProjects });
+      dispatch(updatePortfolioData({ 
+        sectionType: "projects", 
+        newData: updatedProjects,
+        sectionTitle,
+        sectionDescription
+      }));
+      await updateSection({ 
+        portfolioId: portfolioId, 
+        sectionName: "projects",
+        sectionContent: updatedProjects,
+        sectionTitle,
+        sectionDescription
+      });
       setProjects(updatedProjects);
       setEditingIndex(null);
     } else {
       const updatedProjects = [...projects, currentProject];
-      dispatch(updatePortfolioData({ sectionType: "projects", newData: updatedProjects }));
-      await updateSection({ portfolioId: portfolioId, sectionName : "projects",sectionContent: updatedProjects });
+      dispatch(updatePortfolioData({ 
+        sectionType: "projects", 
+        newData: updatedProjects,
+        sectionTitle,
+        sectionDescription
+      }));
+      await updateSection({ 
+        portfolioId: portfolioId, 
+        sectionName: "projects",
+        sectionContent: updatedProjects,
+        sectionTitle,
+        sectionDescription
+      });
       setProjects(updatedProjects);
     }
     setCurrentProject(emptyProject);
@@ -144,8 +200,19 @@ const ProjectSidebar = () => {
   const deleteProject = async(index: number) => {
     const updatedProjects = [...projects];
     updatedProjects.splice(index, 1);
-    dispatch(updatePortfolioData({ sectionType: "projects", newData: updatedProjects }));
-    await updateSection({ portfolioId: portfolioId,sectionName : "projects", sectionContent: updatedProjects });
+    dispatch(updatePortfolioData({ 
+      sectionType: "projects", 
+      newData: updatedProjects,
+      sectionTitle,
+      sectionDescription
+    }));
+    await updateSection({ 
+      portfolioId: portfolioId,
+      sectionName: "projects", 
+      sectionContent: updatedProjects,
+      sectionTitle,
+      sectionDescription
+    });
     setProjects(updatedProjects);
   }
 
@@ -198,6 +265,55 @@ const ProjectSidebar = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-5">
+            {projectsSection?.sectionTitle && (
+              <div className="space-y-2">
+                <Label htmlFor="sectionTitle" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Section Title</Label>
+                <Input 
+                  id="sectionTitle" 
+                  value={sectionTitle} 
+                  onChange={(e) => setSectionTitle(e.target.value)} 
+                  placeholder="Enter section title" 
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
+                />
+              </div>
+            )}
+
+            {projectsSection?.sectionDescription && (
+              <div className="space-y-2">
+                <Label htmlFor="sectionDescription" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Section Description</Label>
+                <Textarea 
+                  id="sectionDescription" 
+                  value={sectionDescription} 
+                  onChange={(e) => setSectionDescription(e.target.value)} 
+                  placeholder="Enter section description" 
+                  className="resize-none h-20"
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
+                />
+              </div>
+            )}
+
+            {hasHeaderChanges && (
+              <Button 
+                onClick={handleSaveHeader}
+                className="w-full"
+                style={{ 
+                  backgroundColor: ColorTheme.primary,
+                  color: ColorTheme.textPrimary,
+                  boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
+                }}
+              >
+                Save Section Header
+              </Button>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="projectName" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Project Name</Label>
               <Input 

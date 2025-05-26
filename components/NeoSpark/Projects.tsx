@@ -48,6 +48,9 @@ const Projects: React.FC = ({ currentPortTheme, customCSS }: any) => {
   const mutedColor = theme.colors.states.muted;
   const scrollLineColor = theme.colors.background.secondary;
 
+  const projectsSection = portfolioData?.find((item: any) => item.type === "projects");
+  const sectionTitle = projectsSection?.sectionTitle || "My Projects";
+  const sectionDescription = projectsSection?.sectionDescription || "A showcase of my full-stack projects, built using modern web technologies and frameworks.";
 
   useEffect(() => {
     if (portfolioData) {
@@ -168,11 +171,10 @@ const Projects: React.FC = ({ currentPortTheme, customCSS }: any) => {
         <div className="max-w-4xl mx-auto">
           <div className="max-w-xl block mx-auto">
             <h1 className="text-5xl section-title font-bold mb-4 text-center" style={{color: titleColor}}>
-              My Projects
+              {sectionTitle}
             </h1>
             <p className="text-xl section-description text-gray-300 text-center mb-16">
-              A showcase of my full-stack projects, built using modern web
-              technologies and frameworks.
+              {sectionDescription}
             </p>
             <EditButton sectionName="projects" styles="mr-20" />
           </div>

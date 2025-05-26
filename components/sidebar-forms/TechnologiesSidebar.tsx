@@ -12,6 +12,7 @@ import { updateSection } from '@/app/actions/portfolio'
 import toast from 'react-hot-toast'
 import { Label } from '../ui/label'
 import { ColorTheme } from '@/lib/colorThemes'
+import { Textarea } from '../ui/textarea'
 
 interface Technology {
   name: string;
@@ -26,11 +27,16 @@ const TechnologiesSidebar: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [originalSelected, setOriginalSelected] = useState<Technology[]>([])
   const [hasChanges, setHasChanges] = useState<boolean>(false)
+  const { portfolioData } = useSelector((state: RootState) => state.data);
+  const technologiesData = portfolioData?.find((item: any) => item.type === "technologies")?.data || [];
+  const technologiesSection = portfolioData?.find((item: any) => item.type === "technologies");
+  const [sectionTitle, setSectionTitle] = useState(technologiesSection?.sectionTitle || "");
+  const [sectionDescription, setSectionDescription] = useState(technologiesSection?.sectionDescription || "");
+  const [hasHeaderChanges, setHasHeaderChanges] = useState(false);
 
   const dispatch = useDispatch();
   const params = useParams();
   const portfolioId = params.portfolioId as string;
-  const { portfolioData } = useSelector((state: RootState) => state.data);
 
   useEffect(() => {
     if (portfolioData) {
@@ -41,6 +47,13 @@ const TechnologiesSidebar: React.FC = () => {
       }
     }
   }, [portfolioData]);
+
+  useEffect(() => {
+    setHasHeaderChanges(
+      sectionTitle !== (technologiesSection?.sectionTitle || "") ||
+      sectionDescription !== (technologiesSection?.sectionDescription || "")
+    );
+  }, [sectionTitle, sectionDescription, technologiesSection]);
 
   // Track changes
   useEffect(() => {
@@ -86,8 +99,19 @@ const TechnologiesSidebar: React.FC = () => {
   const handleSaveChanges = async() => {
     try {
       setIsLoading(true);
-      dispatch(updatePortfolioData({ sectionType: "technologies", newData: selected }));
-      await updateSection({ portfolioId: portfolioId,sectionName: "technologies", sectionContent: selected });
+      dispatch(updatePortfolioData({ 
+        sectionType: "technologies", 
+        newData: selected,
+        sectionTitle,
+        sectionDescription
+      }));
+      await updateSection({ 
+        portfolioId: portfolioId,
+        sectionName: "technologies", 
+        sectionContent: selected,
+        sectionTitle,
+        sectionDescription
+      });
       setOriginalSelected(JSON.parse(JSON.stringify(selected)));
       setHasChanges(false);
       toast.success("Technologies updated successfully");
@@ -105,6 +129,29 @@ const TechnologiesSidebar: React.FC = () => {
     toast.success("Changes reset");
   };
 
+  const handleSaveHeader = async () => {
+    try {
+      dispatch(updatePortfolioData({ 
+        sectionType: "technologies", 
+        newData: selected,
+        sectionTitle,
+        sectionDescription
+      }));
+      await updateSection({ 
+        portfolioId: portfolioId, 
+        sectionName: "technologies",
+        sectionContent: selected,
+        sectionTitle,
+        sectionDescription
+      });
+      setHasHeaderChanges(false);
+      toast.success("Section header updated successfully");
+    } catch (error) {
+      console.error("Error saving section header:", error);
+      toast.error("Failed to update section header");
+    }
+  };
+
   return (
     <div className="custom-scrollbar">
       <Card className='min-h-screen rounded-none' style={{ backgroundColor: ColorTheme.bgMain, borderColor: ColorTheme.borderLight }}>
@@ -114,6 +161,55 @@ const TechnologiesSidebar: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-5">
+            {technologiesSection?.sectionTitle && (
+              <div className="space-y-2">
+                <Label htmlFor="sectionTitle" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Section Title</Label>
+                <Input 
+                  id="sectionTitle" 
+                  value={sectionTitle} 
+                  onChange={(e) => setSectionTitle(e.target.value)} 
+                  placeholder="Enter section title" 
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
+                />
+              </div>
+            )}
+
+            {technologiesSection?.sectionDescription && (
+              <div className="space-y-2">
+                <Label htmlFor="sectionDescription" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Section Description</Label>
+                <Textarea 
+                  id="sectionDescription" 
+                  value={sectionDescription} 
+                  onChange={(e) => setSectionDescription(e.target.value)} 
+                  placeholder="Enter section description" 
+                  className="resize-none h-20"
+                  style={{ 
+                    backgroundColor: ColorTheme.bgCard,
+                    borderColor: ColorTheme.borderLight,
+                    color: ColorTheme.textPrimary
+                  }}
+                />
+              </div>
+            )}
+
+            {hasHeaderChanges && (
+              <Button 
+                onClick={handleSaveHeader}
+                className="w-full"
+                style={{ 
+                  backgroundColor: ColorTheme.primary,
+                  color: ColorTheme.textPrimary,
+                  boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`
+                }}
+              >
+                Save Section Header
+              </Button>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="techSearch" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Add Technology</Label>
               <div className="flex gap-2">

@@ -3,7 +3,7 @@ import { ComponentType } from "react";
 
 // Define proper types for our template configuration
 export interface TemplateConfig {
-  navbar: ComponentType;
+  navbar?: ComponentType;
   spotlight?: boolean;
   sections: {
     [key: string]: ComponentType;
@@ -40,5 +40,10 @@ export const templatesConfig: TemplatesConfig = {
             userInfo: dynamic(() => import("@/components/SimpleWhite/Contact")),
         },
         hero: ["name", "title", "summary"]
+    },
+    MultiTab : {
+      sections: {
+        hero: dynamic(() => import("@/components/MultiTab/Hero")),
+    },
     }
 };

@@ -79,8 +79,8 @@ const HeroSidebar = () => {
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      dispatch(updatePortfolioData({ sectionType: "hero", newData: content }));
-      const result = await updateSection({ portfolioId: portfolioId,sectionName : "hero", sectionContent: content });
+      dispatch(updatePortfolioData({ sectionType: "hero", sectionTitle: "Hero Section", sectionDescription: "Manage your hero section.", newData: content }));
+      const result = await updateSection({ portfolioId: portfolioId,sectionName : "hero", sectionTitle: "Hero Section", sectionDescription: "Manage your hero section.", sectionContent: content });
       setOriginalContent(content);
       setHasChanges(false);
       toast.success("Hero section updated successfully");

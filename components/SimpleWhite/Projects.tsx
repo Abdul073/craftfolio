@@ -33,6 +33,7 @@ const Projects: NextPage = ({ customCSS }: any) => {
   useEffect(() => {
     if (portfolioData) {
       const projectsSectionData = portfolioData?.find((section: any) => section.type === "projects")?.data;
+      const projectsSection = portfolioData?.find((section: any) => section.type === "projects");
 
       if (projectsSectionData) {
         setProjectsData(projectsSectionData);
@@ -118,10 +119,10 @@ const Projects: NextPage = ({ customCSS }: any) => {
           className="text-center mb-20"
         >
           <h2 className={`font-display section-title text-4xl md:text-5xl font-medium tracking-tight text-gray-900 mb-4 transition-all duration-700 `}>
-           My Projects
+            {portfolioData?.find((section: any) => section.type === "projects")?.sectionTitle || "My Projects"}
           </h2>
           <p className={`font-sans text-lg section-description md:text-xl font-normal text-gray-600 tracking-normal leading-relaxed max-w-2xl mx-auto transition-all duration-700 `}>
-            Some cool things that i have worked on.
+            {portfolioData?.find((section: any) => section.type === "projects")?.sectionDescription || "Some cool things that i have worked on."}
           </p>
           <div className="mt-6">
           <EditButton styles="right-64 -top-18" sectionName="projects" />

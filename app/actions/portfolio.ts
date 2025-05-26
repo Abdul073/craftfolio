@@ -76,10 +76,14 @@ export async function updateSection({
   sectionName,
   portfolioId,
   sectionContent,
+  sectionTitle,
+  sectionDescription,
 }: {
   sectionName: string;
   portfolioId: string;
   sectionContent: any;
+  sectionTitle: string;
+  sectionDescription: string;
 }) {
   try {
     const portfolio = await prisma.portfolio.findUnique({
@@ -98,7 +102,12 @@ export async function updateSection({
     const updatedContent = {
       sections: allSections.map((section: any) => {
         if (section.type === sectionName) {
-          return { type: sectionName, data: sectionContent };
+          return {
+            type: sectionName,
+            data: sectionContent,
+            sectionTitle: sectionTitle,
+            sectionDescription: sectionDescription,
+          };
         }
         return section;
       }),
@@ -163,8 +172,8 @@ export async function getThemeNameApi({
   try {
     const theme = await prisma.portfolio.findUnique({
       where: { id: portfolioId },
-      include:{
-        PortfolioLink : true
+      include: {
+        PortfolioLink: true,
       },
     });
     return { success: true, data: theme };
@@ -364,10 +373,13 @@ export const updatePortfolioUserId = async ({
       data: updatedPortfolio,
     };
   } catch (error) {
-    console.error('Error updating portfolio userId:', error);
+    console.error("Error updating portfolio userId:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update portfolio userId',
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to update portfolio userId",
     };
   }
 };

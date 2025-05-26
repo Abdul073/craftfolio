@@ -37,13 +37,13 @@ export const features = [
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth={2}
-          d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
         />
       </svg>
     ),
-    title: "Drag & Drop Builder",
+    title: "Portfolio Assistant",
     description:
-      "Our intuitive drag-and-drop editor makes it easy to build stunning portfolio pages without unknown technical knowledge.",
+      "Get AI-powered suggestions and guidance to create the perfect portfolio that highlights your strengths and achievements.",
   },
   {
     id: 3,

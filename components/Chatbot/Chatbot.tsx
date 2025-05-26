@@ -839,7 +839,7 @@ const PortfolioChatbot = ({
                   borderColor: themeColors.borderLight,
                 }}
               >
-                <p
+                <div
                   className="text-sm"
                   style={{ color: themeColors.textSecondary }}
                 >
@@ -854,7 +854,7 @@ const PortfolioChatbot = ({
                     <div className="underline inline-block cursor-pointer text-blue-300">Sign up</div>
                   </SignInButton>{" "}
                   to get started.
-                </p>
+                </div>
               </motion.div>
             ) : null}
 
