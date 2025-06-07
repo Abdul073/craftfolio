@@ -68,14 +68,20 @@ const ContactSidebar = () => {
   }
 
   const handleSubmit = async () => {
+    const originalContent = { ...content };
+    const originalSectionTitle = sectionTitle;
+    const originalSectionDescription = sectionDescription;
+
     try {
       setIsLoading(true);
+      
       dispatch(updatePortfolioData({ 
         sectionType: "userInfo", 
         newData: content,
         sectionTitle,
         sectionDescription
       }));
+
       const result = await updateSection({ 
         sectionName: "userInfo", 
         portfolioId: portfolioId, 
@@ -83,11 +89,25 @@ const ContactSidebar = () => {
         sectionTitle,
         sectionDescription
       });
+
+      if (!result.success) {
+        dispatch(updatePortfolioData({ 
+          sectionType: "userInfo", 
+          newData: originalContent,
+          sectionTitle: originalSectionTitle,
+          sectionDescription: originalSectionDescription
+        }));
+        throw new Error("Database update failed");
+      }
+
       setOriginalContent(content);
       toast.success("Contact information updated successfully");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update contact information");
+      setContent(originalContent);
+      setSectionTitle(originalSectionTitle);
+      setSectionDescription(originalSectionDescription);
+      toast.error("Failed to update contact information. Changes have been reverted.");
     } finally {
       setIsLoading(false);
     }
@@ -134,6 +154,10 @@ const ContactSidebar = () => {
   };
 
   const handleSaveHeader = async () => {
+    const originalContent = { ...content };
+    const originalSectionTitle = sectionTitle;
+    const originalSectionDescription = sectionDescription;
+
     try {
       dispatch(updatePortfolioData({ 
         sectionType: "userInfo", 
@@ -141,18 +165,33 @@ const ContactSidebar = () => {
         sectionTitle,
         sectionDescription
       }));
-      await updateSection({ 
+
+      const result = await updateSection({ 
         portfolioId: portfolioId, 
         sectionName: "userInfo",
         sectionContent: content,
         sectionTitle,
         sectionDescription
       });
+
+      if (!result.success) {
+        dispatch(updatePortfolioData({ 
+          sectionType: "userInfo", 
+          newData: originalContent,
+          sectionTitle: originalSectionTitle,
+          sectionDescription: originalSectionDescription
+        }));
+        throw new Error("Database update failed");
+      }
+
       setHasHeaderChanges(false);
       toast.success("Section header updated successfully");
     } catch (error) {
       console.error("Error saving section header:", error);
-      toast.error("Failed to update section header");
+      setContent(originalContent);
+      setSectionTitle(originalSectionTitle);
+      setSectionDescription(originalSectionDescription);
+      toast.error("Failed to update section header. Changes have been reverted.");
     }
   };
 

@@ -227,3 +227,19 @@ html {
 .cl-modalBackdrop {
   z-index: 99 !important;
 }
+
+.multitab-dark {
+  --multitab-bg: #18181b;
+  --multitab-text: #f3f4f6;
+  --multitab-text-secondary: #d1d5db;
+  --multitab-border: rgba(255, 255, 255, 0.08);
+  --multitab-hover: rgba(255, 255, 255, 0.1);
+}
+
+.multitab-light {
+  --multitab-bg: #ffffff;
+  --multitab-text: #1f2937;
+  --multitab-text-secondary: #4b5563;
+  --multitab-border: rgba(0, 0, 0, 0.1);
+  --multitab-hover: rgba(0, 0, 0, 0.05);
+}

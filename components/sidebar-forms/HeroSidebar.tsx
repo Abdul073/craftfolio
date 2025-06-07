@@ -77,16 +77,42 @@ const HeroSidebar = () => {
   }
 
   const handleSubmit = async () => {
+    const originalContent = { ...content };
+    
     try {
       setIsLoading(true);
-      dispatch(updatePortfolioData({ sectionType: "hero", sectionTitle: "Hero Section", sectionDescription: "Manage your hero section.", newData: content }));
-      const result = await updateSection({ portfolioId: portfolioId,sectionName : "hero", sectionTitle: "Hero Section", sectionDescription: "Manage your hero section.", sectionContent: content });
+      dispatch(updatePortfolioData({ 
+        sectionType: "hero", 
+        sectionTitle: "Hero Section", 
+        sectionDescription: "Manage your hero section.", 
+        newData: content 
+      }));
+      
+      const result = await updateSection({ 
+        portfolioId: portfolioId,
+        sectionName: "hero", 
+        sectionTitle: "Hero Section", 
+        sectionDescription: "Manage your hero section.", 
+        sectionContent: content 
+      });
+
+      if (!result.success) {
+        dispatch(updatePortfolioData({ 
+          sectionType: "hero", 
+          sectionTitle: "Hero Section", 
+          sectionDescription: "Manage your hero section.", 
+          newData: originalContent 
+        }));
+        throw new Error("Database update failed");
+      }
+
       setOriginalContent(content);
       setHasChanges(false);
       toast.success("Hero section updated successfully");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update hero section");
+      setContent(originalContent);
+      toast.error("Failed to update hero section. Changes have been reverted.");
     } finally {
       setIsLoading(false);
     }

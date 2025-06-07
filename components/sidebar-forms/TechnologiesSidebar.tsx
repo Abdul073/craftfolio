@@ -97,6 +97,8 @@ const TechnologiesSidebar: React.FC = () => {
   }
 
   const handleSaveChanges = async() => {
+    const originalSelected = [...selected];
+    
     try {
       setIsLoading(true);
       dispatch(updatePortfolioData({ 
@@ -105,19 +107,32 @@ const TechnologiesSidebar: React.FC = () => {
         sectionTitle,
         sectionDescription
       }));
-      await updateSection({ 
+      
+      const result = await updateSection({ 
         portfolioId: portfolioId,
         sectionName: "technologies", 
         sectionContent: selected,
         sectionTitle,
         sectionDescription
       });
+
+      if (!result.success) {
+        dispatch(updatePortfolioData({ 
+          sectionType: "technologies", 
+          newData: originalSelected,
+          sectionTitle,
+          sectionDescription
+        }));
+        throw new Error("Database update failed");
+      }
+
       setOriginalSelected(JSON.parse(JSON.stringify(selected)));
       setHasChanges(false);
       toast.success("Technologies updated successfully");
     } catch (error) {
       console.error("Error saving technologies:", error);
-      toast.error("Failed to update technologies");
+      setSelected(originalSelected);
+      toast.error("Failed to update technologies. Changes have been reverted.");
     } finally {
       setIsLoading(false);
     }

@@ -6,6 +6,7 @@ import ProjectSidebar from '@/components/sidebar-forms/ProjectSidebar';
 import ExperienceSidebar from '@/components/sidebar-forms/ExperienceSidebar';
 import TechnologiesSidebar from '@/components/sidebar-forms/TechnologiesSidebar';
 import ContactSidebar from '@/components/sidebar-forms/ContactSidebar';
+import EducationSidebar from '@/components/sidebar-forms/EducationSidebar';
 
 const Sidebar = () => {
   const { currentlyEditing } = useSelector((state: RootState) => state.editMode);
@@ -31,6 +32,7 @@ const Sidebar = () => {
         {currentlyEditing === "experience" && <ExperienceSidebar />}
         {currentlyEditing === "technologies" && <TechnologiesSidebar />}
         {currentlyEditing === "contact" && <ContactSidebar />}
+        {currentlyEditing === "education" && <EducationSidebar />}
       </div>
     </div>
   );

@@ -21,7 +21,6 @@ const EditButton = ({
   const { portfolioUserId } = useSelector((state: RootState) => state.data);
   const { user } = useUser();
 
-  // Show edit button if portfolio is guest-owned or if user is the owner
   if (portfolioUserId !== "guest" && (!user || user.id !== portfolioUserId)) {
     return null;
   }

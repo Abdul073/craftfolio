@@ -106,6 +106,7 @@ const Page = () => {
           console.log("true form theme");
           return;
         }
+        console.log(themeResult)
         if (themeResult.success) {
           setPortfolioLink(themeResult?.data?.PortfolioLink?.slug || "");
           dispatch(setPortFolioUserId(themeResult?.data?.userId || ""));
@@ -155,7 +156,7 @@ const Page = () => {
   const getComponentForSection = (sectionType: string) => {
     if (!Template || !Template.sections || !Template.sections[sectionType]) {
       return null;
-    }
+    } 
     const SectionComponent: any = Template.sections[sectionType];
     return SectionComponent ? (
       <SectionComponent
@@ -183,6 +184,8 @@ const Page = () => {
   const NavbarComponent: any = Template.navbar;
   const hasSpotlight = Template.spotlight;
   const selectedFontClass = fontClassMap[fontName] || fontClassMap["raleway"];
+
+
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       
@@ -205,7 +208,7 @@ const Page = () => {
         }
       >
         <motion.div
-          className={cn("custom-bg min-h-screen w-full", selectedFontClass)}
+          className={cn(" min-h-screen w-full", selectedFontClass)}
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           {NavbarComponent && (

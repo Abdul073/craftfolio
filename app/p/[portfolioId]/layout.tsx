@@ -30,8 +30,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
         (section: any) => section.type === "seo"
       );
 
-      console.log(seoSection);
-
       if (seoSection?.data) {
         // Determine favicon type
         let faviconType = "image/x-icon";

@@ -3,7 +3,6 @@ import { PromptTemplate } from "@langchain/core/prompts";
 import { techList } from "@/lib/techlist";
 import { themeContent } from "@/lib/themeContent";
 
-// Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const model = genAI.getGenerativeModel({
   model: "gemini-1.5-flash",

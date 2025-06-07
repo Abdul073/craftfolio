@@ -8,7 +8,7 @@ export const maps : any = {
         "fontName" : "Raleway"
     },
     "MultiTab":{
-        "themeName" : "",
+        "themeName" : "SunsetOcean",
         "fontName" : "Raleway"
     },
     

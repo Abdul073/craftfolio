@@ -5,6 +5,10 @@ import {
   Mail,
   MapPin,
   Twitter,
+  Sparkles,
+  User,
+  ExternalLink,
+  Heart,
 } from "lucide-react";
 import Projects from "./Projects";
 import Navbar from "./Navbar";
@@ -12,195 +16,566 @@ import Technologies from "./Technologies";
 import Experience from "./Experience";
 import Contact from "./Contact";
 import Education from "./Education";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  MultiTabThemeProvider,
+  useMultiTabTheme,
+  getThemeClasses,
+} from "./ThemeContext";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { supabase } from "@/lib/supabase-client";
+import { useParams } from "next/navigation";
+import EditButton from "../NeoSpark/EditButton";
+import { motion, AnimatePresence } from "framer-motion";
+import { HeaderComponent } from "./Components";
 
-const Hero = () => {
+// Helper function to convert hex to rgba
+function hexToRgba(hex: string, alpha: number): string {
+  // Remove # if present
+  hex = hex.replace("#", "");
+
+  // Parse hex to RGB
+  const bigint = parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+const HeroContent = ({ currentPortTheme, customCSS }: any) => {
   const [activeTab, setActiveTab] = useState("home");
+  const { theme } = useMultiTabTheme();
+  const { portfolioData } = useSelector((state: RootState) => state.data);
+  const inTheme = portfolioData?.find((item: any) => item.type === "themes");
+  const currentTheme = inTheme.data[currentPortTheme];
+  const [isLoading, setIsLoading] = useState(true);
+  const [heroData, setHeroData] = useState<any>(null);
+  const [contactData, setContactData] = useState<any>(null);
+  const params = useParams();
+  const portfolioId = params.portfolioId as string;
+
+  const themeClasses = getThemeClasses(currentTheme);
+
+  useEffect(() => {
+    if (portfolioData) {
+      const heroSectionData = portfolioData.find(
+        (section: any) => section.type === "hero"
+      )?.data;
+      const contactSectionData = portfolioData.find(
+        (section: any) => section.type === "userInfo"
+      )?.data;
+
+      if (heroSectionData) {
+        setHeroData(heroSectionData);
+      }
+      if (contactSectionData) {
+        setContactData(contactSectionData);
+      }
+      setIsLoading(false);
+    }
+  }, [portfolioData]);
+
+  useEffect(() => {
+    const subscription = supabase
+      .channel(`portfolio-hero-${portfolioId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "Portfolio",
+          filter: `id=eq.${portfolioId}`,
+        },
+        (payload) => {
+          console.log("Portfolio update detected!");
+        }
+      )
+      .subscribe((status) => {
+        console.log(`Supabase subscription status: ${status}`);
+      });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [portfolioId, heroData, isLoading]);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
   };
 
-  const socialLinks = [
-    {
-      icon: Mail,
-      label: "Email",
-      href: "mailto:sayantan@example.com",
-      color: "text-gray-400 hover:text-blue-400",
-    },
-    {
-      icon: Github,
-      label: "Github",
-      href: "#",
-      color: "text-gray-400 hover:text-white",
-    },
-    {
-      icon: Twitter,
-      label: "Twitter",
-      href: "#",
-      color: "text-gray-400 hover:text-blue-400",
-    },
-    {
-      icon: Linkedin,
-      label: "LinkedIn",
-      href: "#",
-      color: "text-gray-400 hover:text-blue-500",
-    },
-    {
-      icon: () => (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.18 0 2.31-.21 3.38-.6.39-.14.62-.52.62-.94 0-.41-.23-.79-.62-.94C14.31 19.79 13.18 20 12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83-.31.4-.31.98 0 1.38.4.31.98.31 1.38 0C20.38 16.49 22 14.32 22 12c0-5.52-4.48-10-10-10z" />
-        </svg>
-      ),
-      label: "Dribbble",
-      href: "#",
-      color: "text-gray-400 hover:text-pink-400",
-    },
-  ];
-
   const renderContent = () => {
     switch (activeTab) {
       case "projects":
-        return <Projects />;
+        return <Projects currentTheme={currentTheme} />;
       case "work":
-        return <Experience />;
+        return <Experience currentTheme={currentTheme} />;
       case "learning":
-        return <Education />;
+        return <Education currentTheme={currentTheme} />;
       case "technologies":
-        return <Technologies />;
+        return <Technologies currentTheme={currentTheme} />;
       case "links":
-        return <Contact />;
+        return <Contact currentTheme={currentTheme} />;
       case "home":
       default:
         return (
-          <div className="space-y-8">
-            <h2 className="text-5xl font-bold text-white mb-8">About me</h2>
+          <motion.div
+            className="space-y-8 max-h-screen overflow-y-auto scrollbar-none px-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <HeaderComponent
+              currentTheme={currentTheme}
+              sectionTitle="About Me"
+              sectionDescription="Discover my journey, skills, and passion for creating amazing digital experiences."
+              sectionName="hero"
+            />
 
-            <div className="text-gray-300 text-base leading-relaxed space-y-5">
-              <p>
-                Hi, this is{" "}
-                <span className="text-white font-semibold">Sayantan Paul</span>{" "}
-                - a{" "}
-                <span className="text-white font-semibold">
-                  software engineer
-                </span>{" "}
-                with strong expertise in building{" "}
-                <span className="text-white font-semibold">
-                  end-to-end applications
-                </span>{" "}
-                and a solid understanding of{" "}
-                <span className="text-white font-semibold">
-                  full-stack development
-                </span>
-                . I've built and deployed a lot of applications on cloud. Even
-                as a fresh grad, I built a few applications that reached
-                thousands of users and received positive feedback, demonstrating
-                their robustness.
-              </p>
+            {/* Main Content Cards */}
+            <motion.div
+              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              {/* About Card */}
+              <motion.div
+                className="group relative overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                whileHover={{ y: -2 }}
+              >
+                <div
+                  className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"
+                  style={{ background: themeClasses.gradientHover }}
+                />
+                <div
+                  className={`relative bg-transparent rounded-2xl overflow-hidden border transition-all duration-500 transform group-hover:translate-y-[-2px]`}
+                >
+                  <div className="p-8 space-y-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">
+                        <motion.div
+                          className="p-2 bg-gradient-to-r from-orange-400/20 to-purple-600/20 rounded-lg"
+                          whileHover={{ scale: 1.1, rotate: 10 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                        >
+                          <Sparkles size={20} className="text-orange-400" />
+                        </motion.div>
+                      </div>
+                      <div className="flex-1 space-y-4">
+                        <motion.h3
+                          className={`text-xl font-semibold ${
+                            theme === "dark" ? "text-white" : "text-gray-900"
+                          }`}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.5, delay: 0.7 }}
+                        >
+                          My Story
+                        </motion.h3>
+                        <motion.p
+                          className={`text-base leading-relaxed ${
+                            theme === "dark" ? "text-gray-300" : "text-gray-600"
+                          }`}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: 0.8 }}
+                        >
+                          {heroData?.description || "No description available"}
+                        </motion.p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-orange-400 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+              </motion.div>
 
-              <p>
-                I love experimenting with new technologies and tackling complex
-                problems head-on. Though my career is still in its early stages,
-                I've actively engaged in diverse projects that showcase my
-                skills and dedication. I enjoy continuous learning and applying
-                my skills and knowledge to contribute impactful products and
-                services that can benefit people and society.
-              </p>
-            </div>
-
-            <div className="space-y-5 pt-3">
-              <p className="text-gray-300 text-base leading-relaxed">
-                <span className="text-white font-semibold">
-                  Interested in collaborating?
-                </span>{" "}
-                If you're up for building something awesome, check out my work
-                and let's connect! I'm actively exploring full-time
-                opportunities worldwide (hybrid preferred, but remote works
-                too). Let's create impactful tech solutions together!
-              </p>
-
-              <button className="inline-flex items-center space-x-3 bg-white text-black px-6 py-3 rounded-xl font-semibold text-sm hover:bg-gray-100 transition-all duration-300 hover:shadow-lg">
-                <span>Download CV</span>
-                <Download size={18} />
-              </button>
-            </div>
-          </div>
+              {/* CTA Card */}
+              <motion.div
+                className="group relative overflow-hidden"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                whileHover={{ y: -2 }}
+              >
+                <div
+                  className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"
+                  style={{ background: themeClasses.gradientHover }}
+                />
+                <div
+                  className={`relative backdrop-blur-sm rounded-2xl overflow-hidden border transition-all duration-500 transform group-hover:translate-y-[-2px]`}
+                >
+                  <div className="p-8 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-4">
+                        <motion.h3
+                          className={`text-xl font-semibold ${
+                            theme === "dark" ? "text-white" : "text-gray-900"
+                          }`}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.5, delay: 0.9 }}
+                        >
+                          Let's Work Together
+                        </motion.h3>
+                        <motion.p
+                          className={`text-base leading-relaxed ${
+                            theme === "dark" ? "text-gray-300" : "text-gray-600"
+                          }`}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: 1.0 }}
+                        >
+                          <span
+                            className={`font-semibold ${
+                              theme === "dark" ? "text-white" : "text-gray-900"
+                            }`}
+                          >
+                            Interested in collaborating?
+                          </span>{" "}
+                          Download my CV to learn more about my experience and
+                          expertise.
+                        </motion.p>
+                      </div>
+                      <div className="flex-shrink-0">
+                        <motion.a
+                          href={heroData?.cvUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex cursor-pointer items-center space-x-3 bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 group"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.5, delay: 1.1 }}
+                        >
+                          <span>Download CV</span>
+                          <motion.div
+                            whileHover={{ y: -2 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                          >
+                            <Download size={18} />
+                          </motion.div>
+                        </motion.a>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-orange-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         );
     }
   };
 
-  return (
-    <div className="relative  max-h-screen overflow-y-none bg-gradient-to-b from-[#2d193c] via-[#18181b] to-black">
-      {/* Grid overlay */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0"
-        style={{
-          backgroundImage: "url('/grid5.png')",
-          backgroundRepeat: "repeat",
-          backgroundPosition: "top",
-          opacity: 0.15,
-        }}
-      />
-      {/* Hanging Navbar */}
-      <div className="relative z-10 w-full flex justify-center pt-8">
-        <div className="max-w-4xl w-full">
-          <Navbar onTabChange={handleTabChange} activeTab={activeTab} />
-        </div>
+  if (isLoading || !heroData) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <motion.div
+          className="relative"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            className="w-12 h-12 border-4 border-orange-400/20 border-t-orange-400 rounded-full"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div
+            className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-orange-300 rounded-full"
+            animate={{ scale: [1, 1.2, 1], opacity: [1, 0.5, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </motion.div>
       </div>
-      {/* Main content area, centered, 80% width */}
-      <div className="relative z-10 max-w-6xl mx-auto w-full flex gap-12 mt-12">
-        {/* Sidebar sticky card */}
-        <div className="w-64 sticky top-32 self-start h-fit bg-gray-800/20 backdrop-blur-md rounded-2xl shadow-xl p-6 flex flex-col items-center text-center space-y-6 border border-gray-700/50">
-          {/* Profile Image */}
-          <div className="relative">
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-600/50 shadow-2xl">
-              <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                alt="Sayantan Paul"
-                className="w-full h-full object-cover"
+    );
+  }
+
+  return (
+    <motion.div
+      className={`min-h-screen transition-colors duration-300 relative`}
+      style={{
+        borderColor:
+          theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.1)",
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
+      <div className="absolute inset-0" />
+
+      {/* Grid Background */}
+      <motion.div
+        className="fixed inset-0 z-0 opacity-25"
+        style={{
+          backgroundImage: 'url("/grid5.png")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.25 }}
+        transition={{ duration: 1.2 }}
+      />
+
+      {/* Gradient Overlay with controlled color opacity */}
+      <motion.div
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundColor: theme === "dark" ? "#05020A" : "#F5F5F5",
+          background: `
+            radial-gradient(
+              at 50% 0%, 
+              ${hexToRgba(
+                themeClasses.gradientPrimary.split(", ")[1].split(" ")[0],
+                theme === "dark" ? 0.23 : 0.4
+              )} 0%, 
+              transparent 70%
+            )
+          `,
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      />
+
+      <div className="flex items-start justify-between max-w-[90%] mx-auto">
+        <motion.div
+          className="w-72 mt-16 flex-shrink-0 sticky h-fit"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <div className="relative p-6 rounded-2xl border backdrop-blur-md transition-all duration-300">
+            <div className="absolute -inset-1 rounded-2xl opacity-50 blur-xl"></div>
+
+            <div className="relative z-10">
+              <motion.div
+                className="relative mb-6"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                {/* Profile Image with Enhanced Styling */}
+                <div className="relative w-40 h-40 block mx-auto">
+                  <div
+                    className="absolute -inset-2 rounded-full opacity-20 blur-lg"
+                    style={{ background: themeClasses.gradientPrimary }}
+                  ></div>
+                  <motion.div
+                    className="relative w-full h-full rounded-full overflow-hidden border-4 border-gray-600/50 shadow-2xl"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <img
+                      src={
+                        heroData?.profileImage ||
+                        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
+                      }
+                      alt={heroData?.name || "Profile"}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Name and Title */}
+              <motion.div
+                className="space-y-1 mb-6 text-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
+                <motion.h1
+                  className="text-xl font-bold"
+                  style={{ color: themeClasses.textPrimary }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.7 }}
+                >
+                  {heroData?.name || "Your Name"}
+                </motion.h1>
+                <motion.p
+                  className="text-sm leading-relaxed max-w-xs mx-auto"
+                  style={{ color: themeClasses.textSecondary }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                >
+                  {heroData?.role || "Your Title"}
+                </motion.p>
+              </motion.div>
+
+              {/* Social Links */}
+              <motion.div
+                className="space-y-2 w-full pt-1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+              >
+                {contactData?.socialLinks?.map(
+                  (link: Record<string, string>, index: number) => {
+                    const [icon, value] = Object.entries(link)[0];
+                    let IconComponent;
+                    let color = "text-gray-400 hover:text-blue-400";
+
+                    // Map icon names to their components
+                    switch (icon.toLowerCase()) {
+                      case "github":
+                        IconComponent = Github;
+                        color = "text-gray-400 hover:text-white";
+                        break;
+                      case "twitter":
+                        IconComponent = Twitter;
+                        color = "text-gray-400 hover:text-blue-400";
+                        break;
+                      case "linkedin":
+                        IconComponent = Linkedin;
+                        color = "text-gray-400 hover:text-blue-500";
+                        break;
+                      case "email":
+                        IconComponent = Mail;
+                        color = "text-gray-400 hover:text-blue-400";
+                        break;
+                      case "location":
+                        IconComponent = MapPin;
+                        color = "text-gray-400 hover:text-gray-300";
+                        break;
+                      default:
+                        IconComponent = Twitter; // fallback icon
+                    }
+
+                    const href =
+                      icon === "email"
+                        ? `mailto:${value}`
+                        : icon === "location"
+                        ? undefined
+                        : value;
+
+                    return (
+                      <motion.a
+                        key={index}
+                        href={href}
+                        target={href ? "_blank" : undefined}
+                        rel={href ? "noopener noreferrer" : undefined}
+                        className="group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg backdrop-blur-sm"
+                        style={{
+                          borderColor:
+                            theme === "dark"
+                              ? "rgba(255,255,255,0.1)"
+                              : "rgba(0,0,0,0.1)",
+                          backgroundColor:
+                            theme === "dark"
+                              ? "rgba(0,0,0,0.2)"
+                              : "rgba(255,255,255,0.2)",
+                        }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
+                        whileHover={{ scale: 1.02, x: 5 }}
+                      >
+                        <motion.div
+                          className="p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300"
+                          style={{ background: themeClasses.gradientHover }}
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                        >
+                          <IconComponent
+                            size={16}
+                            className="group-hover:scale-110 transition-transform"
+                            style={{ color: themeClasses.textPrimary }}
+                          />
+                        </motion.div>
+                        <span
+                          className="font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1"
+                          style={{ color: themeClasses.textSecondary }}
+                        >
+                          {value}
+                        </span>
+                        {href && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            whileHover={{ opacity: 1 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ExternalLink
+                              size={12}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              style={{ color: themeClasses.textSecondary }}
+                            />
+                          </motion.div>
+                        )}
+                      </motion.a>
+                    );
+                  }
+                )}
+              </motion.div>
+
+              <div className="absolute -right-24 top-8">
+                <EditButton
+                  sectionName="contact"
+                  styles="mr-14 opacity-70 hover:opacity-100 transition-opacity"
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="w-full"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <motion.div
+            className="sticky top-0 z-50 w-full flex justify-center pt-8 pb-4"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            <div className="w-full max-w-[90%] mx-auto px-4">
+              <Navbar
+                currentTheme={currentTheme}
+                onTabChange={handleTabChange}
+                activeTab={activeTab}
               />
             </div>
-            <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-gray-900 shadow-lg"></div>
-          </div>
+          </motion.div>
 
-          {/* Name and Title */}
-          <div className="space-y-1">
-            <h1 className="text-xl font-bold text-white">Sayantan Paul</h1>
-            <p className="text-gray-300 text-xs leading-relaxed max-w-xs">
-              Full-Stack Software Engineer | Product Design | Cross-Platform
-              Development
-            </p>
+          <div className="relative z-10 max-w-[90%] mx-auto w-full pb-8">
+            <div className="flex gap-8 lg:gap-12">
+              <div className="flex-1 min-w-0">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {renderContent()}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
           </div>
-
-          {/* Location */}
-          <div className="flex items-center space-x-2 text-gray-400 text-xs">
-            <MapPin size={16} />
-            <span>Kolkata, West Bengal, India</span>
-          </div>
-
-          {/* Social Links */}
-          <div className="space-y-1 w-full pt-1">
-            {socialLinks.map((link, index) => {
-              const IconComponent =
-                typeof link.icon === "function" ? link.icon : link.icon;
-              return (
-                <a
-                  key={index}
-                  href={link.href}
-                  className={`flex items-center space-x-1 text-xs transition-all duration-300 p-2 rounded-xl hover:bg-gray-800/50 ${link.color}`}
-                >
-                  <IconComponent size={16} />
-                  <span className="font-medium">{link.label}</span>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1">{renderContent()}</div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
+  );
+};
+
+const Hero = ({ currentPortTheme, customCSS }: any) => {
+  return (
+    <MultiTabThemeProvider>
+      <HeroContent currentPortTheme={currentPortTheme} customCSS={customCSS} />
+    </MultiTabThemeProvider>
   );
 };
 

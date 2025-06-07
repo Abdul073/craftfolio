@@ -891,8 +891,6 @@ const PortfolioChatbot = ({
     return null;
   }
 
-  console.log(user);
-
   return (
     <div
       className={

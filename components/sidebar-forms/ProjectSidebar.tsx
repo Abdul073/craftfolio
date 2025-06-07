@@ -150,43 +150,80 @@ const ProjectSidebar = () => {
   }
 
   const handleSaveProject = async() => {
-    if (editingIndex !== null) {
-      const updatedProjects = [...projects];
-      updatedProjects[editingIndex] = currentProject;
-      dispatch(updatePortfolioData({ 
-        sectionType: "projects", 
-        newData: updatedProjects,
-        sectionTitle,
-        sectionDescription
-      }));
-      await updateSection({ 
-        portfolioId: portfolioId, 
-        sectionName: "projects",
-        sectionContent: updatedProjects,
-        sectionTitle,
-        sectionDescription
-      });
-      setProjects(updatedProjects);
-      setEditingIndex(null);
-    } else {
-      const updatedProjects = [...projects, currentProject];
-      dispatch(updatePortfolioData({ 
-        sectionType: "projects", 
-        newData: updatedProjects,
-        sectionTitle,
-        sectionDescription
-      }));
-      await updateSection({ 
-        portfolioId: portfolioId, 
-        sectionName: "projects",
-        sectionContent: updatedProjects,
-        sectionTitle,
-        sectionDescription
-      });
-      setProjects(updatedProjects);
+    const originalProjects = [...projects];
+    const originalCurrentProject = { ...currentProject };
+    
+    try {
+      if (editingIndex !== null) {
+        const updatedProjects = [...projects];
+        updatedProjects[editingIndex] = currentProject;
+        
+        dispatch(updatePortfolioData({ 
+          sectionType: "projects", 
+          newData: updatedProjects,
+          sectionTitle,
+          sectionDescription
+        }));
+
+        const result = await updateSection({ 
+          portfolioId: portfolioId, 
+          sectionName: "projects",
+          sectionContent: updatedProjects,
+          sectionTitle,
+          sectionDescription
+        });
+
+        if (!result.success) {
+          dispatch(updatePortfolioData({ 
+            sectionType: "projects", 
+            newData: originalProjects,
+            sectionTitle,
+            sectionDescription
+          }));
+          throw new Error("Database update failed");
+        }
+
+        setProjects(updatedProjects);
+        setEditingIndex(null);
+      } else {
+        const updatedProjects = [...projects, currentProject];
+        
+        dispatch(updatePortfolioData({ 
+          sectionType: "projects", 
+          newData: updatedProjects,
+          sectionTitle,
+          sectionDescription
+        }));
+
+        const result = await updateSection({ 
+          portfolioId: portfolioId, 
+          sectionName: "projects",
+          sectionContent: updatedProjects,
+          sectionTitle,
+          sectionDescription
+        });
+
+        if (!result.success) {
+          dispatch(updatePortfolioData({ 
+            sectionType: "projects", 
+            newData: originalProjects,
+            sectionTitle,
+            sectionDescription
+          }));
+          throw new Error("Database update failed");
+        }
+
+        setProjects(updatedProjects);
+      }
+      setCurrentProject(emptyProject);
+      setIsUploaded(false);
+      toast.success(editingIndex !== null ? 'Project updated!' : 'Project added!');
+    } catch (error) {
+      console.error(error);
+      setProjects(originalProjects);
+      setCurrentProject(originalCurrentProject);
+      toast.error("Failed to update project. Changes have been reverted.");
     }
-    setCurrentProject(emptyProject);
-    setIsUploaded(false);
   }
 
   const editProject = (index: number) => {
