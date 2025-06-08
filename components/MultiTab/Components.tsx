@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { getThemeClasses } from "./ThemeContext";
+import { getThemeClasses, useMultiTabTheme } from "./ThemeContext";
 import { User } from "lucide-react";
 import EditButton from "../NeoSpark/EditButton";
 
@@ -15,6 +15,8 @@ const HeaderComponent = ({
   sectionName : string;
 }) => {
   const themeClasses = getThemeClasses(currentTheme);
+  const { theme } = useMultiTabTheme();
+
 
   return (
     <motion.div
@@ -46,7 +48,7 @@ const HeaderComponent = ({
               </motion.div>
               <motion.h2
                 className="text-3xl font-bold"
-                style={{ color: themeClasses.textPrimary }}
+                style={{ color: theme==="dark" ? themeClasses.textPrimary : "black" }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.4 }}

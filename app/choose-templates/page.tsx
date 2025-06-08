@@ -26,6 +26,7 @@ const PortfolioThemePage = () => {
   const [isLoadingThemes, setIsLoadingThemes] = useState(true);
   const [selectedThemeName, setSelectedThemeName] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -47,64 +48,142 @@ const PortfolioThemePage = () => {
   }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const fetchThemes = async () => {
+    console.log("🚀 Starting fetchThemes function");
+    console.log("📍 Environment:", process.env.NODE_ENV);
+    console.log("📍 ANONE KEY:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    console.log("📍 URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log("🌐 Current URL:", window.location.href);
+    console.log("👤 User signed in:", isSignedIn);
+    console.log("👤 User ID:", user?.id);
+    
     setIsLoadingThemes(true);
+    setError(null);
+    
     try {
+      console.log("🔄 Calling fetchThemesApi...");
+      const startTime = Date.now();
+      
       const response = await fetchThemesApi();
-      console.log(response.data);
+      
+      const endTime = Date.now();
+      console.log(`⏱️ API call took ${endTime - startTime}ms`);
+      console.log("📦 Raw API response:", {
+        success: response?.success,
+        dataLength: response?.data?.length,
+        error: response?.error,
+        fullResponse: response
+      });
+      
       if (response.success) {
+        console.log("✅ Themes fetched successfully");
+        console.log("📊 Themes data:", response.data);
+        console.log("🔢 Number of themes:", response.data?.length);
+        
+        // Log each theme for debugging
+        response.data?.forEach((theme: any, index: number) => {
+          console.log(`🎨 Theme ${index + 1}:`, {
+            id: theme.id,
+            name: theme.name,
+            description: theme.description,
+            previewUrl: theme.previewUrl,
+            allFields: theme
+          });
+        });
+        
         setThemes(response.data);
+      } else {
+        console.error("❌ API returned unsuccessful response");
+        console.error("🔍 Error details:", response.error);
+        setError("Failed to fetch themes");
+        toast.error("Failed to load themes");
       }
     } catch (error) {
-      console.error("Error fetching themes:", error);
+      console.error("💥 Exception caught in fetchThemes:");
+      console.error("🔍 Error type:", typeof error);
+      console.error("🔍 Full error object:", error);
+      
+      // Check if it's a network error
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        console.error("🌐 Network error detected - check internet connection and API endpoint");
+        setError("Network error - check connection");
+        toast.error("Network error - please check your connection");
+      } else {
+        setError("An unexpected error occurred");
+        toast.error("Failed to load themes");
+      }
     } finally {
       setIsLoadingThemes(false);
+      console.log("🏁 fetchThemes function completed");
     }
   };
 
   const handleSelectTheme = (id: number, name: string) => {
+    console.log("🎯 Theme selected:", { id, name });
     setSelectedThemeName(name);
     setSelectedTheme(id);
     setIsModalOpen(true);
   };
 
   const handleCardClick = (id: number) => {
+    console.log("🖱️ Card clicked:", id);
     setExpandedId(expandedId === id ? null : id);
   };
 
   const handleCreatePortfolio = async (customBodyResume: any) => {
+    console.log("🏗️ Creating portfolio with:", {
+      selectedTheme,
+      creationMethod,
+      customBodyResume: !!customBodyResume,
+      userId: isSignedIn ? user.id : "guest"
+    });
+
     if (selectedTheme && creationMethod) {
       setIsCreating(true);
       try {
         const themeName = themes.find(
           (theme: any) => theme.id === selectedTheme
         )?.name;
+        
+        console.log("🔍 Found theme name:", themeName);
+        
         if (!themeName) {
+          console.error("❌ Invalid template - theme not found");
           toast.error("Invalid template");
           return;
         }
+        
+        console.log("🚀 Calling createPortfolio API...");
         const result = await createPortfolio(
           isSignedIn ? user.id : "guest",
           themeName,
           creationMethod,
           customBodyResume
         );
+        
+        console.log("📦 CreatePortfolio result:", result);
+        
         if (result.success) {
+          console.log("✅ Portfolio created successfully");
+          console.log("🔗 Redirecting to:", `/p/${result?.data?.id}`);
+          
           if (creationMethod === "import") {
             router.push(`/p/${result?.data?.id}`);
           } else {
             router.push(`/p/${result?.data?.id}`);
           }
         } else {
+          console.error("❌ Failed to create portfolio:", result.error);
           toast.error("Failed to create portfolio");
-          console.error("Failed to create portfolio:", result.error);
         }
       } catch (error) {
-        console.error("Error creating portfolio:", error);
+        console.error("💥 Error creating portfolio:", error);
         toast.error("An error occurred");
       } finally {
         setIsCreating(false);
         setIsModalOpen(false);
       }
+    } else {
+      console.warn("⚠️ Missing required data:", { selectedTheme, creationMethod });
     }
   };
 
@@ -119,6 +198,30 @@ const PortfolioThemePage = () => {
       { text: "Preparing your experience", icon: CheckCircle },
     ];
     return <LoadingSpinner loadingMessages={chooseTemplatesMessages} />;
+  }
+
+  // Show error state if there's an error
+  if (error) {
+    return (
+      <div className="main-bg-noise relative">
+        <MainNavbar />
+        <BgShapes />
+        <div className="container mx-auto max-w-4xl pt-24 px-4 pb-24">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold mb-4 text-red-500">Error Loading Themes</h1>
+            <p className="text-lg mb-6" style={{ color: ColorTheme.textSecondary }}>
+              {error}
+            </p>
+            <button
+              onClick={fetchThemes}
+              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -166,33 +269,57 @@ const PortfolioThemePage = () => {
             </motion.p>
           </motion.div>
 
+          {/* Debug info in development */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mb-8 p-4 bg-gray-800 rounded-lg">
+              <h3 className="text-white mb-2">Debug Info:</h3>
+              <p className="text-gray-300">Themes loaded: {themes.length}</p>
+              <p className="text-gray-300">Loading: {isLoadingThemes.toString()}</p>
+              <p className="text-gray-300">Error: {error || 'None'}</p>
+            </div>
+          )}
+
           {/* Themes grid */}
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 lg:gap-14"
-            initial="hidden"
-            animate={themes.length > 0 ? "visible" : "hidden"}
-            viewport={{ once: true }}
-            variants={staggerContainer}
-          >
-            {themes?.map((theme: any, index: number) => (
-              <motion.div
-                key={theme.id}
-                className="max-w-full sm:max-w-md md:max-w-lg mx-auto self-start"
-                variants={fadeIn}
-                custom={index}
+          {themes.length > 0 ? (
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 lg:gap-14"
+              initial="hidden"
+              animate="visible"
+              viewport={{ once: true }}
+              variants={staggerContainer}
+            >
+              {themes?.map((theme: any, index: number) => (
+                <motion.div
+                  key={theme.id}
+                  className="max-w-full sm:max-w-md md:max-w-lg mx-auto self-start"
+                  variants={fadeIn}
+                  custom={index}
+                >
+                  <ThemeCard
+                    theme={theme}
+                    handleSelectTheme={() =>
+                      handleSelectTheme(theme.id, theme.name)
+                    }
+                    selectedTheme={selectedTheme}
+                    isExpanded={expandedId === theme.id}
+                    handleCardClick={handleCardClick}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-lg" style={{ color: ColorTheme.textSecondary }}>
+                No themes available at the moment.
+              </p>
+              <button
+                onClick={fetchThemes}
+                className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
               >
-                <ThemeCard
-                  theme={theme}
-                  handleSelectTheme={() =>
-                    handleSelectTheme(theme.id, theme.name)
-                  }
-                  selectedTheme={selectedTheme}
-                  isExpanded={expandedId === theme.id}
-                  handleCardClick={handleCardClick}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
+                Refresh
+              </button>
+            </div>
+          )}
 
           {/* Floating decoration */}
           <motion.div

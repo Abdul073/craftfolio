@@ -154,6 +154,9 @@ export async function updatePortfolio({
 }
 
 export async function fetchThemesApi() {
+ console.log("🚀 [API] fetchThemesApi called");
+  console.log("📍 [API] Environment:", process.env.NODE_ENV);
+  console.log("🔑 [API] Environment variables check:");
   try {
     const themes = await prisma.template.findMany();
     console.log(themes);

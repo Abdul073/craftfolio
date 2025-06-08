@@ -153,17 +153,36 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                   style={{ background: themeClasses.gradientHover }}
                 />
                 <div
-                  className={`relative bg-transparent rounded-2xl overflow-hidden border transition-all duration-500 transform group-hover:translate-y-[-2px]`}
+                  className={`relative ${
+                    theme === "light"
+                      ? "bg-white shadow-xl border-gray-200/60"
+                      : "bg-transparent"
+                  } rounded-2xl overflow-hidden border transition-all duration-500 transform group-hover:translate-y-[-2px]`}
+                  style={{
+                    borderColor:
+                      theme === "light" ? "rgba(0,0,0,0.08)" : undefined,
+                  }}
                 >
                   <div className="p-8 space-y-6">
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
                         <motion.div
-                          className="p-2 bg-gradient-to-r from-orange-400/20 to-purple-600/20 rounded-lg"
+                          className={`p-2 rounded-lg ${
+                            theme === "light"
+                              ? "bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200/50"
+                              : "bg-gradient-to-r from-orange-400/20 to-purple-600/20"
+                          }`}
                           whileHover={{ scale: 1.1, rotate: 10 }}
                           transition={{ type: "spring", stiffness: 300 }}
                         >
-                          <Sparkles size={20} className="text-orange-400" />
+                          <Sparkles
+                            size={20}
+                            className={
+                              theme === "light"
+                                ? "text-orange-600"
+                                : "text-orange-400"
+                            }
+                          />
                         </motion.div>
                       </div>
                       <div className="flex-1 space-y-4">
@@ -179,7 +198,7 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                         </motion.h3>
                         <motion.p
                           className={`text-base leading-relaxed ${
-                            theme === "dark" ? "text-gray-300" : "text-gray-600"
+                            theme === "dark" ? "text-gray-300" : "text-gray-700"
                           }`}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -190,7 +209,13 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                       </div>
                     </div>
                   </div>
-                  <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-orange-400 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div
+                    className={`absolute left-0 top-0 w-1 h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
+                      theme === "light"
+                        ? "bg-gradient-to-b from-orange-500 to-orange-600"
+                        : "bg-gradient-to-b from-orange-400 to-purple-600"
+                    }`}
+                  ></div>
                 </div>
               </motion.div>
 
@@ -207,7 +232,15 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                   style={{ background: themeClasses.gradientHover }}
                 />
                 <div
-                  className={`relative backdrop-blur-sm rounded-2xl overflow-hidden border transition-all duration-500 transform group-hover:translate-y-[-2px]`}
+                  className={`relative ${
+                    theme === "light"
+                      ? "bg-white shadow-xl border-gray-200/60"
+                      : "backdrop-blur-sm"
+                  } rounded-2xl overflow-hidden border transition-all duration-500 transform group-hover:translate-y-[-2px]`}
+                  style={{
+                    borderColor:
+                      theme === "light" ? "rgba(0,0,0,0.08)" : undefined,
+                  }}
                 >
                   <div className="p-8 space-y-6">
                     <div className="flex items-center justify-between">
@@ -224,7 +257,7 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                         </motion.h3>
                         <motion.p
                           className={`text-base leading-relaxed ${
-                            theme === "dark" ? "text-gray-300" : "text-gray-600"
+                            theme === "dark" ? "text-gray-300" : "text-gray-700"
                           }`}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -246,7 +279,7 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                           href={heroData?.cvUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex cursor-pointer items-center space-x-3 bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 group"
+                          className="inline-flex cursor-pointer items-center space-x-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 group"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           initial={{ opacity: 0, scale: 0.8 }}
@@ -264,7 +297,13 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                       </div>
                     </div>
                   </div>
-                  <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-orange-400 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div
+                    className={`absolute left-0 top-0 w-1 h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
+                      theme === "light"
+                        ? "bg-gradient-to-b from-orange-500 to-orange-600"
+                        : "bg-gradient-to-b from-orange-400 to-orange-600"
+                    }`}
+                  ></div>
                 </div>
               </motion.div>
             </motion.div>
@@ -303,6 +342,10 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
       style={{
         borderColor:
           theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.1)",
+        background:
+          theme === "light"
+            ? "linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%)"
+            : "",
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -318,17 +361,36 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
+          display: theme === "light" ? "none" : "block",
         }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.25 }}
         transition={{ duration: 1.2 }}
       />
 
+      {/* Light mode subtle pattern */}
+      {theme === "light" && (
+        <motion.div
+          className="fixed inset-0 z-0 opacity-30"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 25% 25%, rgba(251, 146, 60, 0.05) 0%, transparent 50%),
+              radial-gradient(circle at 75% 75%, rgba(251, 146, 60, 0.03) 0%, transparent 50%),
+              linear-gradient(45deg, transparent 49%, rgba(251, 146, 60, 0.01) 50%, transparent 51%)
+            `,
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.3 }}
+          transition={{ duration: 1 }}
+        />
+      )}
+
       {/* Gradient Overlay with controlled color opacity */}
       <motion.div
         className="fixed inset-0 z-0"
         style={{
-          backgroundColor: theme === "dark" ? "#05020A" : "#F5F5F5",
+          display: theme === "light" ? "none" : "block",
+          backgroundColor: theme === "dark" ? "#05020A" : "#ffffff",
           background: `
             radial-gradient(
               at 50% 0%, 
@@ -352,7 +414,13 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <div className="relative p-6 rounded-2xl border backdrop-blur-md transition-all duration-300">
+          <div
+            className={`relative p-6 rounded-2xl border transition-all duration-300 ${
+              theme === "light"
+                ? "bg-white/80 backdrop-blur-sm shadow-2xl border-gray-200/50"
+                : "backdrop-blur-md"
+            }`}
+          >
             <div className="absolute -inset-1 rounded-2xl opacity-50 blur-xl"></div>
 
             <div className="relative z-10">
@@ -365,11 +433,17 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                 {/* Profile Image with Enhanced Styling */}
                 <div className="relative w-40 h-40 block mx-auto">
                   <div
-                    className="absolute -inset-2 rounded-full opacity-20 blur-lg"
+                    className={`absolute -inset-2 rounded-full opacity-20 blur-lg ${
+                      theme === "light" ? "opacity-30" : ""
+                    }`}
                     style={{ background: themeClasses.gradientPrimary }}
                   ></div>
                   <motion.div
-                    className="relative w-full h-full rounded-full overflow-hidden border-4 border-gray-600/50 shadow-2xl"
+                    className={`relative w-full h-full rounded-full overflow-hidden border-4 shadow-2xl ${
+                      theme === "light"
+                        ? "border-white shadow-orange-100/50"
+                        : "border-gray-600/50"
+                    }`}
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
@@ -394,8 +468,13 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                 transition={{ duration: 0.6, delay: 0.6 }}
               >
                 <motion.h1
-                  className="text-xl font-bold"
-                  style={{ color: themeClasses.textPrimary }}
+                  className={`text-xl font-bold ${
+                    theme === "light" ? "text-gray-900" : ""
+                  }`}
+                  style={{
+                    color:
+                      theme === "light" ? undefined : themeClasses.textPrimary,
+                  }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
@@ -403,8 +482,15 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                   {heroData?.name || "Your Name"}
                 </motion.h1>
                 <motion.p
-                  className="text-sm leading-relaxed max-w-xs mx-auto"
-                  style={{ color: themeClasses.textSecondary }}
+                  className={`text-sm leading-relaxed max-w-xs mx-auto ${
+                    theme === "light" ? "text-gray-600" : ""
+                  }`}
+                  style={{
+                    color:
+                      theme === "light"
+                        ? undefined
+                        : themeClasses.textSecondary,
+                  }}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.8 }}
@@ -465,16 +551,24 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                         href={href}
                         target={href ? "_blank" : undefined}
                         rel={href ? "noopener noreferrer" : undefined}
-                        className="group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg backdrop-blur-sm"
+                        className={`group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg ${
+                          theme === "light"
+                            ? "bg-white/60 backdrop-blur-sm border-gray-200/60 hover:bg-white/80 hover:shadow-orange-100/50"
+                            : "backdrop-blur-sm"
+                        }`}
                         style={{
                           borderColor:
-                            theme === "dark"
+                            theme === "light"
+                              ? undefined
+                              : theme === "dark"
                               ? "rgba(255,255,255,0.1)"
-                              : "rgba(0,0,0,0.1)",
+                              : "rgba(0,0,0,0.15)",
                           backgroundColor:
-                            theme === "dark"
+                            theme === "light"
+                              ? undefined
+                              : theme === "dark"
                               ? "rgba(0,0,0,0.2)"
-                              : "rgba(255,255,255,0.2)",
+                              : "rgba(255,255,255,0.5)",
                         }}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -482,19 +576,42 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                         whileHover={{ scale: 1.02, x: 5 }}
                       >
                         <motion.div
-                          className="p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300"
-                          style={{ background: themeClasses.gradientHover }}
+                          className={`p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300 ${
+                            theme === "light"
+                              ? "bg-gradient-to-br from-orange-50 to-orange-100"
+                              : ""
+                          }`}
+                          style={{
+                            background:
+                              theme === "light"
+                                ? undefined
+                                : themeClasses.gradientHover,
+                          }}
                           whileHover={{ scale: 1.1, rotate: 5 }}
                         >
                           <IconComponent
                             size={16}
-                            className="group-hover:scale-110 transition-transform"
-                            style={{ color: themeClasses.textPrimary }}
+                            className={`group-hover:scale-110 transition-transform ${
+                              theme === "light" ? "text-orange-600" : ""
+                            }`}
+                            style={{
+                              color:
+                                theme === "light"
+                                  ? undefined
+                                  : themeClasses.textPrimary,
+                            }}
                           />
                         </motion.div>
                         <span
-                          className="font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1"
-                          style={{ color: themeClasses.textSecondary }}
+                          className={`font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1 ${
+                            theme === "light" ? "text-gray-700" : ""
+                          }`}
+                          style={{
+                            color:
+                              theme === "light"
+                                ? undefined
+                                : themeClasses.textSecondary,
+                          }}
                         >
                           {value}
                         </span>
@@ -506,8 +623,15 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                           >
                             <ExternalLink
                               size={12}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity"
-                              style={{ color: themeClasses.textSecondary }}
+                              className={`opacity-0 group-hover:opacity-100 transition-opacity ${
+                                theme === "light" ? "text-gray-500" : ""
+                              }`}
+                              style={{
+                                color:
+                                  theme === "light"
+                                    ? undefined
+                                    : themeClasses.textSecondary,
+                              }}
                             />
                           </motion.div>
                         )}
