@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase-client';
-import EditButton from './EditButton';
+import EditButton from '@/components/EditButton';
 
 interface TechnologyType {
   name: string;

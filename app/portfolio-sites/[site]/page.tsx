@@ -93,7 +93,11 @@ const Page = () => {
           }
           console.log(themeResult)
           if (themeResult.success) {
-            setPortfolioLink(themeResult?.data?.PortfolioLink?.slug || "");
+            setPortfolioLink(themeResult?.data?.PortfolioLink?.subdomain 
+              ? `https://${themeResult?.data?.PortfolioLink?.subdomain}.craftfolio.live`
+              : themeResult?.data?.PortfolioLink?.slug 
+                ? `https://craftfolio.live/p/${themeResult?.data?.PortfolioLink?.slug}`
+                : "");
             dispatch(setPortFolioUserId(themeResult?.data?.userId || ""));
             dispatch(
               setTemplateName(themeResult?.data?.templateName || "default")

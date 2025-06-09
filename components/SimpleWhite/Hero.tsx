@@ -3,7 +3,7 @@ import { MdEmail, MdLocationOn } from 'react-icons/md';
 import type { NextPage } from 'next';
 import Navbar from './Navbar';
 import AnimatedButton from './AnimatedButton';
-import EditButton from './EditButton';
+import EditButton from '@/components/EditButton';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';

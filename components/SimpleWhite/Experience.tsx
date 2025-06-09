@@ -5,7 +5,7 @@ import { RootState } from '@/store/store';
 import { setCurrentEdit } from '@/slices/editModeSlice';
 import { supabase } from '@/lib/supabase-client';
 import { useParams } from 'next/navigation';
-import EditButton from './EditButton';
+import EditButton from '@/components/EditButton';
 
 interface Technology {
   name: string;

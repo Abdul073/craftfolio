@@ -56,18 +56,22 @@ const MainNavbar = () => {
       className={`fixed w-full z-50 transition-all duration-300 ${
         scrolled ? "backdrop-blur-md shadow-lg py-5" : "transparent py-4"
       }`}
-     
     >
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            
-              <img
-                src="/craftfolio.png"
-                alt="CraftFolio"
-                onClick={() => router.push("/")}
-                className="w-40 cursor-pointer"
-              />
+            <img
+              src="/craftfolioicon.png"
+              alt="CraftFolio"
+              onClick={() => router.push("/")}
+              className="w-11 cursor-pointer"
+            />
+            <img
+              src="/craftfolio.png"
+              alt="CraftFolio"
+              onClick={() => router.push("/")}
+              className="w-40 cursor-pointer"
+            />
             {/* </motion.span> */}
           </div>
 

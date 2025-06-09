@@ -50,9 +50,9 @@ export const templatesConfig: TemplatesConfig = {
     },
     hero: ["name", "title", "summary"],
   },
-  MultiTab: {
+  LumenFlow: {
     sections: {
-      hero: dynamic(() => import("@/components/MultiTab/Hero")),
+      hero: dynamic(() => import("@/components/LumenFlow/Hero")),
     },
     hero: ["name", "title", "summary"],
   },

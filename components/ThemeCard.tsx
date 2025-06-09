@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from "framer-motion";
 import Slider from "react-slick";
 import { ColorTheme } from '@/lib/colorThemes';
-import { CheckCircle, GripHorizontalIcon, MousePointer2, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { CheckCircle, GripHorizontalIcon, MousePointer2, ChevronLeft, ChevronRight, ChevronDown, Star, Sparkles, Palette, Zap } from 'lucide-react';
 import { fadeInScale } from '@/lib/animations';
 import { useRouter } from 'next/navigation';
 import "slick-carousel/slick/slick.css";
@@ -28,8 +28,8 @@ const PrevArrow: React.FC<{ className?: string; style?: React.CSSProperties; onC
   const { className, style, onClick } = props;
   return (
     <div
-      className="absolute top-1/2 left-2 z-10 cursor-pointer bg-black bg-opacity-50 rounded-full p-1"
-      style={{ ...style, transform: 'translateY(-50%)' }}
+      className="absolute bottom-4 right-[52px] z-10 cursor-pointer bg-black bg-opacity-50 rounded-full p-1"
+      style={{ ...style }}
       onClick={onClick}
     >
       <ChevronLeft size={20} color={ColorTheme.primary} />
@@ -41,8 +41,8 @@ const NextArrow: React.FC<{ className?: string; style?: React.CSSProperties; onC
   const { className, style, onClick } = props;
   return (
     <div
-      className="absolute top-1/2 right-2 z-10 cursor-pointer bg-black bg-opacity-50 rounded-full p-1"
-      style={{ ...style, transform: 'translateY(-50%)' }}
+      className="absolute bottom-4 right-4 z-10 cursor-pointer bg-black bg-opacity-50 rounded-full p-1"
+      style={{ ...style }}
       onClick={onClick}
     >
       <ChevronRight size={20} color={ColorTheme.primary} />
@@ -96,7 +96,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
 
   return (
     <motion.div 
-      className="rounded-xl overflow-hidden transition-all h-full w-full max-w-full md:max-w-none sm:max-w-md md:mx-0 mx-auto"
+      className="rounded-xl overflow-visible transition-all h-full w-full max-w-full md:max-w-none sm:max-w-md md:mx-0 mx-auto"
       variants={fadeInScale}
       style={{ 
         backgroundColor: ColorTheme.bgCard,
@@ -108,6 +108,42 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
         boxShadow: `0 8px 30px rgba(0,0,0,0.12), 0 4px 15px ${ColorTheme.primaryGlow}`,
       }}
     >
+      {/* Theme Tag - Moved to extreme top left */}
+      <div className="absolute -top-3 -left-3 z-20">
+        <span 
+          className="text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 transition-all duration-300 hover:scale-105"
+          style={{ 
+            background: 'rgba(0, 0, 0, 0.75)',
+            border: `1px solid ${ColorTheme.primary}`,
+            color: ColorTheme.primary,
+            boxShadow: `0 2px 8px rgba(0, 0, 0, 0.3)`,
+            backdropFilter: 'blur(4px)'
+          }}
+        >
+          {theme.name === 'LumenFlow' ? (
+            <>
+              <Star size={14} className="text-yellow-500" />
+              Recommended
+            </>
+          ) : theme.name === 'SimpleWhite' ? (
+            <>
+              <Palette size={14} />
+              Minimalistic
+            </>
+          ) : theme.name === 'NeoSpark' ? (
+            <>
+              <Zap size={14} className="text-blue-500" />
+              Modern & Dynamic
+            </>
+          ) : (
+            <>
+              <Sparkles size={14} className="text-purple-500" />
+              Professional
+            </>
+          )}
+        </span>
+      </div>
+      
       {/* Image Section with Slider */}
       <div className="h-48 sm:h-56  md:h-64 lg:h-64 xl:h-64 relative overflow-hidden group">
         <Slider {...sliderSettings} className="h-full">
@@ -140,6 +176,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
       {/* Content Section */}
       <div className="p-4 sm:p-6 md:p-6 lg:p-6 xl:p-6">
         <h3 className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl font-bold mb-2 md:mb-2" style={{ color: ColorTheme.textPrimary }}>{theme.name}</h3>
+        
         <p className="mb-4 text-sm sm:text-base md:text-base lg:text-lg xl:text-lg" style={{ color: ColorTheme.textSecondary }}>
           {isExpanded ? theme.description : truncateDescription(theme.description)}
         </p>
@@ -231,7 +268,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
       <style jsx global>{`
         .custom-line-indicators {
           position: absolute;
-          bottom: 15px;
+          bottom: 40px; /* Adjusted to prevent overlap with arrows */
           display: flex !important;
           justify-content: center;
           align-items: center;

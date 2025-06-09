@@ -18,15 +18,15 @@ import Contact from "./Contact";
 import Education from "./Education";
 import { useEffect, useState } from "react";
 import {
-  MultiTabThemeProvider,
-  useMultiTabTheme,
+  LumenFlowThemeProvider,
+  useLumenFlowTheme,
   getThemeClasses,
 } from "./ThemeContext";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { supabase } from "@/lib/supabase-client";
 import { useParams } from "next/navigation";
-import EditButton from "../NeoSpark/EditButton";
+import EditButton from "@/components/EditButton";
 import { motion, AnimatePresence } from "framer-motion";
 import { HeaderComponent } from "./Components";
 
@@ -46,7 +46,7 @@ function hexToRgba(hex: string, alpha: number): string {
 
 const HeroContent = ({ currentPortTheme, customCSS }: any) => {
   const [activeTab, setActiveTab] = useState("home");
-  const { theme } = useMultiTabTheme();
+  const { theme } = useLumenFlowTheme();
   const { portfolioData } = useSelector((state: RootState) => state.data);
   const inTheme = portfolioData?.find((item: any) => item.type === "themes");
   const currentTheme = inTheme.data[currentPortTheme];
@@ -104,6 +104,8 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
   };
+
+  console.log(contactData);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -506,139 +508,153 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
               >
-                {contactData?.socialLinks?.map(
-                  (link: Record<string, string>, index: number) => {
-                    const [icon, value] = Object.entries(link)[0];
-                    let IconComponent;
-                    let color = "text-gray-400 hover:text-blue-400";
+                {contactData?.socialLinks?.map((link: any, index: number) => {
+                  let iconName;
+                  let linkValue;
+                  let linkLink;
 
-                    // Map icon names to their components
-                    switch (icon.toLowerCase()) {
-                      case "github":
-                        IconComponent = Github;
-                        color = "text-gray-400 hover:text-white";
-                        break;
-                      case "twitter":
-                        IconComponent = Twitter;
-                        color = "text-gray-400 hover:text-blue-400";
-                        break;
-                      case "linkedin":
-                        IconComponent = Linkedin;
-                        color = "text-gray-400 hover:text-blue-500";
-                        break;
-                      case "email":
-                        IconComponent = Mail;
-                        color = "text-gray-400 hover:text-blue-400";
-                        break;
-                      case "location":
-                        IconComponent = MapPin;
-                        color = "text-gray-400 hover:text-gray-300";
-                        break;
-                      default:
-                        IconComponent = Twitter; // fallback icon
-                    }
+                  if (link.type && link.url) {
+                    iconName = link.type;
+                    linkValue = link.url;
+                    linkLink = link.url;
+                  } else {
+                    const [key, val] = Object.entries(link)[1];
+                    const [key2, val2] = Object.entries(link)[0];
+                    iconName = key;
+                    linkValue = val;
+                    linkLink = val2;
+                  }
 
-                    const href =
-                      icon === "email"
-                        ? `mailto:${value}`
-                        : icon === "location"
-                        ? undefined
-                        : value;
+                  let IconComponent;
+                  let color = "text-gray-400 hover:text-blue-400";
 
-                    return (
-                      <motion.a
-                        key={index}
-                        href={href}
-                        target={href ? "_blank" : undefined}
-                        rel={href ? "noopener noreferrer" : undefined}
-                        className={`group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg ${
+                  // console.log(iconName,linkValue,linkLink)
+                  // Map icon names to their components
+                  switch (iconName.toLowerCase()) {
+                    case "github":
+                      IconComponent = Github;
+                      color = "text-gray-400 hover:text-white";
+                      break;
+                    case "twitter":
+                      IconComponent = Twitter;
+                      color = "text-gray-400 hover:text-blue-400";
+                      break;
+                    case "linkedin":
+                      IconComponent = Linkedin;
+                      color = "text-gray-400 hover:text-blue-500";
+                      break;
+                    case "email":
+                      IconComponent = Mail;
+                      color = "text-gray-400 hover:text-blue-400";
+                      break;
+                    case "location":
+                      IconComponent = MapPin;
+                      color = "text-gray-400 hover:text-gray-300";
+                      break;
+                    default:
+                      IconComponent = Twitter; // fallback icon
+                  }
+
+                  const href =
+                    iconName === "email"
+                      ? `mailto:${linkLink}`
+                      : iconName === "location"
+                      ? undefined
+                      : linkLink;
+
+                  return (
+                    <motion.a
+                      key={index}
+                      href={href}
+                      target={href ? "_blank" : undefined}
+                      rel={href ? "noopener noreferrer" : undefined}
+                      className={`group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg ${
+                        theme === "light"
+                          ? "bg-white/60 backdrop-blur-sm border-gray-200/60 hover:bg-white/80 hover:shadow-orange-100/50"
+                          : "backdrop-blur-sm"
+                      }`}
+                      style={{
+                        borderColor:
                           theme === "light"
-                            ? "bg-white/60 backdrop-blur-sm border-gray-200/60 hover:bg-white/80 hover:shadow-orange-100/50"
-                            : "backdrop-blur-sm"
+                            ? undefined
+                            : theme === "dark"
+                            ? "rgba(255,255,255,0.1)"
+                            : "rgba(0,0,0,0.15)",
+                        backgroundColor:
+                          theme === "light"
+                            ? undefined
+                            : theme === "dark"
+                            ? "rgba(0,0,0,0.2)"
+                            : "rgba(255,255,255,0.5)",
+                      }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
+                      whileHover={{ scale: 1.02, x: 5 }}
+                    >
+                      <motion.div
+                        className={`p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300 ${
+                          theme === "light"
+                            ? "bg-gradient-to-br from-orange-50 to-orange-100"
+                            : ""
                         }`}
                         style={{
-                          borderColor:
+                          background:
                             theme === "light"
                               ? undefined
-                              : theme === "dark"
-                              ? "rgba(255,255,255,0.1)"
-                              : "rgba(0,0,0,0.15)",
-                          backgroundColor:
-                            theme === "light"
-                              ? undefined
-                              : theme === "dark"
-                              ? "rgba(0,0,0,0.2)"
-                              : "rgba(255,255,255,0.5)",
+                              : themeClasses.gradientHover,
                         }}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
-                        whileHover={{ scale: 1.02, x: 5 }}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
                       >
-                        <motion.div
-                          className={`p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300 ${
-                            theme === "light"
-                              ? "bg-gradient-to-br from-orange-50 to-orange-100"
-                              : ""
-                          }`}
-                          style={{
-                            background:
-                              theme === "light"
-                                ? undefined
-                                : themeClasses.gradientHover,
-                          }}
-                          whileHover={{ scale: 1.1, rotate: 5 }}
-                        >
-                          <IconComponent
-                            size={16}
-                            className={`group-hover:scale-110 transition-transform ${
-                              theme === "light" ? "text-orange-600" : ""
-                            }`}
-                            style={{
-                              color:
-                                theme === "light"
-                                  ? undefined
-                                  : themeClasses.textPrimary,
-                            }}
-                          />
-                        </motion.div>
-                        <span
-                          className={`font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1 ${
-                            theme === "light" ? "text-gray-700" : ""
+                        <IconComponent
+                          size={16}
+                          className={`group-hover:scale-110 transition-transform ${
+                            theme === "light" ? "text-orange-600" : ""
                           }`}
                           style={{
                             color:
                               theme === "light"
                                 ? undefined
-                                : themeClasses.textSecondary,
+                                : themeClasses.textPrimary,
                           }}
+                        />
+                      </motion.div>
+                      <span
+                        className={`font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1 ${
+                          theme === "light" ? "text-gray-700" : ""
+                        }`}
+                        style={{
+                          color:
+                            theme === "light"
+                              ? undefined
+                              : themeClasses.textSecondary,
+                        }}
+                      >
+                        {linkValue}
+                      </span>
+                      {href && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          whileHover={{ opacity: 1 }}
+                          transition={{ duration: 0.2 }}
                         >
-                          {value}
-                        </span>
-                        {href && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            whileHover={{ opacity: 1 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <ExternalLink
-                              size={12}
-                              className={`opacity-0 group-hover:opacity-100 transition-opacity ${
-                                theme === "light" ? "text-gray-500" : ""
-                              }`}
-                              style={{
-                                color:
-                                  theme === "light"
-                                    ? undefined
-                                    : themeClasses.textSecondary,
-                              }}
-                            />
-                          </motion.div>
-                        )}
-                      </motion.a>
-                    );
-                  }
-                )}
+                          <ExternalLink
+                            size={12}
+                            className={`opacity-0 group-hover:opacity-100 transition-opacity ${
+                              theme === "light" ? "text-gray-500" : ""
+                            }`}
+                            style={{
+                              color:
+                                theme === "light"
+                                  ? undefined
+                                  : themeClasses.textSecondary,
+                            }}
+                          />
+                        </motion.div>
+                      )}
+                    </motion.a>
+                  );
+                })}
               </motion.div>
 
               <div className="absolute -right-24 top-8">
@@ -697,9 +713,9 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
 
 const Hero = ({ currentPortTheme, customCSS }: any) => {
   return (
-    <MultiTabThemeProvider>
+    <LumenFlowThemeProvider>
       <HeroContent currentPortTheme={currentPortTheme} customCSS={customCSS} />
-    </MultiTabThemeProvider>
+    </LumenFlowThemeProvider>
   );
 };
 

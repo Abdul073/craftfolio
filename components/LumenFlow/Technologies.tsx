@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { supabase } from "@/lib/supabase-client";
-import EditButton from "../NeoSpark/EditButton";
+import EditButton from '@/components/EditButton';
 import { Code2 } from "lucide-react";
 import { getThemeClasses } from "./ThemeContext";
 import { HeaderComponent } from "./Components";

@@ -11,14 +11,14 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function MultiTabThemeProvider({
+export function LumenFlowThemeProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== "undefined") {
-      const savedTheme = localStorage.getItem("multitab-theme") as Theme;
+      const savedTheme = localStorage.getItem("lumenflow-theme") as Theme;
       return savedTheme || "dark";
     }
     return "dark";
@@ -26,9 +26,9 @@ export function MultiTabThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove("multitab-light", "multitab-dark");
-    root.classList.add(`multitab-${theme}`);
-    localStorage.setItem("multitab-theme", theme);
+    root.classList.remove("lumenflow-light", "lumenflow-dark");
+    root.classList.add(`lumenflow-${theme}`);
+    localStorage.setItem("lumenflow-theme", theme);
   }, [theme]);
 
   const toggleTheme = () => {
@@ -42,11 +42,11 @@ export function MultiTabThemeProvider({
   );
 }
 
-export function useMultiTabTheme() {
+export function useLumenFlowTheme() {
   const context = useContext(ThemeContext);
   if (context === undefined) {
     throw new Error(
-      "useMultiTabTheme must be used within a MultiTabThemeProvider"
+      "useLumenFlowTheme must be used within a LumenFlowThemeProvider"
     );
   }
   return context;

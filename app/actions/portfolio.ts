@@ -52,6 +52,8 @@ export async function createPortfolio(
       content = template.defaultContent;
     }
 
+    console.log(templateName)
+
     const newTemplate = await prisma.portfolio.create({
       data: {
         isTemplate: false,
@@ -59,8 +61,8 @@ export async function createPortfolio(
         content: content,
         isPublished: false,
         templateName: templateName,
-        fontName: maps[templateName].fontName,
-        themeName: maps[templateName].themeName,
+        fontName: maps[templateName]?.fontName,
+        themeName: maps[templateName]?.themeName,
       },
     });
 

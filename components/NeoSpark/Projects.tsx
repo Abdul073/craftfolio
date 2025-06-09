@@ -9,7 +9,7 @@ import { RootState } from "@/store/store";
 import { setCurrentEdit } from "@/slices/editModeSlice";
 import { supabase } from "@/lib/supabase-client";
 import { motion } from "framer-motion";
-import EditButton from "./EditButton";
+import EditButton from '@/components/EditButton';
 
 interface Technology {
   name: string;
@@ -164,7 +164,7 @@ const Projects: React.FC = ({ currentPortTheme, customCSS }: any) => {
   return (
     <section
       ref={sectionRef}
-      className="py-24 w-full overflow-hidden min-h-screen text-white"
+      className="py-24 w-full custom-bg overflow-hidden min-h-screen text-white"
     >
       <style>{customCSS}</style>
       <div className="container relative mx-auto max-w-6xl px-4">

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase-client";
-import EditButton from "./EditButton";
+import EditButton from '@/components/EditButton';
 
 const Hero = ({ currentPortTheme, customCSS }: any) => {
   const params = useParams();
@@ -140,7 +140,7 @@ const Hero = ({ currentPortTheme, customCSS }: any) => {
 
 
   return (
-    <div className="relative flex-1 flex flex-col items-center mt-12 px-4 md:px-8">
+    <div className="relative flex-1 flex custom-bg flex-col items-center mt-12 px-4 md:px-8">
       <style>{customCSS}</style>
       {heroData?.badge?.isVisible && (
         <motion.div

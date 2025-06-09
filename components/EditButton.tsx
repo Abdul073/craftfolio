@@ -8,17 +8,25 @@ import { useDispatch, useSelector } from "react-redux";
 const EditButton = ({
   sectionName,
   styles,
+  divStyles,
 }: {
   sectionName: string;
   styles?: string;
+  divStyles?: string;
 }) => {
   const dispatch = useDispatch();
   const { currentlyEditing } = useSelector(
     (state: RootState) => state.editMode
   );
   const { portfolioUserId } = useSelector((state: RootState) => state.data);
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
 
+  // Don't render anything while Clerk is loading
+  if (!isLoaded) {
+    return null;
+  }
+
+  // Only show edit button if user is logged in and owns the portfolio
   if (portfolioUserId !== "guest" && (!user || user.id !== portfolioUserId)) {
     return null;
   }
@@ -32,19 +40,15 @@ const EditButton = ({
   };
 
   return (
-    <div className={`absolute ${styles}`}>
+    <div className={divStyles ? divStyles : "absolute right-24 -top-12"}>
       <Button
         onClick={handleSectionEdit}
-        className="bg-transparent capitalize tracking-wider text-black hover:bg-transparent border border-dashed border-gray-900 shadow transition-all px-4 py-2 text-sm"
+        className={`bg-transparent !${styles} tracking-wider text-white hover:bg-transparent border border-dashed border-gray-300 shadow transition-all px-4 py-2 text-sm`}
       >
-        {currentlyEditing === sectionName ? (
-          "Cancel"
-        ) : (
-          <>✏️ Edit {sectionName}</>
-        )}
+        {currentlyEditing === sectionName ? "Cancel" : <>✏️ Edit</>}
       </Button>
     </div>
   );
 };
 
-export default EditButton;
+export default EditButton; 

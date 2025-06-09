@@ -228,18 +228,18 @@ html {
   z-index: 99 !important;
 }
 
-.multitab-dark {
-  --multitab-bg: #18181b;
-  --multitab-text: #f3f4f6;
-  --multitab-text-secondary: #d1d5db;
-  --multitab-border: rgba(255, 255, 255, 0.08);
-  --multitab-hover: rgba(255, 255, 255, 0.1);
+.lumenflow-dark {
+  --lumenflow-bg: #18181b;
+  --lumenflow-text: #f3f4f6;
+  --lumenflow-text-secondary: #d1d5db;
+  --lumenflow-border: rgba(255, 255, 255, 0.08);
+  --lumenflow-hover: rgba(255, 255, 255, 0.1);
 }
 
-.multitab-light {
-  --multitab-bg: #ffffff;
-  --multitab-text: #1f2937;
-  --multitab-text-secondary: #4b5563;
-  --multitab-border: rgba(0, 0, 0, 0.1);
-  --multitab-hover: rgba(0, 0, 0, 0.05);
+.lumenflow-light {
+  --lumenflow-bg: #ffffff;
+  --lumenflow-text: #1f2937;
+  --lumenflow-text-secondary: #4b5563;
+  --lumenflow-border: rgba(0, 0, 0, 0.1);
+  --lumenflow-hover: rgba(0, 0, 0, 0.05);
 }

@@ -5,7 +5,7 @@ import { setCurrentEdit } from "@/slices/editModeSlice";
 import { RootState } from "@/store/store";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase-client";
-import EditButton from "./EditButton";
+import EditButton from '@/components/EditButton';
 
 const Technologies = ({ currentPortTheme, customCSS }: any) => {
   const { portfolioData } = useSelector((state: RootState) => state.data);
@@ -77,7 +77,7 @@ const Technologies = ({ currentPortTheme, customCSS }: any) => {
   }
 
   return (
-    <div className={`py-8 sm:py-12 md:py-16 text-white`}>
+  <div className={`py-8 custom-bg sm:py-12 md:py-16 text-white`}>
       <style>{customCSS}</style>
       <div className="max-w-4xl mx-auto">
         <div className="container block relative mx-auto">

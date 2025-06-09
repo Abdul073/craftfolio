@@ -5,7 +5,7 @@ import { setCurrentEdit } from '@/slices/editModeSlice';
 import { supabase } from '@/lib/supabase-client';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import EditButton from './EditButton';
+import EditButton from '@/components/EditButton';
 
 const ProfessionalJourney = ({ currentPortTheme, customCSS }: any) => {
 
@@ -116,7 +116,7 @@ const ProfessionalJourney = ({ currentPortTheme, customCSS }: any) => {
   }
 
   return (
-    <div className="text-white p-2 sm:p-4 md:p-8">
+    <div className="text-white custom-bg p-2 sm:p-4 md:p-8">
       <style>{customCSS}</style>
       <div className="max-w-4xl mx-auto">
         <div 

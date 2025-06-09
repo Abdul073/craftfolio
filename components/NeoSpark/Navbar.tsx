@@ -9,7 +9,7 @@ import { RootState } from "@/store/store";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase-client";
 import toast from "react-hot-toast";
-import EditButton from "./EditButton";
+import EditButton from '@/components/EditButton';
 
 const Navbar = ({ currentPortTheme, customCSS }: any) => {
   const params = useParams();

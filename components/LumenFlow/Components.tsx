@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { getThemeClasses, useMultiTabTheme } from "./ThemeContext";
+import { getThemeClasses, useLumenFlowTheme } from "./ThemeContext";
 import { User } from "lucide-react";
-import EditButton from "../NeoSpark/EditButton";
+import EditButton from '@/components/EditButton';
 
 const HeaderComponent = ({
   currentTheme,
@@ -15,7 +15,7 @@ const HeaderComponent = ({
   sectionName : string;
 }) => {
   const themeClasses = getThemeClasses(currentTheme);
-  const { theme } = useMultiTabTheme();
+  const { theme } = useLumenFlowTheme();
 
 
   return (

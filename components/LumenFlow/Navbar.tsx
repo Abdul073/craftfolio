@@ -1,6 +1,6 @@
 import React from "react";
 import { Moon, Sun } from "lucide-react";
-import { useMultiTabTheme } from "./ThemeContext";
+import { useLumenFlowTheme } from "./ThemeContext";
 import { getThemeClasses } from "./ThemeContext";
 
 const Navbar = ({
@@ -12,7 +12,7 @@ const Navbar = ({
   activeTab: string;
   currentTheme: any;
 }) => {
-  const { theme, toggleTheme } = useMultiTabTheme();
+  const { theme, toggleTheme } = useLumenFlowTheme();
   const themeClasses = getThemeClasses(currentTheme);
 
   const tabs = [
