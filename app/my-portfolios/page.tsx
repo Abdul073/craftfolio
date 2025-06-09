@@ -134,13 +134,17 @@ export default function MyPortfoliosPage() {
                     <span className="text-green-500 text-xs sm:text-sm mt-1">
                       Deployed at:{" "}
                       <a 
-                        href={`https://craft-folio-three.vercel.app/p/${portfolio.PortfolioLink.slug}`}
+                        href={portfolio.PortfolioLink.subdomain 
+                          ? `https://${portfolio.PortfolioLink.subdomain}.craftfolio.live`
+                          : `https://craftfolio.live/p/${portfolio.PortfolioLink.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline hover:text-green-600"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        craft-folio-three.vercel.app/p/{portfolio.PortfolioLink.slug}
+                        {portfolio.PortfolioLink.subdomain 
+                          ? `${portfolio.PortfolioLink.subdomain}.craftfolio.live`
+                          : `craftfolio.live/p/${portfolio.PortfolioLink.slug}`}
                       </a>
                     </span>
                   )}

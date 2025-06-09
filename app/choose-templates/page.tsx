@@ -48,63 +48,20 @@ const PortfolioThemePage = () => {
   }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const fetchThemes = async () => {
-    console.log("🚀 Starting fetchThemes function");
-    console.log("📍 Environment:", process.env.NODE_ENV);
-    console.log("📍 ANONE KEY:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-    console.log("📍 URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-    console.log("🌐 Current URL:", window.location.href);
-    console.log("👤 User signed in:", isSignedIn);
-    console.log("👤 User ID:", user?.id);
-    
     setIsLoadingThemes(true);
     setError(null);
     
     try {
-      console.log("🔄 Calling fetchThemesApi...");
-      const startTime = Date.now();
-      
       const response = await fetchThemesApi();
       
-      const endTime = Date.now();
-      console.log(`⏱️ API call took ${endTime - startTime}ms`);
-      console.log("📦 Raw API response:", {
-        success: response?.success,
-        dataLength: response?.data?.length,
-        error: response?.error,
-        fullResponse: response
-      });
-      
       if (response.success) {
-        console.log("✅ Themes fetched successfully");
-        console.log("📊 Themes data:", response.data);
-        console.log("🔢 Number of themes:", response.data?.length);
-        
-        // Log each theme for debugging
-        response.data?.forEach((theme: any, index: number) => {
-          console.log(`🎨 Theme ${index + 1}:`, {
-            id: theme.id,
-            name: theme.name,
-            description: theme.description,
-            previewUrl: theme.previewUrl,
-            allFields: theme
-          });
-        });
-        
         setThemes(response.data);
       } else {
-        console.error("❌ API returned unsuccessful response");
-        console.error("🔍 Error details:", response.error);
         setError("Failed to fetch themes");
         toast.error("Failed to load themes");
       }
     } catch (error) {
-      console.error("💥 Exception caught in fetchThemes:");
-      console.error("🔍 Error type:", typeof error);
-      console.error("🔍 Full error object:", error);
-      
-      // Check if it's a network error
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        console.error("🌐 Network error detected - check internet connection and API endpoint");
         setError("Network error - check connection");
         toast.error("Network error - please check your connection");
       } else {
@@ -113,30 +70,20 @@ const PortfolioThemePage = () => {
       }
     } finally {
       setIsLoadingThemes(false);
-      console.log("🏁 fetchThemes function completed");
     }
   };
 
   const handleSelectTheme = (id: number, name: string) => {
-    console.log("🎯 Theme selected:", { id, name });
     setSelectedThemeName(name);
     setSelectedTheme(id);
     setIsModalOpen(true);
   };
 
   const handleCardClick = (id: number) => {
-    console.log("🖱️ Card clicked:", id);
     setExpandedId(expandedId === id ? null : id);
   };
 
   const handleCreatePortfolio = async (customBodyResume: any) => {
-    console.log("🏗️ Creating portfolio with:", {
-      selectedTheme,
-      creationMethod,
-      customBodyResume: !!customBodyResume,
-      userId: isSignedIn ? user.id : "guest"
-    });
-
     if (selectedTheme && creationMethod) {
       setIsCreating(true);
       try {
@@ -144,15 +91,11 @@ const PortfolioThemePage = () => {
           (theme: any) => theme.id === selectedTheme
         )?.name;
         
-        console.log("🔍 Found theme name:", themeName);
-        
         if (!themeName) {
-          console.error("❌ Invalid template - theme not found");
           toast.error("Invalid template");
           return;
         }
         
-        console.log("🚀 Calling createPortfolio API...");
         const result = await createPortfolio(
           isSignedIn ? user.id : "guest",
           themeName,
@@ -160,30 +103,21 @@ const PortfolioThemePage = () => {
           customBodyResume
         );
         
-        console.log("📦 CreatePortfolio result:", result);
-        
         if (result.success) {
-          console.log("✅ Portfolio created successfully");
-          console.log("🔗 Redirecting to:", `/p/${result?.data?.id}`);
-          
           if (creationMethod === "import") {
             router.push(`/p/${result?.data?.id}`);
           } else {
             router.push(`/p/${result?.data?.id}`);
           }
         } else {
-          console.error("❌ Failed to create portfolio:", result.error);
           toast.error("Failed to create portfolio");
         }
       } catch (error) {
-        console.error("💥 Error creating portfolio:", error);
         toast.error("An error occurred");
       } finally {
         setIsCreating(false);
         setIsModalOpen(false);
       }
-    } else {
-      console.warn("⚠️ Missing required data:", { selectedTheme, creationMethod });
     }
   };
 
@@ -268,16 +202,6 @@ const PortfolioThemePage = () => {
               identity. Each template is fully customizable to suit your needs.
             </motion.p>
           </motion.div>
-
-          {/* Debug info in development */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="mb-8 p-4 bg-gray-800 rounded-lg">
-              <h3 className="text-white mb-2">Debug Info:</h3>
-              <p className="text-gray-300">Themes loaded: {themes.length}</p>
-              <p className="text-gray-300">Loading: {isLoadingThemes.toString()}</p>
-              <p className="text-gray-300">Error: {error || 'None'}</p>
-            </div>
-          )}
 
           {/* Themes grid */}
           {themes.length > 0 ? (

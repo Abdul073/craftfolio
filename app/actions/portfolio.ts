@@ -154,7 +154,7 @@ export async function updatePortfolio({
 }
 
 export async function fetchThemesApi() {
- console.log("🚀 [API] fetchThemesApi called");
+  console.log("🚀 [API] fetchThemesApi called");
   console.log("📍 [API] Environment:", process.env.NODE_ENV);
   console.log("🔑 [API] Environment variables check:");
   try {
@@ -281,53 +281,75 @@ export async function fetchPortfoliosByUserId(userId: string) {
 export async function deployPortfolio(
   userId: string,
   portfolioId: string,
-  slug: string
+  value: string,
+  isSubdomain: boolean = false
 ) {
   try {
-    if (slug.length < 3 || slug.length > 30) {
+    if (value.length < 3 || value.length > 30) {
       return {
         success: false,
-        error: "Portfolio Slug must be between 3 and 30 characters",
+        error: `${
+          isSubdomain ? "Subdomain" : "Portfolio Slug"
+        } must be between 3 and 30 characters`,
       };
     }
-    if (!/^[a-z0-9-]+$/.test(slug)) {
+    if (!/^[a-z0-9-]+$/.test(value)) {
       return {
         success: false,
-        error:
-          "Portfolio Slug can only contain lowercase letters, numbers, and hyphens",
+        error: `${
+          isSubdomain ? "Subdomain" : "Portfolio Slug"
+        } can only contain lowercase letters, numbers, and hyphens`,
       };
     }
-    if (slug.startsWith("-") || slug.endsWith("-")) {
+    if (value.startsWith("-") || value.endsWith("-")) {
       return {
         success: false,
-        error: "Portfolio Slug cannot start or end with a hyphen",
+        error: `${
+          isSubdomain ? "Subdomain" : "Portfolio Slug"
+        } cannot start or end with a hyphen`,
       };
     }
 
+    // Check if the value is already taken
     const existingPortfolio = await prisma.portfolioLink.findFirst({
       where: {
-        slug: slug,
+        OR: [{ slug: value }, { subdomain: value }],
       },
     });
 
     if (existingPortfolio) {
-      return { success: false, error: "This Portfolio Slug is already taken" };
+      return {
+        success: false,
+        error: `This ${
+          isSubdomain ? "subdomain" : "portfolio slug"
+        } is already taken`,
+      };
     }
 
-    console.log(slug, portfolioId, userId);
-    const updatedPortfolio = await prisma.portfolioLink.create({
-      data: {
-        slug: slug,
+    // Create or update the portfolio link
+    const updatedPortfolio = await prisma.portfolioLink.upsert({
+      where: {
+        portfolioId: portfolioId,
+      },
+      update: {
+        [isSubdomain ? "subdomain" : "slug"]: value,
+      },
+      create: {
+        [isSubdomain ? "subdomain" : "slug"]: value,
         portfolioId: portfolioId,
         userId: userId,
       },
     });
 
+    const finalUrl = isSubdomain
+      ? `https://${value}.craftfolio.live`
+      : `https://craftfolio.live/p/${value}`;
+
     return {
       success: true,
       data: {
         ...updatedPortfolio,
-        url: `https://craft-folio-three.vercel.app/p/${slug}`,
+        url: finalUrl,
       },
     };
   } catch (error) {
@@ -386,3 +408,55 @@ export const updatePortfolioUserId = async ({
     };
   }
 };
+
+export async function getIdThroughSubdomain({
+  subdomain,
+}: {
+  subdomain: string;
+}) {
+  try {
+    const portfolio = await prisma.portfolio.findFirst({
+      where: {
+        PortfolioLink: {
+          subdomain: subdomain,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!portfolio) {
+      return { success: false, error: "Portfolio not found" };
+    }
+
+    return { success: true, portfolioId: portfolio.id };
+  } catch (error) {
+    console.error("Error getting portfolio ID through subdomain:", error);
+    return { success: false, error: "Failed to get portfolio ID" };
+  }
+}
+
+export async function checkUserSubdomain(userId: string) {
+  try {
+    const existingSubdomain = await prisma.portfolioLink.findFirst({
+      where: {
+        userId: userId,
+        subdomain: {
+          not: null
+        }
+      }
+    });
+
+    return { 
+      success: true, 
+      hasSubdomain: !!existingSubdomain 
+    };
+  } catch (error) {
+    console.error("Error checking user subdomain:", error);
+    return { 
+      success: false, 
+      error: "Failed to check subdomain status" 
+    };
+  }
+}

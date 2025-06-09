@@ -21,9 +21,12 @@ const EditButton = ({
   const { portfolioUserId } = useSelector((state: RootState) => state.data);
   const { user } = useUser();
 
-  if (portfolioUserId !== "guest" && (!user || user.id !== portfolioUserId)) {
+  console.log(user,portfolioUserId,user?.id)
+
+  if (portfolioUserId !== "guest" && (!user || user?.id !== portfolioUserId)) {
     return null;
   }
+
 
   const handleSectionEdit = () => {
     if (currentlyEditing === sectionName) {
