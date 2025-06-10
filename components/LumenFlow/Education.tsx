@@ -13,7 +13,7 @@ import {
   ArrowUpRight,
   School,
 } from "lucide-react";
-import { getThemeClasses } from "./ThemeContext";
+import { getThemeClasses, useLumenFlowTheme } from "./ThemeContext";
 import { HeaderComponent } from "./Components";
 
 interface Technology {
@@ -22,12 +22,12 @@ interface Technology {
 }
 
 interface Education {
-  courseName: string;
+  degree: string;
   endDate: string;
   location: string;
   startDate: string;
-  description: string;
-  instituteName: string;
+  description: string | null;
+  institution: string;
 }
 
 interface EducationProps {
@@ -50,6 +50,7 @@ const Education: React.FC<EducationProps> = ({ currentTheme }) => {
     educationSection?.sectionDescription ||
     "My educational journey through various institutions and courses, building the foundation of knowledge and skills that drive my professional growth and expertise.";
   const themeClasses = getThemeClasses(currentTheme);
+  const { theme } = useLumenFlowTheme();
 
   useEffect(() => {
     if (portfolioData) {
@@ -87,6 +88,8 @@ const Education: React.FC<EducationProps> = ({ currentTheme }) => {
     };
   }, [portfolioId]);
 
+  console.log(educationData)
+
   if (isLoading) {
     return (
       <div className="space-y-8 max-h-screen overflow-y-auto scrollbar-none max-w-7xl mx-auto">
@@ -107,7 +110,7 @@ const Education: React.FC<EducationProps> = ({ currentTheme }) => {
         currentTheme={currentTheme}
         sectionTitle={sectionTitle}
         sectionDescription={sectionDescription}
-        sectionName="projects"
+        sectionName="education"
       />
 
       {/* Education Timeline */}
@@ -120,41 +123,65 @@ const Education: React.FC<EducationProps> = ({ currentTheme }) => {
             onMouseLeave={() => setHoveredEducation(null)}
           >
             {/* Background Glow Effect */}
-            <div className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" style={{ background: themeClasses.gradientHover }}></div>
+            <div className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" style={{ 
+              background: theme === "light"
+                ? "linear-gradient(to right, rgba(249,115,22,0.1), rgba(234,88,12,0.1))"
+                : themeClasses.gradientHover 
+            }}></div>
 
             {/* Main Card */}
-            <div className="relative bg-transparent rounded-2xl overflow-hidden border border-gray-700/50 group-hover:border-orange-400/30 transition-all duration-500 transform group-hover:translate-y-[-4px] h-full flex flex-col">
+            <div className={`relative bg-transparent rounded-2xl overflow-hidden border ${
+              theme === "light"
+                ? "border-gray-200/50 group-hover:border-orange-400/30"
+                : "border-gray-700/50 group-hover:border-orange-400/30"
+            } transition-all duration-500 transform group-hover:translate-y-[-4px] h-full flex flex-col`}>
               {/* Education Content */}
               <div className="p-6 space-y-4 flex-grow">
                 {/* Header Section */}
                 <div className="space-y-2">
                   <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 rounded-full" style={{ background: themeClasses.gradientPrimary }}></div>
-                    <h3 className="text-xl font-bold transition-colors duration-300" style={{ color: themeClasses.textPrimary }}>
-                      {edu.courseName}
+                    <div className="w-3 h-3 rounded-full" style={{ 
+                      background: theme === "light"
+                        ? "linear-gradient(to right, rgba(249,115,22,0.8), rgba(234,88,12,0.8))"
+                        : themeClasses.gradientPrimary 
+                    }}></div>
+                    <h3 className={`text-xl font-bold transition-colors duration-300 ${
+                      theme === "light" ? "text-gray-900" : themeClasses.textPrimary
+                    }`}>
+                      {edu.degree}
                     </h3>
                   </div>
                 </div>
 
                 {/* Description */}
-                <div className="space-y-2">
-                  <p className="text-sm leading-relaxed" style={{ color: themeClasses.textSecondary }}>
-                    {edu.description}
-                  </p>
-                </div>
+                {edu.description && (
+                  <div className="space-y-2">
+                    <p className={`text-sm leading-relaxed ${
+                      theme === "light" ? "text-gray-600" : themeClasses.textSecondary
+                    }`}>
+                      {edu.description}
+                    </p>
+                  </div>
+                )}
 
                 {/* Bottom Section */}
-                <div className="flex items-center justify-between pt-4 mt-auto border-t border-gray-700/50">
+                <div className={`flex items-center justify-between pt-4 mt-auto border-t ${
+                  theme === "light" ? "border-gray-200/50" : "border-gray-700/50"
+                }`}>
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-1">
                       <MapPin size={14} className="text-orange-400" />
-                      <span className="text-sm" style={{ color: themeClasses.textSecondary }}>
-                        {edu.instituteName}
+                      <span className={`text-sm ${
+                        theme === "light" ? "text-gray-600" : themeClasses.textSecondary
+                      }`}>
+                        {edu.institution}
                       </span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Calendar size={14} className="text-orange-400" />
-                      <span className="text-sm" style={{ color: themeClasses.textSecondary }}>
+                      <span className={`text-sm ${
+                        theme === "light" ? "text-gray-600" : themeClasses.textSecondary
+                      }`}>
                         {edu.startDate} - {edu.endDate}
                       </span>
                     </div>
@@ -174,7 +201,11 @@ const Education: React.FC<EducationProps> = ({ currentTheme }) => {
               </div>
 
               {/* Side Accent Line */}
-              <div className="absolute left-0 top-0 w-1 h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: themeClasses.gradientPrimary }}></div>
+              <div className="absolute left-0 top-0 w-1 h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ 
+                background: theme === "light"
+                  ? "linear-gradient(to bottom, rgba(249,115,22,0.8), rgba(234,88,12,0.8))"
+                  : themeClasses.gradientPrimary 
+              }}></div>
             </div>
           </div>
         ))}
@@ -184,13 +215,19 @@ const Education: React.FC<EducationProps> = ({ currentTheme }) => {
       {educationData.length === 0 && (
         <div className="text-center py-16">
           <div className="space-y-4">
-            <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto" style={{ background: themeClasses.bgSecondary }}>
-              <GraduationCap size={32} style={{ color: themeClasses.textSecondary }} />
+            <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto ${
+              theme === "light" ? "bg-gray-50" : themeClasses.bgSecondary
+            }`}>
+              <GraduationCap size={32} className={theme === "light" ? "text-gray-400" : themeClasses.textSecondary} />
             </div>
-            <h3 className="text-xl font-semibold" style={{ color: themeClasses.textSecondary }}>
+            <h3 className={`text-xl font-semibold ${
+              theme === "light" ? "text-gray-600" : themeClasses.textSecondary
+            }`}>
               No education yet
             </h3>
-            <p className="max-w-md mx-auto" style={{ color: themeClasses.textSecondary }}>
+            <p className={`max-w-md mx-auto ${
+              theme === "light" ? "text-gray-500" : themeClasses.textSecondary
+            }`}>
               Start adding your educational background to showcase your academic
               journey and qualifications.
             </p>

@@ -206,7 +206,7 @@ const PortfolioThemePage = () => {
           {/* Themes grid */}
           {themes.length > 0 ? (
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 lg:gap-14"
+              className="grid grid-cols-1 px-4 md:grid-cols-2 gap-6 sm:gap-10 lg:gap-14"
               initial="hidden"
               animate="visible"
               viewport={{ once: true }}

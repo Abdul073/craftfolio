@@ -47,7 +47,7 @@ const HeaderComponent = ({
                 <User className="text-white" size={18} />
               </motion.div>
               <motion.h2
-                className="text-3xl font-bold"
+                className="text-2xl md:text-3xl font-bold"
                 style={{ color: theme==="dark" ? themeClasses.textPrimary : "black" }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -58,12 +58,12 @@ const HeaderComponent = ({
               <div className="absolute right-24 top-16">
                 <EditButton
                   sectionName={sectionName}
-                  styles="opacity-70 top-16 hover:opacity-100 transition-opacity"
+                  styles={` ${theme === "light" ? "text-gray-700" : ""} opacity-70 top-16 hover:opacity-100 transition-opacity`}
                 />
               </div>
             </motion.div>
             <motion.p
-              className="text-lg leading-relaxed max-w-4xl"
+              className="text-base md:text-lg leading-relaxed max-w-4xl"
               style={{ color: themeClasses.textSecondary }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

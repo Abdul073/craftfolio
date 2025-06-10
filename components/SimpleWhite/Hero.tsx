@@ -87,6 +87,7 @@ const Hero: NextPage = ({ customCSS }: any) => {
   // }
 
 
+
   return (
     <div id='about' className="min-h-screen relative bg-white simple-white">
       <style>{customCSS}</style>

@@ -382,7 +382,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="main-bg-noise pt-16 pb-20 md:pb-28 relative overflow-hidden">
+      <section className="main-bg-noise pt-16 px-4 pb-20 md:pb-28 relative overflow-hidden">
         <motion.div
           className="relative w-full max-w-7xl mx-auto rounded-xl overflow-hidden"
           style={{
@@ -556,11 +556,10 @@ export default function Page() {
       </section>
 
       {/* Testimonials Section (New) */}
-      <section
+      {/* <section
         id="testimonials"
-        className="py-20 md:py-28 main-bg-noise relative overflow-hidden"
+        className="py-20 md:pt-28 main-bg-noise relative overflow-hidden"
       >
-        {/* Background decoration */}
         <motion.div
           className="absolute top-1/2 left-0 transform -translate-y-1/2 w-full h-full -z-10"
           style={{
@@ -647,7 +646,6 @@ export default function Page() {
                     boxShadow: `0 10px 30px rgba(0,0,0,0.15), 0 5px 15px ${ColorTheme.primaryGlow}`,
                   }}
                 >
-                  {/* Quote mark */}
                   <div
                     className="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-xl font-serif"
                     style={{
@@ -659,7 +657,6 @@ export default function Page() {
                   </div>
 
                   <div className="mb-6">
-                    {/* Star rating */}
                     <div className="flex mb-4">
                       {[...Array(5)].map((_, i) => (
                         <svg
@@ -713,7 +710,6 @@ export default function Page() {
             )}
           </motion.div>
 
-          {/* Call-to-action */}
           <motion.div
             className="text-center mt-16"
             initial={{ opacity: 0 }}
@@ -752,7 +748,7 @@ export default function Page() {
             </motion.a>
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       {/* Footer */}
       <footer className="py-12 relative main-bg-noise overflow-hidden">

@@ -12,7 +12,7 @@ import {
   Star,
   ArrowUpRight,
 } from "lucide-react";
-import { getThemeClasses } from "./ThemeContext";
+import { getThemeClasses, useLumenFlowTheme } from "./ThemeContext";
 import { HeaderComponent } from "./Components";
 
 interface Technology {
@@ -47,7 +47,8 @@ const Experience = ({ currentTheme }: any) => {
   const sectionDescription =
     experienceSection?.sectionDescription ||
     "My professional journey through various roles and technologies, showcasing growth, expertise, and the impact I've made in different organizations and projects.";
-    const themeClasses = getThemeClasses(currentTheme);
+  const { theme } = useLumenFlowTheme();
+  const themeClasses = getThemeClasses(currentTheme);
 
   useEffect(() => {
     if (portfolioData) {
@@ -99,13 +100,13 @@ const Experience = ({ currentTheme }: any) => {
   }
 
   return (
-    <div className="space-y-12 max-h-screen overflow-y-auto scrollbar-none max-w-7xl mx-auto px-4">
+    <div className="space-y-4 md:space-y-12 max-h-screen overflow-y-auto scrollbar-none max-w-7xl mx-auto md:px-4">
       {/* Header Section */}
       <HeaderComponent
         currentTheme={currentTheme}
         sectionTitle={sectionTitle}
         sectionDescription={sectionDescription}
-        sectionName="projects"
+        sectionName="experience"
       />
 
       {/* Experience Timeline */}
@@ -118,17 +119,31 @@ const Experience = ({ currentTheme }: any) => {
             onMouseLeave={() => setHoveredExperience(null)}
           >
             {/* Background Glow Effect */}
-            <div className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" style={{ background: themeClasses.gradientHover }}></div>
+            <div className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" style={{ 
+              background: theme === "light"
+                ? "linear-gradient(to right, rgba(249,115,22,0.1), rgba(234,88,12,0.1))"
+                : themeClasses.gradientHover 
+            }}></div>
 
             {/* Main Card */}
-            <div className="relative bg-transparent rounded-2xl overflow-hidden border border-gray-700/50 group-hover:border-orange-400/30 transition-all duration-500 transform group-hover:translate-y-[-4px] h-full flex flex-col">
+            <div className={`relative bg-transparent rounded-2xl overflow-hidden border ${
+              theme === "light"
+                ? "border-gray-200/50 group-hover:border-orange-400/30"
+                : "border-gray-700/50 group-hover:border-orange-400/30"
+            } transition-all duration-500 transform group-hover:translate-y-[-4px] h-full flex flex-col`}>
               {/* Experience Content */}
               <div className="p-6 space-y-4 flex-grow">
                 {/* Header Section */}
                 <div className="space-y-2">
                   <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 rounded-full" style={{ background: themeClasses.gradientPrimary }}></div>
-                    <h3 className="text-xl font-bold transition-colors duration-300" style={{ color: themeClasses.textPrimary }}>
+                    <div className="w-3 h-3 rounded-full" style={{ 
+                      background: theme === "light"
+                        ? "linear-gradient(to right, rgba(249,115,22,0.8), rgba(234,88,12,0.8))"
+                        : themeClasses.gradientPrimary 
+                    }}></div>
+                    <h3 className={`text-xl font-bold transition-colors duration-300 ${
+                      theme === "light" ? "text-gray-900" : themeClasses.textPrimary
+                    }`}>
                       {exp.role}
                     </h3>
                   </div>
@@ -136,7 +151,9 @@ const Experience = ({ currentTheme }: any) => {
 
                 {/* Description */}
                 <div className="space-y-2">
-                  <p className="text-sm leading-relaxed" style={{ color: themeClasses.textSecondary }}>
+                  <p className={`text-sm leading-relaxed ${
+                    theme === "light" ? "text-gray-600" : themeClasses.textSecondary
+                  }`}>
                     {exp.description}
                   </p>
                 </div>
@@ -145,7 +162,9 @@ const Experience = ({ currentTheme }: any) => {
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <Star size={14} className="text-orange-400" />
-                    <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+                    <span className={`text-xs font-medium uppercase tracking-wide ${
+                      theme === "light" ? "text-gray-500" : "text-gray-400"
+                    }`}>
                       Tech Stack
                     </span>
                   </div>
@@ -153,8 +172,11 @@ const Experience = ({ currentTheme }: any) => {
                     {exp.techStack.map((tech, techIndex) => (
                       <span
                         key={techIndex}
-                        className="px-2 py-1 rounded-full text-xs font-medium border hover:border-orange-400/50 transition-all duration-300"
-                        style={{ color: themeClasses.textSecondary }}
+                        className={`px-2 py-1 rounded-full text-xs font-medium border ${
+                          theme === "light"
+                            ? "border-gray-200 hover:border-orange-400/50 text-gray-600"
+                            : "border-gray-700 hover:border-orange-400/50 text-gray-400"
+                        } transition-all duration-300`}
                       >
                         {tech.name}
                       </span>
@@ -163,17 +185,23 @@ const Experience = ({ currentTheme }: any) => {
                 </div>
 
                 {/* Bottom Section */}
-                <div className="flex items-center justify-between pt-4 mt-auto border-t border-gray-700/50">
+                <div className={`flex items-center justify-between pt-4 mt-auto border-t ${
+                  theme === "light" ? "border-gray-200/50" : "border-gray-700/50"
+                }`}>
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-1">
                       <MapPin size={14} className="text-orange-400" />
-                      <span className="text-sm" style={{ color: themeClasses.textSecondary }}>
+                      <span className={`text-sm ${
+                        theme === "light" ? "text-gray-600" : themeClasses.textSecondary
+                      }`}>
                         {exp.location}
                       </span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Calendar size={14} className="text-orange-400" />
-                      <span className="text-sm" style={{ color: themeClasses.textSecondary }}>
+                      <span className={`text-sm ${
+                        theme === "light" ? "text-gray-600" : themeClasses.textSecondary
+                      }`}>
                         {exp.startDate} - {exp.endDate}
                       </span>
                     </div>
@@ -193,7 +221,11 @@ const Experience = ({ currentTheme }: any) => {
               </div>
 
               {/* Side Accent Line */}
-              <div className="absolute left-0 top-0 w-1 h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: themeClasses.gradientPrimary }}></div>
+              <div className="absolute left-0 top-0 w-1 h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ 
+                background: theme === "light"
+                  ? "linear-gradient(to bottom, rgba(249,115,22,0.8), rgba(234,88,12,0.8))"
+                  : themeClasses.gradientPrimary 
+              }}></div>
             </div>
           </div>
         ))}

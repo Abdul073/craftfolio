@@ -43,7 +43,16 @@ export async function createPortfolio(
       const newContent = {
         ...templateContent,
         sections: templateContent.sections.map((section: any) => {
-          return customSectionMap[section.type] || section;
+          const customSection = customSectionMap[section.type];
+          if (customSection) {
+            return {
+              ...section,
+              data: customSection.data,
+              sectionTitle: section.sectionTitle,
+              sectionDescription: section.sectionDescription,
+            };
+          }
+          return section;
         }),
       };
 
@@ -52,8 +61,7 @@ export async function createPortfolio(
       content = template.defaultContent;
     }
 
-    console.log(templateName)
-
+    console.log(content);
     const newTemplate = await prisma.portfolio.create({
       data: {
         isTemplate: false,
@@ -160,9 +168,24 @@ export async function fetchThemesApi() {
   console.log("📍 [API] Environment:", process.env.NODE_ENV);
   console.log("🔑 [API] Environment variables check:");
   try {
-    const themes = await prisma.template.findMany();
-    console.log(themes);
-    return { success: true, data: themes };
+    const themes = await prisma.template.findMany({
+      orderBy: {
+        name: 'asc'
+      }
+    });
+    
+    // Reorder themes to match desired order
+    const orderedThemes = themes.sort((a, b) => {
+      const order: Record<string, number> = {
+        'LumenFlow': 1,
+        'NeoSpark': 2,
+        'SimpleWhite': 3
+      };
+      return (order[a.name] || 999) - (order[b.name] || 999);
+    });
+
+    console.log(orderedThemes);
+    return { success: true, data: orderedThemes };
   } catch (error) {
     console.error("Error fetching themes:", error);
     return { success: false, error: error };
@@ -445,20 +468,20 @@ export async function checkUserSubdomain(userId: string) {
       where: {
         userId: userId,
         subdomain: {
-          not: null
-        }
-      }
+          not: null,
+        },
+      },
     });
 
-    return { 
-      success: true, 
-      hasSubdomain: !!existingSubdomain 
+    return {
+      success: true,
+      hasSubdomain: !!existingSubdomain,
     };
   } catch (error) {
     console.error("Error checking user subdomain:", error);
-    return { 
-      success: false, 
-      error: "Failed to check subdomain status" 
+    return {
+      success: false,
+      error: "Failed to check subdomain status",
     };
   }
 }

@@ -40,7 +40,7 @@ const EditButton = ({
   };
 
   return (
-    <div className={divStyles ? divStyles : "absolute right-24 -top-12"}>
+    <div className={divStyles ? divStyles : "hidden md:block absolute right-24 -top-12"}>
       <Button
         onClick={handleSectionEdit}
         className={`bg-transparent !${styles} tracking-wider text-white hover:bg-transparent border border-dashed border-gray-300 shadow transition-all px-4 py-2 text-sm`}

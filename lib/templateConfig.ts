@@ -48,12 +48,12 @@ export const templatesConfig: TemplatesConfig = {
       technologies: dynamic(() => import("@/components/SimpleWhite/Skills")),
       userInfo: dynamic(() => import("@/components/SimpleWhite/Contact")),
     },
-    hero: ["name", "title", "summary"],
+    hero: ["name", "title", "summary","shortSummary"],
   },
   LumenFlow: {
     sections: {
       hero: dynamic(() => import("@/components/LumenFlow/Hero")),
     },
-    hero: ["name", "title", "summary"],
+    hero: ["name", "title","longSummary"],
   },
 };

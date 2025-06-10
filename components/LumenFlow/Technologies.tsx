@@ -5,7 +5,7 @@ import { RootState } from "@/store/store";
 import { supabase } from "@/lib/supabase-client";
 import EditButton from '@/components/EditButton';
 import { Code2 } from "lucide-react";
-import { getThemeClasses } from "./ThemeContext";
+import { getThemeClasses, useLumenFlowTheme } from "./ThemeContext";
 import { HeaderComponent } from "./Components";
 
 interface TechnologiesProps {
@@ -25,6 +25,7 @@ const Technologies: React.FC<TechnologiesProps> = ({ currentTheme }) => {
   const [hoveredTech, setHoveredTech] = useState<number | null>(null);
   const params = useParams();
   const portfolioId = params.portfolioId as string;
+  const { theme } = useLumenFlowTheme();
   const themeClasses = getThemeClasses(currentTheme);
 
   const { portfolioData } = useSelector((state: RootState) => state.data);
@@ -86,17 +87,16 @@ const Technologies: React.FC<TechnologiesProps> = ({ currentTheme }) => {
   }
 
   return (
-    <div className="space-y-12 max-h-screen overflow-y-auto scrollbar-none max-w-7xl mx-auto px-4">
+    <div className="space-y-4 md:space-y-12 max-h-screen overflow-y-auto scrollbar-none max-w-7xl mx-auto md:px-4">
       {/* Header Section */}
       <HeaderComponent
         currentTheme={currentTheme}
         sectionTitle={sectionTitle}
         sectionDescription={sectionDescription}
-        sectionName="projects"
+        sectionName="technologies"
       />
 
-      {/* Technologies Grid - Clean Card Layout */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
         {technologiesData.map((tech: Technology, index: number) => (
           <div
             key={index}
@@ -107,21 +107,30 @@ const Technologies: React.FC<TechnologiesProps> = ({ currentTheme }) => {
             {/* Background Glow Effect */}
             <div
               className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-lg"
-              style={{ background: themeClasses.gradientPrimary }}
+              style={{ 
+                background: theme === "light" 
+                  ? "linear-gradient(to right, rgba(249,115,22,0.1), rgba(234,88,12,0.1))"
+                  : themeClasses.gradientPrimary 
+              }}
             ></div>
 
-            {/* Main Card */}
-            <div className="relative bg-transparent rounded-2xl overflow-hidden border border-gray-700/50 group-hover:border-orange-400/50 transition-all duration-300 transform group-hover:translate-y-[-2px] group-hover:scale-105 ">
-              {/* Technology Content */}
-              <div className="p-8 flex flex-col items-center text-center space-y-4 h-48">
-                {/* Logo Container - Large and Prominent */}
+            <div className={`relative bg-transparent rounded-2xl overflow-hidden border ${
+              theme === "light"
+                ? "border-gray-200/50 group-hover:border-orange-400/50"
+                : "border-gray-700/50 group-hover:border-orange-400/50"
+            } transition-all duration-300 transform group-hover:translate-y-[-2px] group-hover:scale-105`}>
+              <div className="p-4 sm:p-6 md:p-8 flex flex-col items-center text-center space-y-2 sm:space-y-3 md:space-y-4 md:h-48">
                 <div className="flex-shrink-0">
                   {tech.logo ? (
-                    <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-700/30 flex items-center justify-center group-hover:bg-gray-600/30 transition-colors duration-300">
+                    <div className={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl overflow-hidden ${
+                      theme === "light"
+                        ? "bg-gray-100/50 group-hover:bg-orange-50/50"
+                        : "bg-gray-700/30 group-hover:bg-gray-600/30"
+                    } flex items-center justify-center transition-colors duration-300`}>
                       <img
                         src={tech.logo}
                         alt={tech.name}
-                        className="w-16 h-16 object-contain transition-transform duration-300 group-hover:scale-110"
+                        className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain transition-transform duration-300 group-hover:scale-110"
                         onError={(e) => {
                           // Fallback if image fails to load
                           e.currentTarget.style.display = "none";
@@ -132,60 +141,78 @@ const Technologies: React.FC<TechnologiesProps> = ({ currentTheme }) => {
                           }
                         }}
                       />
-                      <div className="hidden w-16 h-16 items-center justify-center">
-                        <Code2 size={32} className="text-gray-400" />
+                      <div className="hidden w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 items-center justify-center">
+                        <Code2 size={24} className={`${
+                          theme === "light" ? "text-gray-600" : "text-gray-400"
+                        } sm:text-2xl md:text-3xl`} />
                       </div>
                     </div>
                   ) : (
-                    <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center border border-gray-600/30 group-hover:from-gray-600 group-hover:to-gray-700 transition-colors duration-300">
-                      <Code2 size={32} className="text-gray-400" />
+                    <div className={`w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl ${
+                      theme === "light"
+                        ? "bg-gradient-to-br from-gray-50 to-gray-100 group-hover:from-orange-50 group-hover:to-orange-100"
+                        : "bg-gradient-to-br from-gray-700 to-gray-800 group-hover:from-gray-600 group-hover:to-gray-700"
+                    } flex items-center justify-center border ${
+                      theme === "light"
+                        ? "border-gray-200/30"
+                        : "border-gray-600/30"
+                    } transition-colors duration-300`}>
+                      <Code2 size={24} className={`${
+                        theme === "light" ? "text-gray-600" : "text-gray-400"
+                      } sm:text-2xl md:text-3xl`} />
                     </div>
                   )}
                 </div>
 
-                {/* Technology Name */}
-                <div className="space-y-1">
+                <div className="space-y-0.5 sm:space-y-1">
                   <h3
-                    className="text-lg font-bold transition-colors duration-300"
-                    style={{ color: themeClasses.textPrimary }}
+                    className={`text-sm sm:text-base md:text-lg font-bold transition-colors duration-300 ${
+                      theme === "light" ? "text-gray-900" : themeClasses.textPrimary
+                    }`}
                   >
                     {tech.name}
                   </h3>
                   <div
-                    className="text-sm font-medium opacity-70"
-                    style={{ color: themeClasses.textSecondary }}
+                    className={`text-xs sm:text-sm font-medium opacity-70 ${
+                      theme === "light" ? "text-gray-600" : themeClasses.textSecondary
+                    }`}
                   >
                     {tech.category}
                   </div>
                 </div>
 
-                {/* Hover Description Overlay */}
                 <div
-                  className={`absolute inset-0 bg-gray-900/95 backdrop-blur-sm rounded-2xl p-6 flex flex-col justify-center text-center transition-all duration-300 ${
+                  className={`absolute inset-0 ${
+                    theme === "light"
+                      ? "bg-white/95"
+                      : "bg-gray-900/95"
+                  } backdrop-blur-sm rounded-2xl p-3 sm:p-4 md:p-6 flex flex-col justify-center text-center transition-all duration-300 ${
                     hoveredTech === index
                       ? "opacity-100"
                       : "opacity-0 pointer-events-none"
                   }`}
                 >
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     <h4
-                      className="text-lg font-bold"
-                      style={{ color: themeClasses.textPrimary }}
+                      className={`text-sm sm:text-base md:text-lg font-bold ${
+                        theme === "light" ? "text-gray-900" : themeClasses.textPrimary
+                      }`}
                     >
                       {tech.name}
                     </h4>
                     <p
-                      className="text-sm leading-relaxed"
-                      style={{ color: themeClasses.textSecondary }}
+                      className={`text-xs sm:text-sm leading-relaxed ${
+                        theme === "light" ? "text-gray-600" : themeClasses.textSecondary
+                      }`}
                     >
                       {tech.description}
                     </p>
                     <div
-                      className="inline-flex items-center space-x-2 text-xs font-medium px-3 py-1 rounded-full"
-                      style={{
-                        background: themeClasses.gradientPrimary,
-                        color: "white",
-                      }}
+                      className={`inline-flex items-center space-x-2 text-xs font-medium px-2 sm:px-3 py-0.5 sm:py-1 rounded-full ${
+                        theme === "light"
+                          ? "bg-orange-500 text-white"
+                          : "bg-gradient-to-r from-orange-500 to-orange-600 text-white"
+                      }`}
                     >
                       <span>{tech.category}</span>
                     </div>
@@ -196,14 +223,17 @@ const Technologies: React.FC<TechnologiesProps> = ({ currentTheme }) => {
               {/* Bottom Accent Line */}
               <div
                 className="absolute bottom-0 left-0 right-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{ background: themeClasses.gradientPrimary }}
+                style={{ 
+                  background: theme === "light"
+                    ? "linear-gradient(to right, rgba(249,115,22,0.5), rgba(234,88,12,0.5))"
+                    : themeClasses.gradientPrimary 
+                }}
               ></div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Empty State */}
       {technologiesData.length === 0 && (
         <div className="text-center py-16">
           <div className="space-y-4">

@@ -123,7 +123,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
           {theme.name === 'LumenFlow' ? (
             <>
               <Star size={14} className="text-yellow-500" />
-              Recommended
+              Premium Choice
             </>
           ) : theme.name === 'SimpleWhite' ? (
             <>
@@ -145,14 +145,14 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
       </div>
       
       {/* Image Section with Slider */}
-      <div className="h-48 sm:h-56  md:h-64 lg:h-64 xl:h-64 relative overflow-hidden group">
+      <div className="relative overflow-hidden group aspect-[16/9]">
         <Slider {...sliderSettings} className="h-full">
           {previewImages.map((image, index) => (
-            <div key={index} className="h-48 sm:h-56 md:h-64  lg:h-64 xl:h-64">
+            <div key={index} className="aspect-[16/9]">
               <img
                 src={image}
                 alt={`${theme.name} theme preview ${index + 1}`}
-                className="max-w-full mx-auto h-full object-cover transition-transform duration-500"
+                className="w-full h-full object-contain bg-black/5"
               />
             </div>
           ))}
@@ -180,10 +180,48 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
         <p className="mb-4 text-sm sm:text-base md:text-base lg:text-lg xl:text-lg" style={{ color: ColorTheme.textSecondary }}>
           {isExpanded ? theme.description : truncateDescription(theme.description)}
         </p>
+
+        {/* Top Buttons Row */}
+        <div className="flex flex-row gap-2 mb-4">
+          <motion.button 
+            className="flex-1 flex items-center justify-center cursor-pointer gap-2 px-3 sm:px-4 md:px-4 py-2 md:py-2 rounded-lg font-medium transition-all"
+            style={{ 
+              backgroundColor: 'rgba(38, 38, 42, 0.8)',
+              color: ColorTheme.textPrimary
+            }}
+            whileHover={{ 
+              backgroundColor: 'rgba(48, 48, 52, 0.8)',
+              scale: 1.05
+            }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => router.push('/portfolio')}
+          >
+            <GripHorizontalIcon className="h-4 w-4" />
+            Preview
+          </motion.button>
+          
+          <motion.button 
+            className="flex-1 flex items-center justify-center cursor-pointer gap-2 px-3 sm:px-4 md:px-4 py-2 md:py-2 rounded-lg font-medium transition-all"
+            style={{ 
+              background: `linear-gradient(to right, ${ColorTheme.primary}, ${ColorTheme.primaryDark})`,
+              color: '#000',
+              boxShadow: selectedTheme === theme.id ? `0 4px 14px ${ColorTheme.primaryGlow}` : 'none'
+            }}
+            whileHover={{ 
+              boxShadow: `0 6px 20px ${ColorTheme.primaryGlow}`,
+              scale: 1.05
+            }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleSelectTheme(theme.id)}
+          >
+            <MousePointer2 className="h-4 w-4" />
+            {selectedTheme === theme.id ? 'Selected' : 'Select'}
+          </motion.button>
+        </div>
         
         {/* Show More Button */}
         <motion.button
-          className="flex items-center cursor-pointer gap-2 text-sm mb-4"
+          className="w-full flex items-center justify-center cursor-pointer gap-2 text-sm mb-4"
           onClick={() => handleCardClick(theme.id)}
           style={{ color: ColorTheme.primary }}
           whileHover={{ scale: 1.05 }}
@@ -221,44 +259,6 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
                   </span>
                 ))}
               </div>
-            </div>
-            
-            {/* Buttons */}
-            <div className="flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-center md:items-center">
-              <motion.button 
-                className="flex items-center cursor-pointer gap-2 px-3 sm:px-4 md:px-4 py-2 md:py-2 rounded-lg font-medium transition-all w-full md:w-auto justify-center md:justify-start"
-                style={{ 
-                  backgroundColor: 'rgba(38, 38, 42, 0.8)',
-                  color: ColorTheme.textPrimary
-                }}
-                whileHover={{ 
-                  backgroundColor: 'rgba(48, 48, 52, 0.8)',
-                  scale: 1.05
-                }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => router.push('/portfolio')}
-              >
-                <GripHorizontalIcon className="h-4 w-4" />
-                Preview
-              </motion.button>
-              
-              <motion.button 
-                className="flex items-center cursor-pointer gap-2 px-3 sm:px-4 md:px-4 py-2 md:py-2 rounded-lg font-medium transition-all w-full md:w-auto justify-center md:justify-start"
-                style={{ 
-                  background: `linear-gradient(to right, ${ColorTheme.primary}, ${ColorTheme.primaryDark})`,
-                  color: '#000',
-                  boxShadow: selectedTheme === theme.id ? `0 4px 14px ${ColorTheme.primaryGlow}` : 'none'
-                }}
-                whileHover={{ 
-                  boxShadow: `0 6px 20px ${ColorTheme.primaryGlow}`,
-                  scale: 1.05
-                }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleSelectTheme(theme.id)}
-              >
-                <MousePointer2 className="h-4 w-4" />
-                {selectedTheme === theme.id ? 'Selected' : 'Select'}
-              </motion.button>
             </div>
           </motion.div>
         )}

@@ -35,10 +35,9 @@ const MainNavbar = () => {
   let navItemsToShow: { label: string; href: string }[] = [];
   if (pathname === "/") {
     navItemsToShow = [
-      { label: "Resume Import", href: "#resume-import" },
       { label: "Features", href: "#features" },
       { label: "Templates", href: "/choose-templates" },
-      { label: "Testimonials", href: "#testimonials" },
+      // { label: "Testimonials", href: "#testimonials" },
       { label: "My Portfolios", href: "/my-portfolios" },
     ];
   } else if (

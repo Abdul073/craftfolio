@@ -190,6 +190,7 @@ const CreateMethodModal = ({
         const reportText = await response.text();
         console.log(JSON.parse(reportText));
         setCustomBodyResume(reportText);
+        console.log(reportText)
 
         // Animate to 100% smoothly over 2 seconds
         clearInterval(progressInterval);
@@ -341,21 +342,21 @@ const CreateMethodModal = ({
         }}
       >
         <DialogContent
-          className="backdrop-blur-xl rounded-xl w-full max-w-[95vw] p-2 sm:p-6 md:p-12 h-[90vh] sm:max-w-4xl sm:h-auto flex flex-col"
+          className="backdrop-blur-xl rounded-xl w-full max-w-[98vw] sm:max-w-4xl p-2 sm:p-6 md:p-12 h-[95vh] sm:h-auto flex flex-col"
           style={{
             backgroundColor: "rgba(18, 18, 18, 0.95)",
             border: "1px solid rgba(75, 85, 99, 0.3)",
             color: "#f3f4f6",
             boxShadow:
               "0 25px 50px rgba(0,0,0,0.3), 0 10px 30px rgba(16, 185, 129, 0.15)",
-            maxHeight: "90vh",
+            maxHeight: "95vh",
             overflow: "hidden"
           }}
         >
           {!showResumeImport ? (
-            <div className="flex-1 overflow-y-auto overflow-x-hidden">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 sm:px-0 sm:py-0">
               <DialogHeader className="mb-4">
-                <DialogTitle className="text-3xl text-center md:text-4xl font-bold">
+                <DialogTitle className="text-2xl sm:text-3xl text-center md:text-4xl font-bold">
                   How would you like to build your{" "}
                   <span
                     style={{
@@ -368,14 +369,14 @@ const CreateMethodModal = ({
                   </span>
                   ?
                 </DialogTitle>
-                <p className="text-center text-gray-400 mt-2">
+                <p className="text-center text-gray-400 mt-2 text-base sm:text-lg">
                   Choose the method that works best for you to get started
                   quickly
                 </p>
               </DialogHeader>
 
               <motion.div
-                className="flex flex-col md:flex-row gap-6 mt-6"
+                className="flex flex-col gap-6 mt-6 md:flex-row md:gap-6"
                 style={{ maxHeight: "calc(90vh - 200px)" }}
                 initial="hidden"
                 animate="visible"
@@ -383,7 +384,7 @@ const CreateMethodModal = ({
               >
                 {/* From scratch option */}
                 <motion.div
-                  className="flex-1 p-5 rounded-xl cursor-pointer border transition-all flex flex-col items-center text-center"
+                  className="flex-1 p-4 sm:p-5 rounded-xl cursor-pointer border transition-all flex flex-col items-center text-center mb-2 md:mb-0"
                   variants={fadeInScale}
                   style={{
                     backgroundColor:
@@ -424,12 +425,12 @@ const CreateMethodModal = ({
                     />
                   </div>
                   <h3
-                    className="text-xl font-semibold"
+                    className="text-lg sm:text-xl font-semibold"
                     style={{ color: "#f3f4f6" }}
                   >
                     Edit a Pre-filled Template
                   </h3>
-                  <p className="text-gray-400">
+                  <p className="text-gray-400 text-sm sm:text-base mt-2">
                     Start with a pre-filled template featuring dummy data that
                     you can easily edit. Perfect for building your portfolio
                     step by step while maintaining full control over the content{" "}
@@ -438,7 +439,7 @@ const CreateMethodModal = ({
 
                 {/* Import from resume option */}
                 <motion.div
-                  className="flex-1 p-5 rounded-xl cursor-pointer border transition-all flex flex-col items-center text-center"
+                  className="flex-1 p-4 sm:p-5 rounded-xl cursor-pointer border transition-all flex flex-col items-center text-center"
                   variants={fadeInScale}
                   style={{
                     backgroundColor:
@@ -478,12 +479,12 @@ const CreateMethodModal = ({
                     />
                   </div>
                   <h3
-                    className="text-xl font-semibold"
+                    className="text-lg sm:text-xl font-semibold"
                     style={{ color: "#f3f4f6" }}
                   >
                     Import from Resume
                   </h3>
-                  <p className="text-gray-400">
+                  <p className="text-gray-400 text-sm sm:text-base mt-2">
                     Upload your existing resume and we'll automatically populate
                     your portfolio. Save time by importing your skills,
                     experience, projects and education.
@@ -492,7 +493,7 @@ const CreateMethodModal = ({
               </motion.div>
 
               <motion.div
-                className="flex justify-center mt-8"
+                className="flex flex-col sm:flex-row justify-center mt-8 gap-3 sm:gap-0"
                 style={{ maxHeight: "100px" }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -500,7 +501,7 @@ const CreateMethodModal = ({
               >
                 {creationMethod && (
                   <motion.button
-                    className="px-8 py-3 rounded-lg font-medium text-lg group transition-all flex items-center  justify-center"
+                    className="w-full sm:w-auto px-8 py-3 rounded-lg font-medium text-lg group transition-all flex items-center  justify-center"
                     style={{
                       background: "#10b981",
                       color: "#000",

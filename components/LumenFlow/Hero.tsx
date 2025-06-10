@@ -9,6 +9,7 @@ import {
   User,
   ExternalLink,
   Heart,
+  Link,
 } from "lucide-react";
 import Projects from "./Projects";
 import Navbar from "./Navbar";
@@ -43,6 +44,153 @@ function hexToRgba(hex: string, alpha: number): string {
 
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
+
+const MobileProfileCard = ({
+  heroData,
+  contactData,
+  theme,
+  themeClasses,
+}: any) => (
+  <div className="block lg:hidden w-full mx-auto ">
+    <div
+      className={`relative rounded-2xl overflow-hidden border ${
+        theme === "light"
+          ? "bg-white/90 shadow-xl border-gray-200/60"
+          : "bg-transparent"
+      }`}
+    >
+      {/* Main Content Container */}
+      <div className="p-4">
+        {/* Top Section: Profile Image and Social Links */}
+        <div className="flex items-center justify-between mb-3">
+          {/* Profile Image */}
+          <div className="flex-shrink-0">
+            <div className={`w-24 h-24 rounded-full border-2 ${
+              theme === "light"
+                ? "border-orange-500/50 bg-gray-50"
+                : "border-orange-500/50 bg-gray-800"
+            } overflow-hidden shadow-lg`}>
+              <img
+                src={
+                  heroData?.profileImage ||
+                  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
+                }
+                alt={heroData?.name || "Profile"}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Social Links - show all, wrap if needed */}
+          {contactData?.socialLinks && contactData.socialLinks.length > 0 && (
+            <div className="flex flex-wrap items-center justify-end gap-2 max-w-[60%]">
+              {contactData.socialLinks.map((link: any, idx: number) => {
+                let iconName =
+                  link.type || Object.keys(link)[1] || Object.keys(link)[0];
+                let linkValue =
+                  link.url || Object.values(link)[1] || Object.values(link)[0];
+                let href =
+                  iconName === "email" ? `mailto:${linkValue}` : linkValue;
+                let IconComponent;
+                switch (iconName.toLowerCase()) {
+                  case "github":
+                    IconComponent = Github;
+                    break;
+                  case "twitter":
+                    IconComponent = Twitter;
+                    break;
+                  case "linkedin":
+                    IconComponent = Linkedin;
+                    break;
+                  case "email":
+                    IconComponent = Mail;
+                    break;
+                  case "location":
+                    IconComponent = MapPin;
+                    break;
+                  case "website":
+                  case "portfolio":
+                  case "link":
+                    IconComponent = Link;
+                    break;
+                  default:
+                    IconComponent = Link;
+                }
+                return (
+                  <a
+                    key={idx}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`rounded-full p-2 transition-all duration-200 hover:scale-110 ${
+                      theme === "light"
+                        ? "bg-gray-50 hover:bg-orange-50 text-gray-700 hover:text-orange-600"
+                        : "bg-gray-800/80 hover:bg-orange-500/20 text-gray-300 hover:text-orange-400"
+                    }`}
+                  >
+                    <IconComponent size={16} />
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Profile Information */}
+        <div className="space-y-1">
+          <div
+            className={`text-lg font-bold leading-tight ${
+              theme === "light" ? "text-gray-900" : "text-white"
+            }`}
+          >
+            {heroData?.name || "Your Name"}
+          </div>
+
+          <div
+            className={`text-sm font-medium ${
+              theme === "light" ? "text-orange-600" : "text-orange-400"
+            }`}
+          >
+            {heroData?.title || "Your Title"}
+          </div>
+
+          <div
+            className={`text-xs break-all leading-relaxed ${
+              theme === "light" ? "text-gray-600" : "text-gray-300"
+            }`}
+          >
+            {contactData?.email || heroData?.email || "your@email.com"}
+          </div>
+        </div>
+
+        {/* Additional Info or Badge */}
+        {heroData?.location && (
+          <div className="mt-3 pt-3 border-t border-gray-200/20">
+            <div
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
+                theme === "light"
+                  ? "bg-gray-50 text-gray-700"
+                  : "bg-gray-800/60 text-gray-400"
+              }`}
+            >
+              <MapPin size={12} />
+              {heroData.location}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Subtle gradient overlay for depth */}
+      <div
+        className={`absolute inset-0 pointer-events-none ${
+          theme === "light"
+            ? "bg-gradient-to-br from-transparent via-transparent to-orange-50/30"
+            : "bg-gradient-to-br from-transparent via-transparent to-orange-900/10"
+        }`}
+      />
+    </div>
+  </div>
+);
 
 const HeroContent = ({ currentPortTheme, customCSS }: any) => {
   const [activeTab, setActiveTab] = useState("home");
@@ -105,15 +253,15 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
     setActiveTab(tab);
   };
 
-  console.log(contactData);
+  console.log(activeTab);
 
   const renderContent = () => {
     switch (activeTab) {
       case "projects":
         return <Projects currentTheme={currentTheme} />;
-      case "work":
+      case "experience":
         return <Experience currentTheme={currentTheme} />;
-      case "learning":
+      case "education":
         return <Education currentTheme={currentTheme} />;
       case "technologies":
         return <Technologies currentTheme={currentTheme} />;
@@ -123,11 +271,20 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
       default:
         return (
           <motion.div
-            className="space-y-8 max-h-screen overflow-y-auto scrollbar-none px-4"
+            className="space-y-4  md:space-y-8 max-h-screen overflow-y-auto scrollbar-none md:px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
+            {/* Mobile Profile Card below navbar (hidden on desktop) */}
+            <div className="block lg:hidden mb-4">
+              <MobileProfileCard
+                heroData={heroData}
+                contactData={contactData}
+                theme={theme}
+                themeClasses={themeClasses}
+              />
+            </div>
             <HeaderComponent
               currentTheme={currentTheme}
               sectionTitle="About Me"
@@ -199,17 +356,27 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                           My Story
                         </motion.h3>
                         <motion.p
-                          className={`text-base leading-relaxed ${
+                          className={` hidden md:block text-base leading-relaxed ${
                             theme === "dark" ? "text-gray-300" : "text-gray-700"
                           }`}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.5, delay: 0.8 }}
                         >
-                          {heroData?.description || "No description available"}
+                          {heroData?.longSummary || "No description available"}
                         </motion.p>
                       </div>
                     </div>
+                    <motion.p
+                      className={`block md:hidden text-justify text-base leading-relaxed ${
+                        theme === "dark" ? "text-gray-300" : "text-gray-700"
+                      }`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.8 }}
+                    >
+                      {heroData?.longSummary || "No description available"}
+                    </motion.p>
                   </div>
                   <div
                     className={`absolute left-0 top-0 w-1 h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
@@ -245,8 +412,8 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                   }}
                 >
                   <div className="p-8 space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-4">
+                    <div className="md:flex items-center justify-between">
+                      <div className="space-y-4 mb-4 md:mb-0">
                         <motion.h3
                           className={`text-xl font-semibold ${
                             theme === "dark" ? "text-white" : "text-gray-900"
@@ -409,288 +576,289 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
         transition={{ duration: 1 }}
       />
 
-      <div className="flex items-start justify-between max-w-[90%] mx-auto">
-        <motion.div
-          className="w-72 mt-16 flex-shrink-0 sticky h-fit"
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <div
-            className={`relative p-6 rounded-2xl border transition-all duration-300 ${
-              theme === "light"
-                ? "bg-white/80 backdrop-blur-sm shadow-2xl border-gray-200/50"
-                : "backdrop-blur-md"
-            }`}
+      <div className="container mx-auto px-4 lg:px-8 max-w-[1600px]">
+        <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
+          {/* Sidebar Profile Card (hidden on mobile, left on desktop) */}
+          <motion.div
+            className="hidden lg:block w-full max-w-xs mt-16 flex-shrink-0 sticky h-fit"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="absolute -inset-1 rounded-2xl opacity-50 blur-xl"></div>
+            <div
+              className={`relative p-6 rounded-2xl border transition-all duration-300 ${
+                theme === "light"
+                  ? "bg-white/80 backdrop-blur-sm shadow-2xl border-gray-200/50"
+                  : "backdrop-blur-md"
+              }`}
+            >
+              <div className="absolute -inset-1 rounded-2xl opacity-50 blur-xl"></div>
 
-            <div className="relative z-10">
-              <motion.div
-                className="relative mb-6"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                {/* Profile Image with Enhanced Styling */}
-                <div className="relative w-40 h-40 block mx-auto">
-                  <div
-                    className={`absolute -inset-2 rounded-full opacity-20 blur-lg ${
-                      theme === "light" ? "opacity-30" : ""
-                    }`}
-                    style={{ background: themeClasses.gradientPrimary }}
-                  ></div>
-                  <motion.div
-                    className={`relative w-full h-full rounded-full overflow-hidden border-4 shadow-2xl ${
-                      theme === "light"
-                        ? "border-white shadow-orange-100/50"
-                        : "border-gray-600/50"
-                    }`}
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <img
-                      src={
-                        heroData?.profileImage ||
-                        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                      }
-                      alt={heroData?.name || "Profile"}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                  </motion.div>
-                </div>
-              </motion.div>
-
-              {/* Name and Title */}
-              <motion.div
-                className="space-y-1 mb-6 text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-              >
-                <motion.h1
-                  className={`text-xl font-bold ${
-                    theme === "light" ? "text-gray-900" : ""
-                  }`}
-                  style={{
-                    color:
-                      theme === "light" ? undefined : themeClasses.textPrimary,
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.7 }}
+              <div className="relative z-10">
+                <motion.div
+                  className="relative mb-6"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
                 >
-                  {heroData?.name || "Your Name"}
-                </motion.h1>
-                <motion.p
-                  className={`text-sm leading-relaxed max-w-xs mx-auto ${
-                    theme === "light" ? "text-gray-600" : ""
-                  }`}
-                  style={{
-                    color:
-                      theme === "light"
-                        ? undefined
-                        : themeClasses.textSecondary,
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.8 }}
-                >
-                  {heroData?.role || "Your Title"}
-                </motion.p>
-              </motion.div>
-
-              {/* Social Links */}
-              <motion.div
-                className="space-y-2 w-full pt-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-              >
-                {contactData?.socialLinks?.map((link: any, index: number) => {
-                  let iconName;
-                  let linkValue;
-                  let linkLink;
-
-                  if (link.type && link.url) {
-                    iconName = link.type;
-                    linkValue = link.url;
-                    linkLink = link.url;
-                  } else {
-                    const [key, val] = Object.entries(link)[1];
-                    const [key2, val2] = Object.entries(link)[0];
-                    iconName = key;
-                    linkValue = val;
-                    linkLink = val2;
-                  }
-
-                  let IconComponent;
-                  let color = "text-gray-400 hover:text-blue-400";
-
-                  // console.log(iconName,linkValue,linkLink)
-                  // Map icon names to their components
-                  switch (iconName.toLowerCase()) {
-                    case "github":
-                      IconComponent = Github;
-                      color = "text-gray-400 hover:text-white";
-                      break;
-                    case "twitter":
-                      IconComponent = Twitter;
-                      color = "text-gray-400 hover:text-blue-400";
-                      break;
-                    case "linkedin":
-                      IconComponent = Linkedin;
-                      color = "text-gray-400 hover:text-blue-500";
-                      break;
-                    case "email":
-                      IconComponent = Mail;
-                      color = "text-gray-400 hover:text-blue-400";
-                      break;
-                    case "location":
-                      IconComponent = MapPin;
-                      color = "text-gray-400 hover:text-gray-300";
-                      break;
-                    default:
-                      IconComponent = Twitter; // fallback icon
-                  }
-
-                  const href =
-                    iconName === "email"
-                      ? `mailto:${linkLink}`
-                      : iconName === "location"
-                      ? undefined
-                      : linkLink;
-
-                  return (
-                    <motion.a
-                      key={index}
-                      href={href}
-                      target={href ? "_blank" : undefined}
-                      rel={href ? "noopener noreferrer" : undefined}
-                      className={`group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg ${
-                        theme === "light"
-                          ? "bg-white/60 backdrop-blur-sm border-gray-200/60 hover:bg-white/80 hover:shadow-orange-100/50"
-                          : "backdrop-blur-sm"
+                  {/* Profile Image with Enhanced Styling */}
+                  <div className="relative w-40 h-40 block mx-auto">
+                    <div
+                      className={`absolute -inset-2 rounded-full opacity-20 blur-lg ${
+                        theme === "light" ? "opacity-30" : ""
                       }`}
-                      style={{
-                        borderColor:
-                          theme === "light"
-                            ? undefined
-                            : theme === "dark"
-                            ? "rgba(255,255,255,0.1)"
-                            : "rgba(0,0,0,0.15)",
-                        backgroundColor:
-                          theme === "light"
-                            ? undefined
-                            : theme === "dark"
-                            ? "rgba(0,0,0,0.2)"
-                            : "rgba(255,255,255,0.5)",
-                      }}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
-                      whileHover={{ scale: 1.02, x: 5 }}
+                      style={{ background: themeClasses.gradientPrimary }}
+                    ></div>
+                    <motion.div
+                      className={`relative w-full h-full rounded-full overflow-hidden border-4 shadow-2xl ${
+                        theme === "light"
+                          ? "border-white shadow-orange-100/50"
+                          : "border-gray-600/50"
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ type: "spring", stiffness: 300 }}
                     >
-                      <motion.div
-                        className={`p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300 ${
+                      <img
+                        src={
+                          heroData?.profileImage ||
+                          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
+                        }
+                        alt={heroData?.name || "Profile"}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    </motion.div>
+                  </div>
+                </motion.div>
+
+                {/* Name and Title */}
+                <motion.div
+                  className="space-y-1 mb-6 text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                >
+                  <motion.h1
+                    className={`text-xl font-bold ${
+                      theme === "light" ? "text-gray-900" : ""
+                    }`}
+                    style={{
+                      color:
+                        theme === "light"
+                          ? undefined
+                          : themeClasses.textPrimary,
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.7 }}
+                  >
+                    {heroData?.name || "Your Name"}
+                  </motion.h1>
+                  <motion.p
+                    className={`text-sm leading-relaxed max-w-xs mx-auto ${
+                      theme === "light" ? "text-gray-600" : ""
+                    }`}
+                    style={{
+                      color:
+                        theme === "light"
+                          ? undefined
+                          : themeClasses.textSecondary,
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.8 }}
+                  >
+                    {heroData?.title || "Your Title"}
+                  </motion.p>
+                </motion.div>
+
+                {/* Social Links */}
+                <motion.div
+                  className="space-y-2 w-full pt-1"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.8 }}
+                >
+                  {contactData?.socialLinks?.map((link: any, index: number) => {
+                    let iconName;
+                    let linkValue;
+                    let linkLink;
+
+                    if (link.type && link.url) {
+                      iconName = link.type;
+                      linkValue = link.url;
+                      linkLink = link.url;
+                    } else {
+                      const [key, val] = Object.entries(link)[1];
+                      const [key2, val2] = Object.entries(link)[0];
+                      iconName = key;
+                      linkValue = val;
+                      linkLink = val2;
+                    }
+
+                    let IconComponent;
+                    let color = "text-gray-400 hover:text-blue-400";
+
+                    // console.log(iconName,linkValue,linkLink)
+                    // Map icon names to their components
+                    switch (iconName.toLowerCase()) {
+                      case "github":
+                        IconComponent = Github;
+                        color = "text-gray-400 hover:text-white";
+                        break;
+                      case "twitter":
+                        IconComponent = Twitter;
+                        color = "text-gray-400 hover:text-blue-400";
+                        break;
+                      case "linkedin":
+                        IconComponent = Linkedin;
+                        color = "text-gray-400 hover:text-blue-500";
+                        break;
+                      case "email":
+                        IconComponent = Mail;
+                        color = "text-gray-400 hover:text-blue-400";
+                        break;
+                      case "location":
+                        IconComponent = MapPin;
+                        color = "text-gray-400 hover:text-gray-300";
+                        break;
+                      default:
+                        IconComponent = Link; // fallback icon
+                    }
+
+                    const href =
+                      iconName === "email"
+                        ? `mailto:${linkLink}`
+                        : iconName === "location"
+                        ? undefined
+                        : linkLink;
+
+                    return (
+                      <motion.a
+                        key={index}
+                        href={href}
+                        target={href ? "_blank" : undefined}
+                        rel={href ? "noopener noreferrer" : undefined}
+                        className={`group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg ${
                           theme === "light"
-                            ? "bg-gradient-to-br from-orange-50 to-orange-100"
-                            : ""
+                            ? "bg-white/60 backdrop-blur-sm border-gray-200/60 hover:bg-white/80 hover:shadow-orange-100/50"
+                            : "backdrop-blur-sm"
                         }`}
                         style={{
-                          background:
+                          borderColor:
                             theme === "light"
                               ? undefined
-                              : themeClasses.gradientHover,
+                              : theme === "dark"
+                              ? "rgba(255,255,255,0.1)"
+                              : "rgba(0,0,0,0.15)",
+                          backgroundColor:
+                            theme === "light"
+                              ? undefined
+                              : theme === "dark"
+                              ? "rgba(0,0,0,0.2)"
+                              : "rgba(255,255,255,0.5)",
                         }}
-                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
+                        whileHover={{ scale: 1.02, x: 5 }}
                       >
-                        <IconComponent
-                          size={16}
-                          className={`group-hover:scale-110 transition-transform ${
-                            theme === "light" ? "text-orange-600" : ""
+                        <motion.div
+                          className={`p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300 ${
+                            theme === "light"
+                              ? "bg-gradient-to-br from-orange-50 to-orange-100"
+                              : ""
                           }`}
                           style={{
-                            color:
+                            background:
                               theme === "light"
                                 ? undefined
-                                : themeClasses.textPrimary,
+                                : themeClasses.gradientHover,
                           }}
-                        />
-                      </motion.div>
-                      <span
-                        className={`font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1 ${
-                          theme === "light" ? "text-gray-700" : ""
-                        }`}
-                        style={{
-                          color:
-                            theme === "light"
-                              ? undefined
-                              : themeClasses.textSecondary,
-                        }}
-                      >
-                        {linkValue}
-                      </span>
-                      {href && (
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          whileHover={{ opacity: 1 }}
-                          transition={{ duration: 0.2 }}
+                          whileHover={{ scale: 1.1, rotate: 5 }}
                         >
-                          <ExternalLink
-                            size={12}
-                            className={`opacity-0 group-hover:opacity-100 transition-opacity ${
-                              theme === "light" ? "text-gray-500" : ""
+                          <IconComponent
+                            size={16}
+                            className={`group-hover:scale-110 transition-transform ${
+                              theme === "light" ? "text-orange-600" : ""
                             }`}
                             style={{
                               color:
                                 theme === "light"
                                   ? undefined
-                                  : themeClasses.textSecondary,
+                                  : themeClasses.textPrimary,
                             }}
                           />
                         </motion.div>
-                      )}
-                    </motion.a>
-                  );
-                })}
-              </motion.div>
+                        <span
+                          className={`font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1 ${
+                            theme === "light" ? "text-gray-700" : ""
+                          }`}
+                          style={{
+                            color:
+                              theme === "light"
+                                ? undefined
+                                : themeClasses.textSecondary,
+                          }}
+                        >
+                          {linkValue}
+                        </span>
+                        {href && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            whileHover={{ opacity: 1 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ExternalLink
+                              size={12}
+                              className={`opacity-0 group-hover:opacity-100 transition-opacity ${
+                                theme === "light" ? "text-gray-500" : ""
+                              }`}
+                              style={{
+                                color:
+                                  theme === "light"
+                                    ? undefined
+                                    : themeClasses.textSecondary,
+                              }}
+                            />
+                          </motion.div>
+                        )}
+                      </motion.a>
+                    );
+                  })}
+                </motion.div>
 
-              <div className="absolute -right-24 top-8">
-                <EditButton
-                  sectionName="contact"
-                  styles="mr-14 opacity-70 hover:opacity-100 transition-opacity"
-                />
+                <div className="absolute -right-24 top-8">
+                  <EditButton
+                    sectionName="contact"
+                    styles={` ${theme === "light" ? "text-gray-700" : ""} mr-14 opacity-70 hover:opacity-100 transition-opacity`}
+                  />
+                </div>
               </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          className="w-full"
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <motion.div
-            className="sticky top-0 z-50 w-full flex justify-center pt-8 pb-4"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            <div className="w-full max-w-[90%] mx-auto px-4">
-              <Navbar
-                currentTheme={currentTheme}
-                onTabChange={handleTabChange}
-                activeTab={activeTab}
-              />
             </div>
           </motion.div>
 
-          <div className="relative z-10 max-w-[90%] mx-auto w-full pb-8">
-            <div className="flex gap-8 lg:gap-12">
-              <div className="flex-1 min-w-0">
+          {/* Main content area (full width on mobile, right side on desktop) */}
+          <div className="flex-1 w-full">
+            {/* Navbar always at the top */}
+            <motion.div
+              className="sticky top-0 z-50 w-full flex justify-center md:px-4 pt-8 pb-4"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
+              <div className="w-full">
+                <Navbar
+                  currentTheme={currentTheme}
+                  onTabChange={handleTabChange}
+                  activeTab={activeTab}
+                />
+              </div>
+            </motion.div>
+
+            {/* Main content (projects, experience, etc.) */}
+            <div className="relative z-10 w-full pb-8">
+              <div className="w-full">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeTab}
@@ -705,7 +873,7 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </motion.div>
   );

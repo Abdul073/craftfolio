@@ -65,7 +65,7 @@ export const features = [
     ),
     title: "Customizable Themes",
     description:
-      "Choose from 40+ professionally designed themes and customize colors, fonts, and layouts to match your personal brand.",
+      "Choose from various pprofessionally designed themes and customize colors, fonts, and layouts to match your personal brand.",
   },
   {
     id: 4,
