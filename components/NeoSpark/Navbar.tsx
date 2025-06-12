@@ -170,12 +170,12 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
             transition={spring}
             className="flex items-center justify-center gap-4 md:gap-8"
           >
-              <EditButton sectionName="contact" divStyles={" "} styles="relative top-0 right-0" />
+              <EditButton sectionName="contact" divStyles="hidden md:block relative top-0 right-0" styles="" />
 
             <motion.div
               layout
               transition={spring}
-              className="flex items-center justify-center gap-4"
+              className="hidden md:flex items-center justify-center gap-4"
             >
               <motion.a
                 layout
@@ -201,8 +201,6 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
                   size={20}
                 />
               </motion.a>
-            </motion.div>
-            <motion.div layout transition={spring} className="flex items-center gap-4">
               <Button
                 onClick={handleResumeDownload}
                 onMouseOver={(e) => {
@@ -251,6 +249,31 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
                 {item.name}
               </a>
             ))}
+            <div className="flex items-center gap-4 mt-2">
+              <a
+                href={userInfo?.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-green-300"
+              >
+                <GithubIcon size={20} />
+              </a>
+              <a
+                href={userInfo?.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-green-300"
+              >
+                <LinkedinIcon size={20} />
+              </a>
+              <Button
+                onClick={handleResumeDownload}
+                style={{ background: buttonBgColor, color: buttonTextColor }}
+                className="px-2 py-1 rounded-md cursor-pointer flex items-center gap-1 font-medium text-xs"
+              >
+                <PaperclipIcon size={16} /> Resume
+              </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

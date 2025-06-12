@@ -28,10 +28,12 @@ import PortfolioNotFound from "@/components/PortfolioNotFound";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { CheckCircle, Layout, Palette } from "lucide-react";
 import Head from "next/head";
+import { useUser } from "@clerk/nextjs";
 
 const Page = () => {
   const dispatch = useDispatch();
   const params = useParams();
+  const { user, isLoaded } = useUser();
   let portfolioId = params.portfolioId as string;
 
   const isUUID = (str: string) =>
@@ -81,6 +83,26 @@ const Page = () => {
 
         // First check if it's a UUID
         if (isUUID(portfolioId)) {
+          // For UUID-based portfolios, check if user is authenticated and is the creator
+          if (!isLoaded) {
+            return; // Wait for auth to load
+          }
+          
+          if (!user) {
+            setPortfolioNotFound(true);
+            return;
+          }
+
+          // Get portfolio data to check ownership
+          const themeResult = await getThemeNameApi({
+            portfolioId: currentPortfolioId,
+          });
+
+          if (!themeResult.success || !themeResult.data || themeResult.data.userId !== user.id) {
+            setPortfolioNotFound(true);
+            return;
+          }
+
           currentPortfolioId = portfolioId;
         } else {
           // If not UUID, try to get ID through slug
@@ -132,7 +154,7 @@ const Page = () => {
           setPortfolioNotFound(true);
           console.log("true form content");
           return;
-        }
+        } 
         if (contentResult.success) {
           dispatch(setPortfolioData(contentResult?.data?.sections));
         }
@@ -147,7 +169,7 @@ const Page = () => {
     };
 
     initializePortfolio();
-  }, [portfolioId, dispatch, finalPortfolioId]);
+  }, [portfolioId, dispatch, finalPortfolioId, isLoaded, user]);
 
   // Don't try to access template config until we have template name
   const Template =

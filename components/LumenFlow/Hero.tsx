@@ -253,7 +253,7 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
     setActiveTab(tab);
   };
 
-  console.log(activeTab);
+  console.log(contactData);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -620,10 +620,10 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                     >
                       <img
                         src={
-                          heroData?.profileImage ||
+                          contactData?.profileImage ||
                           "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
                         }
-                        alt={heroData?.name || "Profile"}
+                        alt={contactData?.name || "Profile"}
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>

@@ -519,30 +519,58 @@ function convertToPortfolioFormat(
       name: resumeData.personalInfo.name || "Alex Morgan",
     };
 
+    // Add profile image only for LumenFlow template
+    if (finalTheme === "LumenFlow") {
+      userInfoData.profileImage = "https://placehold.co/400x400?text=Profile+Image";
+    }
+
+    // Add title/role to userInfo
+    if (themePrompts?.titlePrefixSuffix) {
+      userInfoData.title = `${titleInfo?.titlePrefix || "Software"} ${titleInfo?.titleSuffixOptions?.[0] || "Engineer"}`;
+    } else if (themePrompts?.title) {
+      userInfoData.title = titleInfo?.title || "Software Developer";
+    } else {
+      // Fallback to first experience role or default
+      userInfoData.title = resumeData.experience?.[0]?.role || "Software Developer";
+    }
+
     // Add socialLinks if template has socialLinks enabled
     if (themePrompts?.socialLinks) {
-      userInfoData.socialLinks = [
-        {
+      const socialLinks = [];
+      
+      // Only add location if it exists
+      if (userInfoData.location) {
+        socialLinks.push({
           href: userInfoData.location,
           location: userInfoData.location
-        },
-        {
+        });
+      }
+      
+      // Only add email if it exists
+      if (userInfoData.email) {
+        socialLinks.push({
           href: `mailto:${userInfoData.email}`,
           email: userInfoData.email
-        },
-        {
-          href: "https://github.com/",
-          github: "Github"
-        },
-        {
-          href: "https://twitter.com/",
-          twitter: "Twitter"
-        },
-        {
-          href: "https://linkedin.com/in/",
+        });
+      }
+      
+      // Only add GitHub if it exists and doesn't match the default
+      if (userInfoData.github && userInfoData.github !== "alexmorgan") {
+        socialLinks.push({
+          href: userInfoData.github,
+          github: "GitHub"
+        });
+      }
+      
+      // Only add LinkedIn if it exists and doesn't match the default
+      if (userInfoData.linkedin && userInfoData.linkedin !== "alexmorgan") {
+        socialLinks.push({
+          href: userInfoData.linkedin,
           linkedin: "LinkedIn"
-        }
-      ];
+        });
+      }
+      
+      userInfoData.socialLinks = socialLinks;
     }
 
     sections.push({

@@ -45,9 +45,38 @@ export async function createPortfolio(
         sections: templateContent.sections.map((section: any) => {
           const customSection = customSectionMap[section.type];
           if (customSection) {
+            // Create a deep copy of the template data
+            const mergedData = JSON.parse(JSON.stringify(section.data));
+            
+            // Merge custom data while preserving arrays
+            Object.keys(customSection.data).forEach(key => {
+              const customValue = customSection.data[key];
+              const templateValue = section.data[key];
+              
+              if (Array.isArray(customValue)) {
+                // If custom value is an array, use it directly
+                mergedData[key] = customValue;
+              } else if (Array.isArray(templateValue) && typeof customValue === 'object' && customValue !== null) {
+                // If template has an array and custom has an object, merge array items
+                mergedData[key] = templateValue.map((item: any, index: number) => ({
+                  ...item,
+                  ...(customValue[index] || {})
+                }));
+              } else if (typeof customValue === 'object' && customValue !== null) {
+                // For objects, merge them
+                mergedData[key] = {
+                  ...templateValue,
+                  ...customValue
+                };
+              } else {
+                // For primitives, use custom value
+                mergedData[key] = customValue;
+              }
+            });
+
             return {
               ...section,
-              data: customSection.data,
+              data: mergedData,
               sectionTitle: section.sectionTitle,
               sectionDescription: section.sectionDescription,
             };

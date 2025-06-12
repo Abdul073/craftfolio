@@ -190,7 +190,7 @@ const CreateMethodModal = ({
         const reportText = await response.text();
         console.log(JSON.parse(reportText));
         setCustomBodyResume(reportText);
-        console.log(reportText)
+        console.log(reportText);
 
         // Animate to 100% smoothly over 2 seconds
         clearInterval(progressInterval);
@@ -289,48 +289,6 @@ const CreateMethodModal = ({
 
   return (
     <div>
-      {confettiActive && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            zIndex: 9999999,
-            pointerEvents: "none",
-            opacity: confettiOpacity,
-            transition: "opacity 0.5s ease",
-          }}
-        >
-          <Confetti
-            width={window.innerWidth}
-            height={window.innerHeight}
-            recycle={false}
-            numberOfPieces={800}
-            gravity={0.15}
-            tweenDuration={10000}
-            initialVelocityY={10}
-            colors={[
-              "#f44336",
-              "#e91e63",
-              "#9c27b0",
-              "#673ab7",
-              "#3f51b5",
-              "#2196f3",
-              "#03a9f4",
-              "#00bcd4",
-              "#009688",
-              "#4CAF50",
-              "#8BC34A",
-              "#FFEB3B",
-              "#FFC107",
-              "#FF9800",
-              "#FF5722",
-            ]}
-          />
-        </div>
-      )}
       <Dialog
         open={isModalOpen}
         onOpenChange={(open) => {
@@ -350,9 +308,51 @@ const CreateMethodModal = ({
             boxShadow:
               "0 25px 50px rgba(0,0,0,0.3), 0 10px 30px rgba(16, 185, 129, 0.15)",
             maxHeight: "95vh",
-            overflow: "hidden"
+            overflow: "hidden",
           }}
         >
+          {confettiActive && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                zIndex: 9999999,
+                pointerEvents: "none",
+                opacity: confettiOpacity,
+                transition: "opacity 0.5s ease",
+              }}
+            >
+              <Confetti
+                width={window.innerWidth}
+                height={window.innerHeight}
+                recycle={false}
+                numberOfPieces={800}
+                gravity={0.15}
+                tweenDuration={10000}
+                initialVelocityY={10}
+                colors={[
+                  "#f44336",
+                  "#e91e63",
+                  "#9c27b0",
+                  "#673ab7",
+                  "#3f51b5",
+                  "#2196f3",
+                  "#03a9f4",
+                  "#00bcd4",
+                  "#009688",
+                  "#4CAF50",
+                  "#8BC34A",
+                  "#FFEB3B",
+                  "#FFC107",
+                  "#FF9800",
+                  "#FF5722",
+                ]}
+              />
+            </div>
+          )}
           {!showResumeImport ? (
             <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 sm:px-0 sm:py-0">
               <DialogHeader className="mb-4">

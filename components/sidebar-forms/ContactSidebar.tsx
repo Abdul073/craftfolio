@@ -49,12 +49,16 @@ const ContactSidebar = () => {
     resumeLink: "",
     shortSummary: "",
     resumeFile: "",
+    name: "",
+    title: "",
+    profileImage: "",
   };
 
   const [content, setContent] = useState(emptyContent);
   const [isLoading, setIsLoading] = useState(false);
   const [originalContent, setOriginalContent] = useState({});
   const [isUploaded, setIsUploaded] = useState(false);
+  const [isProfileImageUploaded, setIsProfileImageUploaded] = useState(false);
 
   useEffect(() => {
     if (contactData && Object.keys(contactData).length > 0) {
@@ -92,13 +96,18 @@ const ContactSidebar = () => {
         resumeLink: contactData.resumeLink || "",
         shortSummary: contactData.shortSummary || "",
         resumeFile: contactData.resumeFile || "",
+        name: contactData.name || "",
+        title: contactData.title || "",
+        profileImage: contactData.profileImage || "",
       });
       setOriginalContent(contactData);
       setIsUploaded(!!contactData.resumeFile);
+      setIsProfileImageUploaded(!!contactData.profileImage);
     } else {
       setContent(emptyContent);
       setOriginalContent({});
       setIsUploaded(false);
+      setIsProfileImageUploaded(false);
     }
   }, [contactData]);
 
@@ -112,6 +121,8 @@ const ContactSidebar = () => {
   if (!portfolioId) {
     return redirect("/choose-templates");
   }
+
+  console.log(contactData);
 
   const handleSubmit = async () => {
     const originalContent = { ...content };
@@ -277,6 +288,46 @@ const ContactSidebar = () => {
     setContent({ ...content, socialLinks: newSocialLinks });
   };
 
+  const handleProfileImageUpload = async(event: React.ChangeEvent<HTMLInputElement>) => {
+    if(!event.target.files) return
+    const formData = new FormData();
+    formData.append("file", event.target.files[0]);
+    formData.append(
+      "upload_preset",
+      process.env.NEXT_PUBLIC_CLOUDINARY_PRESET as string
+    );
+
+    try {
+      toast.loading("Uploading image...", { id: "profileImageUpload" });
+      
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        toast.error("Upload failed", { id: "profileImageUpload" });
+        return;
+      }
+
+      const data = await response.json();
+      setContent({...content, profileImage: data.secure_url});
+      setIsProfileImageUploaded(true);
+      toast.success("Image uploaded successfully!", { id: "profileImageUpload" });
+    } catch (error) {
+      toast.error("An error occurred during upload", { id: "profileImageUpload" });
+      console.error("Upload error:", error);
+    }
+  }
+
+  const removeProfileImage = () => {
+    setContent({...content, profileImage: ""});
+    setIsProfileImageUploaded(false);
+  }
+
   return (
     <div className="flex-1 custom-scrollbar h-full">
       <Card
@@ -314,6 +365,121 @@ const ContactSidebar = () => {
 
             <TabsContent value="basic" className="mt-4">
               <CardContent className="p-0 space-y-5">
+                {/* Name Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="name"
+                    className="text-sm font-medium"
+                    style={{ color: ColorTheme.textPrimary }}
+                  >
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    value={content.name}
+                    onChange={(e) =>
+                      setContent({ ...content, name: e.target.value })
+                    }
+                    placeholder="Enter your name"
+                    style={{
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                      color: ColorTheme.textPrimary,
+                    }}
+                  />
+                </div>
+
+                {/* Title Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="title"
+                    className="text-sm font-medium"
+                    style={{ color: ColorTheme.textPrimary }}
+                  >
+                    Title
+                  </Label>
+                  <Input
+                    id="title"
+                    value={content.title}
+                    onChange={(e) =>
+                      setContent({ ...content, title: e.target.value })
+                    }
+                    placeholder="Enter your professional title"
+                    style={{
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                      color: ColorTheme.textPrimary,
+                    }}
+                  />
+                </div>
+
+                {/* Profile Image Field */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Profile Image</Label>
+                  
+                  <div className="mt-1 flex flex-col items-center">
+                    {content.profileImage ? (
+                      <div className="relative w-full">
+                        <img 
+                          src={content.profileImage} 
+                          alt="Profile Preview" 
+                          className="w-full h-48 object-cover rounded-md"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={removeProfileImage}
+                          style={{ 
+                            backgroundColor: ColorTheme.bgCard,
+                            color: ColorTheme.textPrimary
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <label className="w-full cursor-pointer">
+                        <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center h-48 transition-colors"
+                          style={{ 
+                            borderColor: ColorTheme.borderLight,
+                            color: ColorTheme.textSecondary
+                          }}
+                        >
+                          <Cloud className="h-12 w-12" style={{ color: ColorTheme.textSecondary }} />
+                          <p className="mt-2 text-sm">Upload profile image</p>
+                          <p className="mt-1 text-xs" style={{ color: ColorTheme.textMuted }}>PNG, JPG, GIF up to 10MB</p>
+                          <input
+                            type="file"
+                            id="profileImage"
+                            accept="image/*"
+                            onChange={handleProfileImageUpload}
+                            className="hidden"
+                          />
+                        </div>
+                      </label>
+                    )}
+                  </div>
+                  
+                  {!isProfileImageUploaded && !content.profileImage && (
+                    <div className="mt-2">
+                      <Label htmlFor="profileImageUrl" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Or paste image URL</Label>
+                      <Input 
+                        id="profileImageUrl" 
+                        value={content.profileImage || ""} 
+                        onChange={(e) => setContent({...content, profileImage: e.target.value})} 
+                        placeholder="Enter image URL" 
+                        className="mt-1"
+                        style={{ 
+                          backgroundColor: ColorTheme.bgCard,
+                          borderColor: ColorTheme.borderLight,
+                          color: ColorTheme.textPrimary
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
                 {contactSectionData?.sectionTitle && (
                   <div className="space-y-2">
                     <Label

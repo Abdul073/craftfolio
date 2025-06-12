@@ -10,6 +10,7 @@ import { setCurrentEdit } from "@/slices/editModeSlice";
 import { supabase } from "@/lib/supabase-client";
 import { motion } from "framer-motion";
 import EditButton from '@/components/EditButton';
+import SectionHeader from "./SectionHeader";
 
 interface Technology {
   name: string;
@@ -168,17 +169,7 @@ const Projects: React.FC = ({ currentPortTheme, customCSS }: any) => {
     >
       <style>{customCSS}</style>
       <div className="container relative mx-auto max-w-6xl px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="max-w-xl block mx-auto">
-            <h1 className="text-5xl section-title font-bold mb-4 text-center" style={{color: titleColor}}>
-              {sectionTitle}
-            </h1>
-            <p className="text-xl section-description text-gray-300 text-center mb-16">
-              {sectionDescription}
-            </p>
-            <EditButton sectionName="projects" styles="mr-20" />
-          </div>
-        </div>
+        <SectionHeader sectionName="projects" sectionTitle={sectionTitle} sectionDescription={sectionDescription} titleColor={titleColor} />
 
         {/* Add conditional rendering for projects list */}
         {Array.isArray(projectsData) && projectsData.length > 0 ? (

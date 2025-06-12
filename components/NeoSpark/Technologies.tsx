@@ -6,6 +6,7 @@ import { RootState } from "@/store/store";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase-client";
 import EditButton from '@/components/EditButton';
+import SectionHeader from "./SectionHeader";
 
 const Technologies = ({ currentPortTheme, customCSS }: any) => {
   const { portfolioData } = useSelector((state: RootState) => state.data);
@@ -79,20 +80,8 @@ const Technologies = ({ currentPortTheme, customCSS }: any) => {
   return (
   <div className={`py-8 custom-bg sm:py-12 md:py-16 text-white`}>
       <style>{customCSS}</style>
-      <div className="max-w-4xl mx-auto">
-        <div className="container block relative mx-auto">
-          <h1
-            className="text-3xl sm:text-5xl md:text-6xl section-title font-bold mb-2 sm:mb-4 text-center"
-            style={{ color: titleColor }}
-          >
-            {sectionTitle}
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl section-description text-gray-300 text-center mb-6 sm:mb-10 md:mb-16">
-            {sectionDescription}
-          </p>
-          <EditButton sectionName="technologies" />
-        </div>
-      </div>
+      <SectionHeader sectionName="technologies" sectionTitle={sectionTitle} sectionDescription={sectionDescription} titleColor={titleColor} />
+
 
       <div
         className="relative overflow-hidden px-2 sm:px-4"

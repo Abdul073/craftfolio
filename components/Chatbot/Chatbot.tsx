@@ -892,13 +892,22 @@ const PortfolioChatbot = ({
   }
 
   return (
-    <div
-      className={
-        isOpen
-          ? "fixed top-0 right-0 h-screen z-50 w-full md:w-[350px] lg:w-[400px]"
-          : ""
-      }
-    >
+    <div className={isOpen ? "fixed top-0 right-0 h-screen z-50 w-full md:w-[350px] lg:w-[400px]" : ""}>
+      {/* Mobile-only overlay: show ONLY when chatbot is open and on mobile */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 text-white text-center px-6 py-12 md:hidden">
+          <button
+            className="absolute top-4 right-4 text-white text-2xl p-2 rounded-full hover:bg-white/10 focus:outline-none"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close chatbot"
+          >
+            ×
+          </button>
+          <div className="text-2xl font-bold mb-4">Editing Unavailable on Mobile</div>
+          <div className="text-lg">Editing is only available on desktop or larger screens.<br/>Please use a laptop or desktop to edit your portfolio.</div>
+        </div>
+      )}
+      {/* Chatbot content (hidden on mobile by overlay above) */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
