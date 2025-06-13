@@ -17,6 +17,7 @@ interface ThemeCardProps {
     description: string;
     previewImageUrl: string[]; // Changed to string array
     features: string[];
+    liveUrl : string;
   };
   handleSelectTheme: (id: number) => void;
   selectedTheme: number;
@@ -93,6 +94,8 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength) + '...';
   };
+
+  console.log(theme)
 
   return (
     <motion.div 
@@ -194,7 +197,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
               scale: 1.05
             }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => router.push('/portfolio')}
+            onClick={() => window.open(`${theme.liveUrl}`, '_blank')}
           >
             <GripHorizontalIcon className="h-4 w-4" />
             Preview

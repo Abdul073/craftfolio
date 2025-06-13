@@ -90,9 +90,18 @@ const DeployModal = ({ isOpen, onClose, portfolioId, portfolioData, portfolioLin
           toast.error("Failed to verify subdomain availability");
           return;
         }
-        if (result.hasSubdomain) {
-          toast.error("You have already deployed a portfolio with a subdomain. Free users can only have one subdomain deployment.");
-          return;
+        
+        if (result.isPremium) {
+          if (result.hasSubdomain) {
+            toast.error(`You have reached the maximum limit of 10 subdomains for premium users.`);
+            return;
+          }
+          toast.success(`Premium user: ${10 - (result.currentCount || 0)} subdomains remaining.`);
+        } else {
+          if (result.hasSubdomain) {
+            toast.error("You have already deployed a portfolio with a subdomain. Free users can only have one subdomain deployment. Upgrade to premium to create up to 10 subdomains!");
+            return;
+          }
         }
       } catch (error) {
         console.error("Error checking subdomain:", error);
@@ -377,7 +386,7 @@ const DeployModal = ({ isOpen, onClose, portfolioId, portfolioData, portfolioLin
                         <div>
                           <h4 className="font-medium text-yellow-400 mb-1">Recommended Subdomain</h4>
                           <p className="text-sm" style={{ color: ColorTheme.textSecondary }}>
-                            Get a professional subdomain for your portfolio, a highly recommended option. Free users get 1 free subdomain, while premium users enjoy unlimited subdomains.
+                            Get a professional subdomain for your portfolio, a highly recommended option. Free users get 1 free subdomain, while premium users can create up to 10 subdomains.
                           </p>
                         </div>
                       </div>

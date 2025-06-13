@@ -771,7 +771,7 @@ const PortfolioChatbot = ({
     try {
       setIsGeneratingSEO(true);
       const response = await axios.post(
-        `http://localhost:3000/api/seo-settings`,
+        `/api/seo-settings`,
         { portfolioData: portfolioData }
       );
       setSeoTitle(response.data.seoTitle);

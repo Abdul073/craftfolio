@@ -493,6 +493,37 @@ export async function getIdThroughSubdomain({
 
 export async function checkUserSubdomain(userId: string) {
   try {
+    // Check if user is premium
+    const premiumUser = await prisma.premiumUser.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+
+    // Get current subdomain count
+    const subdomainCount = await prisma.portfolioLink.count({
+      where: {
+        userId: userId,
+        subdomain: {
+          not: null,
+        },
+      },
+    });
+
+    const count = subdomainCount || 0;
+    const isPremium = !!premiumUser;
+
+    // If user is premium, allow up to 10 subdomains
+    if (isPremium) {
+      return {
+        success: true,
+        hasSubdomain: count >= 10,
+        isPremium: true,
+        currentCount: count,
+      };
+    }
+
+    // For non-premium users, check if they have any subdomain
     const existingSubdomain = await prisma.portfolioLink.findFirst({
       where: {
         userId: userId,
@@ -505,6 +536,8 @@ export async function checkUserSubdomain(userId: string) {
     return {
       success: true,
       hasSubdomain: !!existingSubdomain,
+      isPremium: false,
+      currentCount: count,
     };
   } catch (error) {
     console.error("Error checking user subdomain:", error);

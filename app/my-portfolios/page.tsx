@@ -56,8 +56,13 @@ export default function MyPortfoliosPage() {
           }}
           className="flex flex-col items-center justify-center min-h-screen pt-24 w-full px-2 sm:px-4"
         >
-          <div className="w-full max-w-md p-6 rounded-xl bg-[var(--bg-card)] shadow-lg border" style={{ borderColor: "var(--border-light)" }}>
-            <h1 className="text-2xl font-bold mb-4 text-center">My Portfolios</h1>
+          <div
+            className="w-full max-w-md p-6 rounded-xl bg-[var(--bg-card)] shadow-lg border"
+            style={{ borderColor: "var(--border-light)" }}
+          >
+            <h1 className="text-2xl font-bold mb-4 text-center">
+              My Portfolios
+            </h1>
             <p className="text-sm text-gray-500 mb-6 text-center">
               Sign in to view and manage your portfolios
             </p>
@@ -87,7 +92,16 @@ export default function MyPortfoliosPage() {
     return <div className="text-red-500">{error}</div>;
   }
 
-  console.log(portfolios)
+  if (loading) {
+    const myPortfoliosMessages: LoadingMessage[] = [
+      { text: "Loading your portfolios", icon: Palette },
+      { text: "Fetching data", icon: Layout },
+      { text: "Almost there", icon: CheckCircle },
+    ];
+    return <LoadingSpinner loadingMessages={myPortfoliosMessages} />;
+  }
+
+  console.log(portfolios);
 
   return (
     <div className="main-bg-noise">
@@ -102,7 +116,9 @@ export default function MyPortfoliosPage() {
           My Portfolios
         </h1>
         {portfolios.length === 0 ? (
-          <div>No portfolios found.</div>
+          <div className="w-full max-w-md p-6 rounded-xl bg-[var(--bg-card)] shadow-lg border text-center" style={{ borderColor: "var(--border-light)" }}>
+            <p className="text-gray-500">No portfolios found. Create your first portfolio to get started!</p>
+          </div>
         ) : (
           <ul className="w-full max-w-full sm:max-w-2xl space-y-3 sm:space-y-4">
             {portfolios.map((portfolio) => (
@@ -133,16 +149,18 @@ export default function MyPortfoliosPage() {
                   {portfolio.PortfolioLink && (
                     <span className="text-green-500 text-xs sm:text-sm mt-1">
                       Deployed at:{" "}
-                      <a 
-                        href={portfolio.PortfolioLink.subdomain 
-                          ? `https://${portfolio.PortfolioLink.subdomain}.craftfolio.live`
-                          : `https://craftfolio.live/p/${portfolio.PortfolioLink.slug}`}
+                      <a
+                        href={
+                          portfolio.PortfolioLink.subdomain
+                            ? `https://${portfolio.PortfolioLink.subdomain}.craftfolio.live`
+                            : `https://craftfolio.live/p/${portfolio.PortfolioLink.slug}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline hover:text-green-600"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {portfolio.PortfolioLink.subdomain 
+                        {portfolio.PortfolioLink.subdomain
                           ? `${portfolio.PortfolioLink.subdomain}.craftfolio.live`
                           : `craftfolio.live/p/${portfolio.PortfolioLink.slug}`}
                       </a>
@@ -192,7 +210,7 @@ export default function MyPortfoliosPage() {
         isOpen={isDeployModalOpen}
         onClose={() => setIsDeployModalOpen(false)}
         portfolioId={selectedPortfolioId}
-        portfolioData={portfolios.find(p => p.id === selectedPortfolioId)}
+        portfolioData={portfolios.find((p) => p.id === selectedPortfolioId)}
       />
     </div>
   );

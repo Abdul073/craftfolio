@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { ColorTheme } from "@/lib/colorThemes";
 import { useRouter, usePathname } from "next/navigation";
+import { Github } from "lucide-react";
 
 const MainNavbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -104,6 +105,27 @@ const MainNavbar = () => {
                 {item.label}
               </motion.a>
             ))}
+
+            {/* GitHub Star Button */}
+            <motion.a
+              href="https://github.com/AdityaRai24/Craft-folio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+              style={{
+                backgroundColor: "rgba(28, 28, 30, 0.7)",
+                color: ColorTheme.textPrimary,
+                border: "1px solid rgba(75, 85, 99, 0.3)",
+              }}
+              whileHover={{
+                backgroundColor: "rgba(38, 38, 42, 0.9)",
+                scale: 1.05,
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <Github className="h-4 w-4" />
+              <span>Star on GitHub</span>
+            </motion.a>
 
             {/* Authentication Section */}
             {user ? (
@@ -231,6 +253,28 @@ const MainNavbar = () => {
                 {item.label}
               </motion.a>
             ))}
+
+            {/* GitHub Star Button for Mobile */}
+            <motion.a
+              href="https://github.com/AdityaRai24/Craft-folio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-3 mt-3 rounded-lg text-sm font-medium transition-all"
+              style={{
+                backgroundColor: "rgba(28, 28, 30, 0.7)",
+                color: ColorTheme.textPrimary,
+                border: "1px solid rgba(75, 85, 99, 0.3)",
+              }}
+              whileHover={{
+                backgroundColor: "rgba(38, 38, 42, 0.9)",
+                scale: 1.05,
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <Github className="h-4 w-4" />
+              <span>Star on GitHub</span>
+            </motion.a>
+
             {!user && pathname === "/" && (
               <div className="mt-4 flex flex-col space-y-3">
                 <motion.a
