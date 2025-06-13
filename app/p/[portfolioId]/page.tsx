@@ -29,6 +29,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { CheckCircle, Layout, Palette } from "lucide-react";
 import Head from "next/head";
 import { useUser } from "@clerk/nextjs";
+import GuestWarningModal from "@/components/GuestWarningModal";
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -56,6 +57,7 @@ const Page = () => {
   const [finalPortfolioId, setFinalPortfolioId] = useState<string>(portfolioId);
   const [portfolioNotFound, setPortfolioNotFound] = useState<boolean>(false);
   const [portfolioLink, setPortfolioLink] = useState("");
+  const [showGuestModal, setShowGuestModal] = useState(false);
 
   type TemplateType = {
     navbar: React.ComponentType;
@@ -83,24 +85,38 @@ const Page = () => {
 
         // First check if it's a UUID
         if (isUUID(portfolioId)) {
-          // For UUID-based portfolios, check if user is authenticated and is the creator
           if (!isLoaded) {
             return; // Wait for auth to load
           }
-          
-          if (!user) {
-            setPortfolioNotFound(true);
-            return;
-          }
 
-          // Get portfolio data to check ownership
+          // Fetch portfolio data to check userId
           const themeResult = await getThemeNameApi({
             portfolioId: currentPortfolioId,
           });
 
-          if (!themeResult.success || !themeResult.data || themeResult.data.userId !== user.id) {
+          if (!themeResult.success || !themeResult.data) {
             setPortfolioNotFound(true);
             return;
+          }
+
+          // If portfolio belongs to guest, only allow access if portfolioId is in sessionStorage.guestPortfolioIds
+          if (themeResult.data.userId === "guest") {
+            if (typeof window !== 'undefined') {
+              const guestIds = JSON.parse(sessionStorage.getItem('guestPortfolioIds') || '[]');
+              if (!guestIds.includes(portfolioId)) {
+                setPortfolioNotFound(true);
+                return;
+              }
+            } else {
+              setPortfolioNotFound(true);
+              return;
+            }
+          } else {
+            // For non-guest portfolios, require authentication and ownership
+            if (!user || themeResult.data.userId !== user.id) {
+              setPortfolioNotFound(true);
+              return;
+            }
           }
 
           currentPortfolioId = portfolioId;
@@ -171,6 +187,13 @@ const Page = () => {
     initializePortfolio();
   }, [portfolioId, dispatch, finalPortfolioId, isLoaded, user]);
 
+  // Show guest modal on first load if in guest mode
+  useEffect(() => {
+    if (dataLoaded && portfolioUserId === "guest") {
+      setShowGuestModal(true);
+    }
+  }, [dataLoaded, portfolioUserId]);
+
   // Don't try to access template config until we have template name
   const Template =
     dataLoaded && templateName
@@ -213,67 +236,70 @@ const Page = () => {
 
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
-      
+    <>
+      <GuestWarningModal open={showGuestModal} onClose={() => setShowGuestModal(false)} />
+      <div className="min-h-screen flex flex-col overflow-x-hidden">
+        
 
-      {hasSpotlight && (
-        <div className="absolute inset-0">
-          <Spotlight
-            className="-top-40 left-0 md:-top-80 md:left-5"
-            fill="white"
-          />
-        </div>
-      )}
-
-      {/* Responsive layout: on md+ if chat is open, add right margin to main content */}
-      <div
-        className={
-          isChatOpen
-            ? "w-full md:w-[80%] md:mr-[20%] transition-all duration-300"
-            : "w-full transition-all duration-300"
-        }
-      >
-        <motion.div
-          className={cn(" min-h-screen w-full", selectedFontClass)}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-        >
-          {NavbarComponent && (
-            <NavbarComponent
-              customCSS={customCSSState}
-              currentPortTheme={themeName}
+        {hasSpotlight && (
+          <div className="absolute inset-0">
+            <Spotlight
+              className="-top-40 left-0 md:-top-80 md:left-5"
+              fill="white"
             />
-          )}
-          <Sidebar />
+          </div>
+        )}
 
-          {allSections && allSections.length > 0 ? (
-            allSections.map((section: string) =>
-              getComponentForSection(section)
-            )
-          ) : (
-            <div className={cn("flex items-center justify-center h-screen")}>
-              <p className="text-xl">Portfolio content not found</p>
-            </div>
-          )}
-        </motion.div>
+        {/* Responsive layout: on md+ if chat is open, add right margin to main content */}
+        <div
+          className={
+            isChatOpen
+              ? "w-full md:w-[80%] md:mr-[20%] transition-all duration-300"
+              : "w-full transition-all duration-300"
+          }
+        >
+          <motion.div
+            className={cn(" min-h-screen w-full", selectedFontClass)}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {NavbarComponent && (
+              <NavbarComponent
+                customCSS={customCSSState}
+                currentPortTheme={themeName}
+              />
+            )}
+            <Sidebar />
+
+            {allSections && allSections.length > 0 ? (
+              allSections.map((section: string) =>
+                getComponentForSection(section)
+              )
+            ) : (
+              <div className={cn("flex items-center justify-center h-screen")}>
+                <p className="text-xl">Portfolio content not found</p>
+              </div>
+            )}
+          </motion.div>
+        </div>
+
+        {/* Only render Chatbot after data is loaded */}
+        {dataLoaded && (
+          <Chatbot
+            portfolioData={portfolioData}
+            themeOptions={themes}
+            setCurrentFont={(font) => dispatch(setFontName(font))}
+            setCurrentPortTheme={(theme) => dispatch(setThemeName(theme))}
+            portfolioId={finalPortfolioId}
+            currentPortTheme={themeName}
+            currentFont={fontName}
+            portfolioLink={portfolioLink}
+            onOpenChange={setIsChatOpen}
+            setCustomCSS={(css) => dispatch(setCustomCSSState(css))}
+            customCSSState={customCSSState}
+          />
+        )}
       </div>
-
-      {/* Only render Chatbot after data is loaded */}
-      {dataLoaded && (
-        <Chatbot
-          portfolioData={portfolioData}
-          themeOptions={themes}
-          setCurrentFont={(font) => dispatch(setFontName(font))}
-          setCurrentPortTheme={(theme) => dispatch(setThemeName(theme))}
-          portfolioId={finalPortfolioId}
-          currentPortTheme={themeName}
-          currentFont={fontName}
-          portfolioLink={portfolioLink}
-          onOpenChange={setIsChatOpen}
-          setCustomCSS={(css) => dispatch(setCustomCSSState(css))}
-          customCSSState={customCSSState}
-        />
-      )}
-    </div>
+    </>
   );
 };
 

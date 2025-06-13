@@ -34,18 +34,15 @@ const MainNavbar = () => {
   }, []);
 
   let navItemsToShow: { label: string; href: string }[] = [];
-  if (pathname === "/") {
+  if (user) {
     navItemsToShow = [
-      { label: "Features", href: "#features" },
+      ...(pathname === "/" ? [{ label: "Features", href: "#features" }] : []),
       { label: "Templates", href: "/choose-templates" },
-      // { label: "Testimonials", href: "#testimonials" },
       { label: "My Portfolios", href: "/my-portfolios" },
     ];
-  } else if (
-    pathname === "/choose-templates" ||
-    pathname === "/my-portfolios"
-  ) {
+  } else {
     navItemsToShow = [
+      ...(pathname === "/" ? [{ label: "Features", href: "#features" }] : []),
       { label: "Templates", href: "/choose-templates" },
       { label: "My Portfolios", href: "/my-portfolios" },
     ];
@@ -76,7 +73,7 @@ const MainNavbar = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             {navItemsToShow.map((item) => (
               <motion.a
                 key={item.href}
@@ -106,30 +103,51 @@ const MainNavbar = () => {
               </motion.a>
             ))}
 
-            {/* GitHub Star Button */}
+            {/* Upgrade Button */}
+            {user && (
+              <motion.a
+                href="/upgrade"
+                className="px-4 py-1.5 rounded-md text-base font-medium transition-all ml-2"
+                style={{
+                  background: `linear-gradient(135deg, ${ColorTheme.primary}, ${ColorTheme.primaryDark})`,
+                  color: ColorTheme.textPrimary,
+                  boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`,
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: `0 6px 20px ${ColorTheme.primaryGlow}`,
+                }}
+              >
+                Upgrade
+              </motion.a>
+            )}
+
+            {/* GitHub Star Button - styled as bordered button */}
             <motion.a
               href="https://github.com/AdityaRai24/Craft-folio"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+              className="px-4 py-1.5 rounded-md text-base font-medium transition-all ml-2 border"
               style={{
-                backgroundColor: "rgba(28, 28, 30, 0.7)",
-                color: ColorTheme.textPrimary,
-                border: "1px solid rgba(75, 85, 99, 0.3)",
+                background: "transparent",
+                color: ColorTheme.primary,
+                border: `2px solid ${ColorTheme.primary}`,
+                boxShadow: "none",
               }}
               whileHover={{
-                backgroundColor: "rgba(38, 38, 42, 0.9)",
+                background: ColorTheme.primaryGlow,
+                color: ColorTheme.textPrimary,
                 scale: 1.05,
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
               }}
             >
-              <Github className="h-4 w-4" />
-              <span>Star on GitHub</span>
+              <span className="flex items-center gap-2">
+                <Github className="h-5 w-5" /> Star on GitHub
+              </span>
             </motion.a>
 
             {/* Authentication Section */}
             {user ? (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 ml-4">
                 <motion.span
                   className="text-lg"
                   style={{ color: ColorTheme.textPrimary }}
@@ -254,26 +272,23 @@ const MainNavbar = () => {
               </motion.a>
             ))}
 
-            {/* GitHub Star Button for Mobile */}
-            <motion.a
-              href="https://github.com/AdityaRai24/Craft-folio"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-3 mt-3 rounded-lg text-sm font-medium transition-all"
-              style={{
-                backgroundColor: "rgba(28, 28, 30, 0.7)",
-                color: ColorTheme.textPrimary,
-                border: "1px solid rgba(75, 85, 99, 0.3)",
-              }}
-              whileHover={{
-                backgroundColor: "rgba(38, 38, 42, 0.9)",
-                scale: 1.05,
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <Github className="h-4 w-4" />
-              <span>Star on GitHub</span>
-            </motion.a>
+            {/* Upgrade Button */}
+            {user && (
+              <motion.a
+                href="/upgrade"
+                className="flex items-center justify-center gap-2 px-4 py-3 mt-3 rounded-lg text-sm font-medium transition-all"
+                style={{
+                  background: `linear-gradient(135deg, ${ColorTheme.primary}, ${ColorTheme.primaryDark})`,
+                  color: ColorTheme.textPrimary,
+                  boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`,
+                }}
+                whileHover={{
+                  boxShadow: `0 6px 20px ${ColorTheme.primaryGlow}`,
+                }}
+              >
+                Upgrade to Premium
+              </motion.a>
+            )}
 
             {!user && pathname === "/" && (
               <div className="mt-4 flex flex-col space-y-3">

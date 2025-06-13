@@ -40,11 +40,13 @@ jobs:
     needs: build
     runs-on: self-hosted
     steps:
+      - name: Cleanup old container and image
+        run: |
+          docker rm -f craftfolio-container || true
+          docker rmi adityarai24/craft-folio-app:latest || true
+
       - name: Pull image from docker hub
         run: docker pull adityarai24/craft-folio-app:latest
-
-      - name: Delete old container
-        run: docker rm -f craftfolio-container
 
       - name: Run docker container
         run: docker run -d -p 3000:3000 --name craftfolio-container adityarai24/craft-folio-app

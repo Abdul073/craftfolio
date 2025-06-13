@@ -80,9 +80,18 @@ const Hero: NextPage = ({ customCSS }: any) => {
       return;
     }
 
-    toast.error(
-      "No resume available. Please upload a resume in the contact section."
-    );
+    // Check if portfolio is hosted (has slug or subdomain)
+    const isHosted = portfolioData?.find(
+      (section: any) => section.type === "themes"
+    )?.data?.PortfolioLink?.slug || portfolioData?.find(
+      (section: any) => section.type === "themes"
+    )?.data?.PortfolioLink?.subdomain;
+
+    if (isHosted) {
+      toast.error("No resume available.");
+    } else {
+      toast.error("No resume available. Please upload a resume in the contact section.");
+    }
   };
 
   // if (isLoading) {

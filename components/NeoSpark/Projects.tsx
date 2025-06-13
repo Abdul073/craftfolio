@@ -165,6 +165,7 @@ const Projects: React.FC = ({ currentPortTheme, customCSS }: any) => {
   return (
     <section
       ref={sectionRef}
+      id="projects"
       className="py-24 w-full custom-bg overflow-hidden min-h-screen text-white"
     >
       <style>{customCSS}</style>

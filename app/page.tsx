@@ -256,7 +256,7 @@ export default function Page() {
                 </motion.div>
 
                 <motion.a
-                  href="#resume-import"
+                  href="#features"
                   className="px-8 py-4 rounded-lg font-medium border transition-all relative overflow-hidden backdrop-blur-sm"
                   style={{
                     color: ColorTheme.textPrimary,
@@ -761,8 +761,8 @@ export default function Page() {
         ></div>
 
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-            <div className="md:col-span-1">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
+            <div className="min-w-[220px] max-w-[340px]">
               <motion.span
                 className="text-2xl font-bold"
                 style={{
@@ -781,68 +781,59 @@ export default function Page() {
                 Build stunning portfolio websites without code. Import your
                 resume and get an instant portfolio in seconds.
               </p>
-              
             </div>
 
-            <div className="md:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-8">
-              <div>
-                <h4 className="font-semibold mb-4">Product</h4>
+            <div className="flex flex-1 justify-end">
+              <div className="min-w-[160px]">
+                <h4 className="font-semibold mb-4">Navigation</h4>
                 <ul className="space-y-2">
-                  {[
-                    "Features",
-                    "Templates",
-                    "Integration",
-                    "Pricing",
-                    "FAQ",
-                  ].map((item) => (
-                    <li key={item}>
-                      <motion.a
-                        href="#"
-                        style={{ color: ColorTheme.textSecondary }}
-                        whileHover={{ color: ColorTheme.primary }}
-                      >
-                        {item}
-                      </motion.a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold mb-4">Company</h4>
-                <ul className="space-y-2">
-                  {["About", "Blog", "Careers", "Press", "Contact"].map(
-                    (item) => (
-                      <li key={item}>
-                        <motion.a
-                          href="#"
-                          style={{ color: ColorTheme.textSecondary }}
-                          whileHover={{ color: ColorTheme.primary }}
-                        >
-                          {item}
-                        </motion.a>
-                      </li>
-                    )
-                  )}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold mb-4">Legal</h4>
-                <ul className="space-y-2">
-                  {["Terms", "Privacy", "Cookies", "Licenses", "Settings"].map(
-                    (item) => (
-                      <li key={item}>
-                        <motion.a
-                          href="#"
-                          style={{ color: ColorTheme.textSecondary }}
-                          whileHover={{ color: ColorTheme.primary }}
-                        >
-                          {item}
-                        </motion.a>
-                      </li>
-                    )
-                  )}
+                  <li>
+                    <motion.a
+                      href="#features"
+                      style={{ color: ColorTheme.textSecondary }}
+                      whileHover={{ color: ColorTheme.primary }}
+                    >
+                      Features
+                    </motion.a>
+                  </li>
+                  <li>
+                    <motion.a
+                      href="/choose-templates"
+                      style={{ color: ColorTheme.textSecondary }}
+                      whileHover={{ color: ColorTheme.primary }}
+                    >
+                      Templates
+                    </motion.a>
+                  </li>
+                  <li>
+                    <motion.a
+                      href="/my-portfolios"
+                      style={{ color: ColorTheme.textSecondary }}
+                      whileHover={{ color: ColorTheme.primary }}
+                    >
+                      My Portfolios
+                    </motion.a>
+                  </li>
+                  <li>
+                    <motion.a
+                      href="/upgrade"
+                      style={{ color: ColorTheme.textSecondary }}
+                      whileHover={{ color: ColorTheme.primary }}
+                    >
+                      Upgrade
+                    </motion.a>
+                  </li>
+                  <li>
+                    <motion.a
+                      href="https://github.com/AdityaRai24/Craft-folio"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: ColorTheme.textSecondary }}
+                      whileHover={{ color: ColorTheme.primary }}
+                    >
+                      Star on GitHub
+                    </motion.a>
+                  </li>
                 </ul>
               </div>
             </div>

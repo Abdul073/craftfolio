@@ -28,11 +28,13 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { CheckCircle, Layout, Palette } from "lucide-react";
 import Head from "next/head";
 import Sidebar from "@/app/p/Sidebar";
+import { useUser } from "@clerk/nextjs";
 
 const Page = () => {
   const dispatch = useDispatch();
   const params = useParams();
   let subdomain = params.site as string;
+  const { user, isLoaded: isUserLoaded } = useUser();
 
   const {
     portfolioData,
@@ -132,8 +134,11 @@ const Page = () => {
       }
     };
 
-    initializePortfolio();
-  }, [subdomain, dispatch]);
+    // Only initialize if user auth state is loaded
+    if (isUserLoaded) {
+      initializePortfolio();
+    }
+  }, [subdomain, dispatch, isUserLoaded]);
 
   // Don't try to access template config until we have template name
   const Template =
@@ -161,7 +166,7 @@ const Page = () => {
     return <PortfolioNotFound />;
   }
 
-  if (isLoading || !dataLoaded || !Template) {
+  if (isLoading || !dataLoaded || !Template || !isUserLoaded) {
     const portfolioMessages: any = [
       { text: "Loading the portfolio", icon: Palette },
       { text: "Fetching data", icon: Layout },
@@ -175,11 +180,8 @@ const Page = () => {
   const hasSpotlight = Template.spotlight;
   const selectedFontClass = fontClassMap[fontName] || fontClassMap["raleway"];
 
-
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
-      
-
       {hasSpotlight && (
         <div className="absolute inset-0">
           <Spotlight

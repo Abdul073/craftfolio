@@ -90,7 +90,18 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
       return;
     }
 
-    toast.error('No resume available. Please upload a resume in the contact section.');
+    // Check if portfolio is hosted (has slug or subdomain)
+    const isHosted = portfolioData?.find(
+      (section: any) => section.type === "themes"
+    )?.data?.PortfolioLink?.slug || portfolioData?.find(
+      (section: any) => section.type === "themes"
+    )?.data?.PortfolioLink?.subdomain;
+
+    if (isHosted) {
+      toast.error('No resume available.');
+    } else {
+      toast.error('No resume available. Please upload a resume in the contact section.');
+    }
   };
 
   const spring = {
@@ -159,6 +170,13 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
                 href={item.href}
                 className="cursor-pointer text-gray-400 text-lg hover:text-white transition duration-200 ease-in"
                 transition={spring}
+                onClick={e => {
+                  const section = document.getElementById(item.href.replace('#', ''));
+                  if (section) {
+                    e.preventDefault();
+                    section.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
               >
                 {item.name}
               </motion.a>
@@ -244,7 +262,14 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
                 key={item.name}
                 href={item.href}
                 className="text-gray-400 hover:text-white p-2 transition duration-200 ease-in"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={e => {
+                  const section = document.getElementById(item.href.replace('#', ''));
+                  if (section) {
+                    e.preventDefault();
+                    section.scrollIntoView({ behavior: 'smooth' });
+                  }
+                  setIsMobileMenuOpen(false);
+                }}
               >
                 {item.name}
               </a>

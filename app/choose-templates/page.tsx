@@ -104,11 +104,13 @@ const PortfolioThemePage = () => {
         );
         
         if (result.success) {
-          if (creationMethod === "import") {
-            router.push(`/p/${result?.data?.id}`);
-          } else {
-            router.push(`/p/${result?.data?.id}`);
+          const url = `/p/${result?.data?.id}`;
+          if (!isSignedIn) {
+            const guestIds = JSON.parse(sessionStorage.getItem('guestPortfolioIds') || '[]');
+            guestIds.push(result?.data?.id);
+            sessionStorage.setItem('guestPortfolioIds', JSON.stringify(guestIds));
           }
+          window.open(url, '_blank');
         } else {
           toast.error("Failed to create portfolio");
         }

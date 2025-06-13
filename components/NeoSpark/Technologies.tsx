@@ -78,7 +78,7 @@ const Technologies = ({ currentPortTheme, customCSS }: any) => {
   }
 
   return (
-  <div className={`py-8 custom-bg sm:py-12 md:py-16 text-white`}>
+  <div id="tech-stack" className={`py-8 custom-bg sm:py-12 md:py-16 text-white`}>
       <style>{customCSS}</style>
       <SectionHeader sectionName="technologies" sectionTitle={sectionTitle} sectionDescription={sectionDescription} titleColor={titleColor} />
 

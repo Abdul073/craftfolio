@@ -144,7 +144,7 @@ const Hero = ({ currentPortTheme, customCSS }: any) => {
       <style>{customCSS}</style>
       {heroData?.badge?.isVisible && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 20 }} 
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           style={{
@@ -230,6 +230,22 @@ const Hero = ({ currentPortTheme, customCSS }: any) => {
                     item.style === "outline"
                       ? `1px solid ${buttonBgColor}`
                       : "";
+                }}
+                onClick={() => {
+                  // Try to scroll to section if label matches an id
+                  const labelToIdMap: Record<string, string> = {
+                    "View Projects": "projects",
+                    "Contact Me": "contact",
+                    "About": "about",
+                    "Tech Stack": "tech-stack",
+                  };
+                  const sectionId = labelToIdMap[item.label] || item.label.toLowerCase().replace(/ /g, "-");
+                  const section = document.getElementById(sectionId);
+                  if (section) {
+                    section.scrollIntoView({ behavior: "smooth" });
+                  } else if (item.href) {
+                    window.location.href = item.href;
+                  }
                 }}
               >
                 {item.label} <ArrowRight size={18} />

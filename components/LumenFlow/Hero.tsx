@@ -30,6 +30,7 @@ import { useParams } from "next/navigation";
 import EditButton from "@/components/EditButton";
 import { motion, AnimatePresence } from "framer-motion";
 import { HeaderComponent } from "./Components";
+import { toast } from "react-hot-toast";
 
 // Helper function to convert hex to rgba
 function hexToRgba(hex: string, alpha: number): string {
@@ -445,7 +446,7 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                       </div>
                       <div className="flex-shrink-0">
                         <motion.a
-                          href={heroData?.cvUrl}
+                          href={contactData?.resumeFile || contactData?.resumeLink || undefined}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex cursor-pointer items-center space-x-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 group"
@@ -454,6 +455,22 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.5, delay: 1.1 }}
+                          onClick={(e) => {
+                            if (!contactData?.resumeFile && !contactData?.resumeLink) {
+                              e.preventDefault();
+                              // Check if portfolio is hosted (has slug or subdomain)
+                              const isHosted = portfolioData?.find(
+                                (section: any) => section.type === "themes"
+                              )?.data?.PortfolioLink?.slug || portfolioData?.find(
+                                (section: any) => section.type === "themes"
+                              )?.data?.PortfolioLink?.subdomain;
+                              if (isHosted) {
+                                toast.error("No resume available.");
+                              } else {
+                                toast.error("No resume available. Please upload a resume in the contact section.");
+                              }
+                            }
+                          }}
                         >
                           <span>Download CV</span>
                           <motion.div
