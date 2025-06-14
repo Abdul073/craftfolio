@@ -141,10 +141,8 @@ const Page = () => {
         });
         if (!themeResult.success) {
           setPortfolioNotFound(true);
-          console.log("true form theme");
           return;
         }
-        console.log(themeResult)
         if (themeResult.success) {
           setPortfolioLink(themeResult?.data?.PortfolioLink?.subdomain 
             ? `https://${themeResult?.data?.PortfolioLink?.subdomain}.craftfolio.live`
@@ -159,16 +157,13 @@ const Page = () => {
           dispatch(setFontName(themeResult?.data?.fontName || "Raleway"));
           dispatch(setCustomCSSState(themeResult?.data?.customCSS || ""));
         }
-        console.log(themeResult);
 
         // Fetch content data
         const contentResult: any = await fetchContent({
           portfolioId: currentPortfolioId,
         });
-        console.log(contentResult, themeResult);
         if (!contentResult.success) {
           setPortfolioNotFound(true);
-          console.log("true form content");
           return;
         } 
         if (contentResult.success) {

@@ -238,11 +238,11 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
           filter: `id=eq.${portfolioId}`,
         },
         (payload) => {
-          console.log("Portfolio update detected!");
+          // console.log("Portfolio update detected!");
         }
       )
       .subscribe((status) => {
-        console.log(`Supabase subscription status: ${status}`);
+        // console.log(`Supabase subscription status: ${status}`);
       });
 
     return () => {
@@ -254,7 +254,6 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
     setActiveTab(tab);
   };
 
-  console.log(contactData);
 
   const renderContent = () => {
     switch (activeTab) {

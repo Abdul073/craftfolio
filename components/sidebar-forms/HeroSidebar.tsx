@@ -52,7 +52,6 @@ const HeroSidebar = () => {
   const [originalContent, setOriginalContent] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   
-  console.log(content)
   useEffect(() => {
     if (heroData && Object.keys(heroData).length > 0) {
       setContent({

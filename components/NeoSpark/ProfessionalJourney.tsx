@@ -96,11 +96,11 @@ const ProfessionalJourney = ({ currentPortTheme, customCSS }: any) => {
           filter: `id=eq.${portfolioId}`,
         },
         (payload) => {
-          console.log("project experience detected!", payload);
+          // console.log("project experience detected!", payload);
         }
       )
       .subscribe((status) => {
-        console.log(`Supabase subscription status experience: ${status}`);
+        // console.log(`Supabase subscription status experience: ${status}`);
       });
 
     return () => {

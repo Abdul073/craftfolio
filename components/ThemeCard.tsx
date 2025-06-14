@@ -121,7 +121,6 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
     }
   };
 
-  console.log(theme)
 
   return (
     <motion.div 

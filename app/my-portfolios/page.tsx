@@ -101,7 +101,6 @@ export default function MyPortfoliosPage() {
     return <LoadingSpinner loadingMessages={myPortfoliosMessages} />;
   }
 
-  console.log(portfolios);
 
   return (
     <div className="main-bg-noise">

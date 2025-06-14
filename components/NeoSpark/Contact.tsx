@@ -29,7 +29,6 @@ const Contact = ({ currentPortTheme, customCSS }: any) => {
   const sectionDescription =
     contactSection?.sectionDescription ||
     "Interested in collaborating, hiring, or just having a chat? Reach out to me on your favorite platform!";
-  console.log(contactSection);
 
   const [isLoading, setIsLoading] = useState(true);
   const [contactData, setContactData] = useState<any>(null);
@@ -58,11 +57,11 @@ const Contact = ({ currentPortTheme, customCSS }: any) => {
           filter: `id=eq.${portfolioId}`,
         },
         (payload) => {
-          console.log("Portfolio update detected!", payload);
+          // console.log("Portfolio update detected!", payload);
         }
       )
       .subscribe((status) => {
-        console.log(`Supabase subscription status: ${status}`);
+        // console.log(`Supabase subscription status: ${status}`);
       });
 
     return () => {

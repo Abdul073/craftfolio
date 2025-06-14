@@ -76,11 +76,11 @@ const Education: React.FC<EducationProps> = ({ currentTheme }) => {
           filter: `id=eq.${portfolioId}`,
         },
         (payload) => {
-          console.log("education update detected!", payload);
+          // console.log("education update detected!", payload);
         }
       )
       .subscribe((status) => {
-        console.log(`Supabase subscription status education: ${status}`);
+        // console.log(`Supabase subscription status education: ${status}`);
       });
 
     return () => {
@@ -88,7 +88,6 @@ const Education: React.FC<EducationProps> = ({ currentTheme }) => {
     };
   }, [portfolioId]);
 
-  console.log(educationData)
 
   if (isLoading) {
     return (

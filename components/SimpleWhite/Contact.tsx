@@ -51,11 +51,11 @@ const Contact = () => {
                     filter: `id=eq.${portfolioId}`
                 },
                 (payload) => {
-                    console.log('Portfolio update detected!', payload);
+                    // console.log('Portfolio update detected!', payload);
                 }
             )
             .subscribe((status) => {
-                console.log(`Supabase subscription status: ${status}`);
+                // console.log(`Supabase subscription status: ${status}`);
             });
 
         return () => {

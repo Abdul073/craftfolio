@@ -38,7 +38,6 @@ const Navbar = ({
     id: item,
     label: item.charAt(0).toUpperCase() + item.slice(1),
   }));
-  console.log(tabs);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);

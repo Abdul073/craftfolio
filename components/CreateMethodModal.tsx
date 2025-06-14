@@ -188,9 +188,7 @@ const CreateMethodModal = ({
 
       if (response.ok) {
         const reportText = await response.text();
-        console.log(JSON.parse(reportText));
         setCustomBodyResume(reportText);
-        console.log(reportText);
 
         // Animate to 100% smoothly over 2 seconds
         clearInterval(progressInterval);

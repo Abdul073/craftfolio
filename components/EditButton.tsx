@@ -21,16 +21,6 @@ const EditButton = ({
   const { portfolioUserId } = useSelector((state: RootState) => state.data);
   const { user, isLoaded } = useUser();
 
-  // Don't render anything while Clerk is loading
-  if (!isLoaded) {
-    return null;
-  }
-
-  // Only show edit button if user is logged in and owns the portfolio
-  if (portfolioUserId !== "guest" && (!user || user.id !== portfolioUserId)) {
-    return null;
-  }
-
   const handleSectionEdit = () => {
     if (currentlyEditing === sectionName) {
       dispatch(setCurrentEdit(""));
@@ -39,14 +29,18 @@ const EditButton = ({
     }
   };
 
+  const shouldShowButton = isLoaded && (portfolioUserId === "guest" || (user && user.id === portfolioUserId));
+
   return (
     <div className={divStyles ? divStyles : "hidden md:block absolute right-24 -top-12"}>
-      <Button
-        onClick={handleSectionEdit}
-        className={`backdrop-blur bg-white/80 tracking-wider dark:bg-black/60 border border-dashed border-gray-400 dark:border-gray-600 shadow-md text-gray-900 dark:text-gray-100 hover:bg-white/90 dark:hover:bg-black/80 transition-all px-4 py-2 text-sm font-medium ${styles || ''}`}
-      >
-        {currentlyEditing === sectionName ? "Cancel" : <>✏️ Edit</>}
-      </Button>
+      {shouldShowButton && (
+        <Button
+          onClick={handleSectionEdit}
+          className={`backdrop-blur bg-white/80 tracking-wider dark:bg-black/60 border border-dashed border-gray-400 dark:border-gray-600 shadow-md text-gray-900 dark:text-gray-100 hover:bg-white/90 dark:hover:bg-black/80 transition-all px-4 py-2 text-sm font-medium ${styles || ''}`}
+        >
+          {currentlyEditing === sectionName ? "Cancel" : <>✏️ Edit</>}
+        </Button>
+      )}
     </div>
   );
 };

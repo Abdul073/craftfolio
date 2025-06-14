@@ -96,11 +96,11 @@ const Experience: React.FC = ({ customCSS }: any) => {
           filter: `id=eq.${portfolioId}` 
         }, 
         (payload) => {
-          console.log('portfolio experience updated!', payload);
+          // console.log('portfolio experience updated!', payload);
         }
       )
       .subscribe((status) => {
-        console.log(`Supabase subscription status experience: ${status}`);
+        // console.log(`Supabase subscription status experience: ${status}`);
       });
 
     return () => {

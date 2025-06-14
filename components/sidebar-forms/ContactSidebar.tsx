@@ -122,8 +122,6 @@ const ContactSidebar = () => {
     return redirect("/choose-templates");
   }
 
-  console.log(contactData);
-
   const handleSubmit = async () => {
     const originalContent = { ...content };
     const originalSectionTitle = sectionTitle;

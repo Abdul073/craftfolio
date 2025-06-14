@@ -81,11 +81,11 @@ const Projects = ({ currentTheme }: any) => {
           filter: `id=eq.${portfolioId}`,
         },
         (payload) => {
-          console.log("project update detected!", payload);
+          // console.log("project update detected!", payload);
         }
       )
       .subscribe((status) => {
-        console.log(`Supabase subscription status project: ${status}`);
+        // console.log(`Supabase subscription status project: ${status}`);
       });
 
     return () => {

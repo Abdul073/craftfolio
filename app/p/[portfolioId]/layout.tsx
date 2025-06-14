@@ -41,7 +41,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
           else if (seoSection.data.favicon.endsWith(".ico"))
             faviconType = "image/x-icon";
         }
-        console.log(seoSection.data.favicon)
         return {
           title: seoSection.data.title || "Portfolio",
           description:

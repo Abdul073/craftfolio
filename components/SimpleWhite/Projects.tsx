@@ -57,11 +57,11 @@ const Projects: NextPage = ({ customCSS }: any) => {
           filter: `id=eq.${portfolioId}` 
         }, 
         (payload) => {
-          console.log('Projects update detected!', payload);
+          // console.log('Projects update detected!', payload);
         }
       )
       .subscribe((status) => {
-        console.log(`Supabase subscription status for projects: ${status}`);
+        // console.log(`Supabase subscription status for projects: ${status}`);
       });
       
     return () => {

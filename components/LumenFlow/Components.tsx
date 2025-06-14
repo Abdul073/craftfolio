@@ -31,13 +31,16 @@ const HeaderComponent = ({
         style={{ background: "transparent!important" }}
       >
         <div className={`flex justify-between items-start`}>
-          <div className="space-y-2">
+          <div className="space-y-2 w-full">
             <motion.div
-              className="flex items-center space-x-3"
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex items-center justify-between  md:max-w-[75%] "
             >
+              <motion.div
+                className="flex items-center space-x-3"
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                >
               <motion.div
                 className="p-2 rounded-lg"
                 style={{ background: themeClasses.gradientPrimary }}
@@ -55,12 +58,12 @@ const HeaderComponent = ({
               >
                 {sectionTitle || "About me"}
               </motion.h2>
-              <div className="absolute right-24 top-16">
-                <EditButton
-                  sectionName={sectionName}
-                  styles={` ${theme === "light" ? "text-gray-700" : ""} opacity-70 top-16 hover:opacity-100 transition-opacity`}
-                />
-              </div>
+              </motion.div>
+              <EditButton
+                sectionName={sectionName}
+                divStyles="ml-auto"
+                styles={` ${theme === "light" ? "text-gray-700" : ""} opacity-70 hover:opacity-100 transition-opacity`}
+              />
             </motion.div>
             <motion.p
               className="text-base md:text-lg leading-relaxed max-w-4xl"

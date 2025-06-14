@@ -189,7 +189,6 @@ const page = () => {
                   onClick={() => {
                     if (!plan.isCurrent && plan.title !== "Premium") {
                       // Handle upgrade logic here
-                      console.log("Upgrade clicked");
                     }
                   }}
                 >

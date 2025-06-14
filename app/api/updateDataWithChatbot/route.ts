@@ -343,7 +343,6 @@ export async function POST(req: NextRequest) {
       userReply: userResponse,
     });
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       {
         error: "An error occurred during portfolio customization",

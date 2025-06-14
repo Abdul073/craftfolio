@@ -61,11 +61,11 @@ const Technologies: React.FC<TechnologiesProps> = ({ currentTheme }) => {
           filter: `id=eq.${portfolioId}`,
         },
         (payload) => {
-          console.log("technologies update detected!", payload);
+          // console.log("technologies update detected!", payload);
         }
       )
       .subscribe((status) => {
-        console.log(`Supabase subscription status technologies: ${status}`);
+        // console.log(`Supabase subscription status technologies: ${status}`);
       });
 
     return () => {

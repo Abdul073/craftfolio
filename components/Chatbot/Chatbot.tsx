@@ -308,7 +308,6 @@ const PortfolioChatbot = ({
         inputValue,
         messageMemory: messageMemory.slice(-3),
       });
-      console.log(response.data);
       return response.data;
     } catch (error) {
       console.log(error);
@@ -795,7 +794,6 @@ const PortfolioChatbot = ({
   };
 
   const handleDeployClick = () => {
-    console.log(portfolioUserId);
     if (!user) {
       toast.error("Please sign up to save and deploy your portfolio", {
         duration: 2500,

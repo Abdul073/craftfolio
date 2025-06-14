@@ -21,7 +21,7 @@ const GuestWarningModal: React.FC<GuestWarningModalProps> = ({ open, onClose }) 
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="!max-w-md">
         <DialogHeader>
           <DialogTitle>You are in Guest Mode</DialogTitle>
           <DialogDescription>

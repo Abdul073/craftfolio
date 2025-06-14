@@ -5,7 +5,6 @@ import React from 'react';
 const ProfilePage = () => {
   const router = useRouter();
   const { username } = useParams(); // Capture subdomain as username
-  console.log(username)
   if (!username) {
     // Optionally show a loading state if username is undefined
     return <div>Loading...</div>;
