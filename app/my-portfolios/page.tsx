@@ -167,7 +167,22 @@ export default function MyPortfoliosPage() {
                     </span>
                   )}
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 flex items-center gap-2">
+                  <motion.button
+                    onClick={() => window.open(`/p/${portfolio.id}`, '_blank', 'noopener,noreferrer')}
+                    className="px-4 py-2 rounded-lg cursor-pointer text-sm font-medium flex items-center gap-2"
+                    style={{
+                      backgroundColor: "var(--bg-card)",
+                      color: "var(--text-primary)",
+                      border: "1px solid var(--border-light)",
+                    }}
+                    whileHover={{
+                      backgroundColor: "var(--bg-hover)",
+                    }}
+                  >
+                    <Layout className="h-4 w-4" />
+                    Edit
+                  </motion.button>
                   {portfolio.PortfolioLink ? (
                     <motion.div
                       className="px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"

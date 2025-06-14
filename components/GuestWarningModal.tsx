@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { SignInButton } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
 
 interface GuestWarningModalProps {
   open: boolean;
@@ -9,6 +10,15 @@ interface GuestWarningModalProps {
 }
 
 const GuestWarningModal: React.FC<GuestWarningModalProps> = ({ open, onClose }) => {
+  const pathname = usePathname();
+  const { isSignedIn } = useUser();
+
+  React.useEffect(() => {
+    if (isSignedIn) {
+      onClose();
+    }
+  }, [isSignedIn, onClose]);
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
@@ -19,7 +29,11 @@ const GuestWarningModal: React.FC<GuestWarningModalProps> = ({ open, onClose }) 
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 mt-4 flex-col sm:flex-row sm:justify-end">
-          <SignInButton mode="modal">
+          <SignInButton 
+            mode="modal"
+            fallbackRedirectUrl={pathname}
+            signUpFallbackRedirectUrl={pathname}
+          >
             <Button className="w-full sm:w-auto" variant="default">
               Log In / Sign Up
             </Button>

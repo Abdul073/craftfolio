@@ -27,8 +27,8 @@ const page = () => {
     },
     {
       title: "Premium",
-      price: "₹99",
-      description: "One-time payment for unlimited access",
+      price: "Coming Soon",
+      description: "Premium features launching soon",
       features: [
         "Up to 10 Subdomain Deployments",
         "All Premium Templates",
@@ -39,7 +39,7 @@ const page = () => {
         "Early Access to New Features",
         "Dedicated Support Channel",
       ],
-      buttonText: "Upgrade Now",
+      buttonText: "Coming Soon",
       isPopular: true,
       isCurrent: false,
     },
@@ -169,25 +169,25 @@ const page = () => {
 
                 <motion.button
                   className={`w-full py-3 rounded-lg font-medium transition-all ${
-                    plan.isCurrent
+                    plan.isCurrent || plan.title === "Premium"
                       ? "opacity-50 cursor-not-allowed"
                       : "hover:scale-105"
                   }`}
                   style={{
-                    background: plan.isCurrent
+                    background: plan.isCurrent || plan.title === "Premium"
                       ? ColorTheme.bgCardHover
                       : `linear-gradient(135deg, ${ColorTheme.primary}, ${ColorTheme.primaryDark})`,
                     color: ColorTheme.textPrimary,
                   }}
                   whileHover={
-                    !plan.isCurrent
+                    !plan.isCurrent && plan.title !== "Premium"
                       ? {
                           boxShadow: `0 8px 25px ${ColorTheme.primaryGlow}, 0 0 30px ${ColorTheme.primaryGlow}30`,
                         }
                       : {}
                   }
                   onClick={() => {
-                    if (!plan.isCurrent) {
+                    if (!plan.isCurrent && plan.title !== "Premium") {
                       // Handle upgrade logic here
                       console.log("Upgrade clicked");
                     }

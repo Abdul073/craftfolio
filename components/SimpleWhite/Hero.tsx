@@ -103,13 +103,11 @@ const Hero: NextPage = ({ customCSS }: any) => {
   // }
 
   return (
-    <div id="about" className="min-h-screen relative bg-white simple-white">
+    <div id="about" className=" relative bg-white simple-white pt-12 sm:pt-16 md:pt-20">
       <style>{customCSS}</style>
-
-      <Navbar />
-
-      <div className="flex justify-center items-end min-h-screen">
-        <div className="max-w-[95%] sm:max-w-[90%] lg:max-w-[90%] xl:max-w-[85%] 2xl:max-w-[80%] mx-auto px-4 pb-4 sm:pb-8 lg:pb-0 sm:px-6 lg:px-8">
+      {/* <Navbar /> */}
+      <div className="flex h-full pt-24 justify-center items-end mb-24">
+        <div className="max-w-[95%] !mt-12 md:mt-0 sm:max-w-[90%] lg:max-w-[90%] xl:max-w-[85%] 2xl:max-w-[80%] mx-auto px-4 pb-4 sm:pb-8 lg:pb-0 sm:px-6 lg:px-8">
           <main className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-4 xl:gap-8">
             {/* Left Column - Main Info */}
             <div className="lg:col-span-2 relative order-1 lg:order-1">

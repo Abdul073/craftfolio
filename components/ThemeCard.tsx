@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import Slider from "react-slick";
 import { ColorTheme } from '@/lib/colorThemes';
 import { CheckCircle, GripHorizontalIcon, MousePointer2, ChevronLeft, ChevronRight, ChevronDown, Star, Sparkles, Palette, Zap } from 'lucide-react';
 import { fadeInScale } from '@/lib/animations';
 import { useRouter } from 'next/navigation';
+import CardImageModal from './CardImageModal';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -53,10 +54,28 @@ const NextArrow: React.FC<{ className?: string; style?: React.CSSProperties; onC
 
 const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selectedTheme, isExpanded, handleCardClick }) => {
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
   
   // State to track current slide index
   const [currentSlide, setCurrentSlide] = useState<number>(0);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // 768px is typical md breakpoint
+    };
+
+    // Initial check
+    checkMobile();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkMobile);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Use the actual preview images from the theme object
   // If previewImageUrl is empty, provide a fallback
   const previewImages = theme.previewImageUrl.length > 0 
@@ -93,6 +112,13 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
   const truncateDescription = (text: string, maxLength: number = 100) => {
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength) + '...';
+  };
+
+  const handleImageClick = (index: number) => {
+    if (!isMobile) {
+      setSelectedImageIndex(index);
+      setIsImageModalOpen(true);
+    }
   };
 
   console.log(theme)
@@ -155,7 +181,8 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
               <img
                 src={image}
                 alt={`${theme.name} theme preview ${index + 1}`}
-                className="w-full h-full object-contain bg-black/5"
+                className={`w-full h-full object-contain bg-black/5 ${!isMobile ? 'cursor-pointer' : ''}`}
+                onClick={() => handleImageClick(index)}
               />
             </div>
           ))}
@@ -266,6 +293,17 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme, handleSelectTheme, selecte
           </motion.div>
         )}
       </div>
+
+      {/* Image Modal - Only render if not mobile */}
+      {!isMobile && (
+        <CardImageModal
+          isOpen={isImageModalOpen}
+          onClose={() => setIsImageModalOpen(false)}
+          images={previewImages}
+          theme={theme}
+          initialIndex={selectedImageIndex}
+        />
+      )}
 
       {/* Add this CSS for styling the line indicators */}
       <style jsx global>{`
