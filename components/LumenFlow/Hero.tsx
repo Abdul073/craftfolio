@@ -15,7 +15,6 @@ import Projects from "./Projects";
 import Navbar from "./Navbar";
 import Technologies from "./Technologies";
 import Experience from "./Experience";
-import Contact from "./Contact";
 import Education from "./Education";
 import { useEffect, useState } from "react";
 import {
@@ -82,59 +81,60 @@ const MobileProfileCard = ({
             </div>
           </div>
 
-          {/* Social Links - show all, wrap if needed */}
-          {contactData?.socialLinks && contactData.socialLinks.length > 0 && (
-            <div className="flex flex-wrap items-center justify-end gap-2 max-w-[60%]">
-              {contactData.socialLinks.map((link: any, idx: number) => {
-                let iconName =
-                  link.type || Object.keys(link)[1] || Object.keys(link)[0];
-                let linkValue =
-                  link.url || Object.values(link)[1] || Object.values(link)[0];
-                let href =
-                  iconName === "email" ? `mailto:${linkValue}` : linkValue;
-                let IconComponent;
-                switch (iconName.toLowerCase()) {
-                  case "github":
-                    IconComponent = Github;
-                    break;
-                  case "twitter":
-                    IconComponent = Twitter;
-                    break;
-                  case "linkedin":
-                    IconComponent = Linkedin;
-                    break;
-                  case "email":
-                    IconComponent = Mail;
-                    break;
-                  case "location":
-                    IconComponent = MapPin;
-                    break;
-                  case "website":
-                  case "portfolio":
-                  case "link":
-                    IconComponent = Link;
-                    break;
-                  default:
-                    IconComponent = Link;
-                }
-                return (
-                  <a
-                    key={idx}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`rounded-full p-2 transition-all duration-200 hover:scale-110 ${
-                      theme === "light"
-                        ? "bg-gray-50 hover:bg-orange-50 text-gray-700 hover:text-orange-600"
-                        : "bg-gray-800/80 hover:bg-orange-500/20 text-gray-300 hover:text-orange-400"
-                    }`}
-                  >
-                    <IconComponent size={16} />
-                  </a>
-                );
-              })}
-            </div>
-          )}
+          {/* Contact Info */}
+          <div className="flex flex-wrap items-center justify-end gap-2 max-w-[60%]">
+            {contactData?.github && (
+              <a
+                href={contactData.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`rounded-full p-2 transition-all duration-200 hover:scale-110 ${
+                  theme === "light"
+                    ? "bg-gray-50 hover:bg-orange-50 text-gray-700 hover:text-orange-600"
+                    : "bg-gray-800/80 hover:bg-orange-500/20 text-gray-300 hover:text-orange-400"
+                }`}
+              >
+                <Github size={16} />
+              </a>
+            )}
+            {contactData?.linkedin && (
+              <a
+                href={contactData.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`rounded-full p-2 transition-all duration-200 hover:scale-110 ${
+                  theme === "light"
+                    ? "bg-gray-50 hover:bg-orange-50 text-gray-700 hover:text-orange-600"
+                    : "bg-gray-800/80 hover:bg-orange-500/20 text-gray-300 hover:text-orange-400"
+                }`}
+              >
+                <Linkedin size={16} />
+              </a>
+            )}
+            {contactData?.email && (
+              <a
+                href={`mailto:${contactData.email}`}
+                className={`rounded-full p-2 transition-all duration-200 hover:scale-110 ${
+                  theme === "light"
+                    ? "bg-gray-50 hover:bg-orange-50 text-gray-700 hover:text-orange-600"
+                    : "bg-gray-800/80 hover:bg-orange-500/20 text-gray-300 hover:text-orange-400"
+                }`}
+              >
+                <Mail size={16} />
+              </a>
+            )}
+            {contactData?.location && (
+              <div
+                className={`rounded-full p-2 ${
+                  theme === "light"
+                    ? "bg-gray-50 text-gray-700"
+                    : "bg-gray-800/80 text-gray-300"
+                }`}
+              >
+                <MapPin size={16} />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Profile Information */}
@@ -265,8 +265,6 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
         return <Education currentTheme={currentTheme} />;
       case "technologies":
         return <Technologies currentTheme={currentTheme} />;
-      case "links":
-        return <Contact currentTheme={currentTheme} />;
       case "home":
       default:
         return (
@@ -445,7 +443,7 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                       </div>
                       <div className="flex-shrink-0">
                         <motion.a
-                          href={contactData?.resumeFile || contactData?.resumeLink || undefined}
+                          href={contactData?.resumeLink || contactData?.resumeLink || undefined}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex cursor-pointer items-center space-x-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 group"
@@ -455,7 +453,7 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ duration: 0.5, delay: 1.1 }}
                           onClick={(e) => {
-                            if (!contactData?.resumeFile && !contactData?.resumeLink) {
+                            if (!contactData?.resumeLink && !contactData?.resumeLink) {
                               e.preventDefault();
                               // Check if portfolio is hosted (has slug or subdomain)
                               const isHosted = portfolioData?.find(
@@ -695,120 +693,85 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.6, delay: 0.8 }}
                 >
-                  {contactData?.socialLinks?.map((link: any, index: number) => {
-                    let iconName;
-                    let linkValue;
-                    let linkLink;
-
-                    if (link.type && link.url) {
-                      iconName = link.type;
-                      linkValue = link.url;
-                      linkLink = link.url;
-                    } else {
-                      const [key, val] = Object.entries(link)[1];
-                      const [key2, val2] = Object.entries(link)[0];
-                      iconName = key;
-                      linkValue = val;
-                      linkLink = val2;
-                    }
-
-                    let IconComponent;
-                    let color = "text-gray-400 hover:text-blue-400";
-
-                    // console.log(iconName,linkValue,linkLink)
-                    // Map icon names to their components
-                    switch (iconName.toLowerCase()) {
-                      case "github":
-                        IconComponent = Github;
-                        color = "text-gray-400 hover:text-white";
-                        break;
-                      case "twitter":
-                        IconComponent = Twitter;
-                        color = "text-gray-400 hover:text-blue-400";
-                        break;
-                      case "linkedin":
-                        IconComponent = Linkedin;
-                        color = "text-gray-400 hover:text-blue-500";
-                        break;
-                      case "email":
-                        IconComponent = Mail;
-                        color = "text-gray-400 hover:text-blue-400";
-                        break;
-                      case "location":
-                        IconComponent = MapPin;
-                        color = "text-gray-400 hover:text-gray-300";
-                        break;
-                      default:
-                        IconComponent = Link; // fallback icon
-                    }
-
-                    const href =
-                      iconName === "email"
-                        ? `mailto:${linkLink}`
-                        : iconName === "location"
-                        ? undefined
-                        : linkLink;
-
-                    return (
-                      <motion.a
-                        key={index}
-                        href={href}
-                        target={href ? "_blank" : undefined}
-                        rel={href ? "noopener noreferrer" : undefined}
-                        className={`group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg ${
+                  {/* GitHub */}
+                  {contactData?.github && (
+                    <motion.a
+                      href={contactData.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg ${
+                        theme === "light"
+                          ? "bg-white/60 backdrop-blur-sm border-gray-200/60 hover:bg-white/80 hover:shadow-orange-100/50"
+                          : "backdrop-blur-sm"
+                      }`}
+                      style={{
+                        borderColor:
                           theme === "light"
-                            ? "bg-white/60 backdrop-blur-sm border-gray-200/60 hover:bg-white/80 hover:shadow-orange-100/50"
-                            : "backdrop-blur-sm"
+                            ? undefined
+                            : theme === "dark"
+                            ? "rgba(255,255,255,0.1)"
+                            : "rgba(0,0,0,0.15)",
+                        backgroundColor:
+                          theme === "light"
+                            ? undefined
+                            : theme === "dark"
+                            ? "rgba(0,0,0,0.2)"
+                            : "rgba(255,255,255,0.5)",
+                      }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.9 }}
+                      whileHover={{ scale: 1.02, x: 5 }}
+                    >
+                      <motion.div
+                        className={`p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300 ${
+                          theme === "light"
+                            ? "bg-gradient-to-br from-orange-50 to-orange-100"
+                            : ""
                         }`}
                         style={{
-                          borderColor:
+                          background:
                             theme === "light"
                               ? undefined
-                              : theme === "dark"
-                              ? "rgba(255,255,255,0.1)"
-                              : "rgba(0,0,0,0.15)",
-                          backgroundColor:
-                            theme === "light"
-                              ? undefined
-                              : theme === "dark"
-                              ? "rgba(0,0,0,0.2)"
-                              : "rgba(255,255,255,0.5)",
+                              : themeClasses.gradientHover,
                         }}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: 0.9 + index * 0.1 }}
-                        whileHover={{ scale: 1.02, x: 5 }}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
                       >
-                        <motion.div
-                          className={`p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300 ${
-                            theme === "light"
-                              ? "bg-gradient-to-br from-orange-50 to-orange-100"
-                              : ""
+                        <Github
+                          size={16}
+                          className={`group-hover:scale-110 transition-transform ${
+                            theme === "light" ? "text-orange-600" : ""
                           }`}
                           style={{
-                            background:
+                            color:
                               theme === "light"
                                 ? undefined
-                                : themeClasses.gradientHover,
+                                : themeClasses.textPrimary,
                           }}
-                          whileHover={{ scale: 1.1, rotate: 5 }}
-                        >
-                          <IconComponent
-                            size={16}
-                            className={`group-hover:scale-110 transition-transform ${
-                              theme === "light" ? "text-orange-600" : ""
-                            }`}
-                            style={{
-                              color:
-                                theme === "light"
-                                  ? undefined
-                                  : themeClasses.textPrimary,
-                            }}
-                          />
-                        </motion.div>
-                        <span
-                          className={`font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1 ${
-                            theme === "light" ? "text-gray-700" : ""
+                        />
+                      </motion.div>
+                      <span
+                        className={`font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1 ${
+                          theme === "light" ? "text-gray-700" : ""
+                        }`}
+                        style={{
+                          color:
+                            theme === "light"
+                              ? undefined
+                              : themeClasses.textSecondary,
+                        }}
+                      >
+                        GitHub
+                      </span>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 1 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ExternalLink
+                          size={12}
+                          className={`opacity-0 group-hover:opacity-100 transition-opacity ${
+                            theme === "light" ? "text-gray-500" : ""
                           }`}
                           style={{
                             color:
@@ -816,32 +779,240 @@ const HeroContent = ({ currentPortTheme, customCSS }: any) => {
                                 ? undefined
                                 : themeClasses.textSecondary,
                           }}
-                        >
-                          {linkValue}
-                        </span>
-                        {href && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            whileHover={{ opacity: 1 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <ExternalLink
-                              size={12}
-                              className={`opacity-0 group-hover:opacity-100 transition-opacity ${
-                                theme === "light" ? "text-gray-500" : ""
-                              }`}
-                              style={{
-                                color:
-                                  theme === "light"
-                                    ? undefined
-                                    : themeClasses.textSecondary,
-                              }}
-                            />
-                          </motion.div>
-                        )}
-                      </motion.a>
-                    );
-                  })}
+                        />
+                      </motion.div>
+                    </motion.a>
+                  )}
+
+                  {/* LinkedIn */}
+                  {contactData?.linkedin && (
+                    <motion.a
+                      href={contactData.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg ${
+                        theme === "light"
+                          ? "bg-white/60 backdrop-blur-sm border-gray-200/60 hover:bg-white/80 hover:shadow-orange-100/50"
+                          : "backdrop-blur-sm"
+                      }`}
+                      style={{
+                        borderColor:
+                          theme === "light"
+                            ? undefined
+                            : theme === "dark"
+                            ? "rgba(255,255,255,0.1)"
+                            : "rgba(0,0,0,0.15)",
+                        backgroundColor:
+                          theme === "light"
+                            ? undefined
+                            : theme === "dark"
+                            ? "rgba(0,0,0,0.2)"
+                            : "rgba(255,255,255,0.5)",
+                      }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 1.0 }}
+                      whileHover={{ scale: 1.02, x: 5 }}
+                    >
+                      <motion.div
+                        className={`p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300 ${
+                          theme === "light"
+                            ? "bg-gradient-to-br from-orange-50 to-orange-100"
+                            : ""
+                        }`}
+                        style={{
+                          background:
+                            theme === "light"
+                              ? undefined
+                              : themeClasses.gradientHover,
+                        }}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                      >
+                        <Linkedin
+                          size={16}
+                          className={`group-hover:scale-110 transition-transform ${
+                            theme === "light" ? "text-orange-600" : ""
+                          }`}
+                          style={{
+                            color:
+                              theme === "light"
+                                ? undefined
+                                : themeClasses.textPrimary,
+                          }}
+                        />
+                      </motion.div>
+                      <span
+                        className={`font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1 ${
+                          theme === "light" ? "text-gray-700" : ""
+                        }`}
+                        style={{
+                          color:
+                            theme === "light"
+                              ? undefined
+                              : themeClasses.textSecondary,
+                        }}
+                      >
+                        LinkedIn
+                      </span>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 1 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ExternalLink
+                          size={12}
+                          className={`opacity-0 group-hover:opacity-100 transition-opacity ${
+                            theme === "light" ? "text-gray-500" : ""
+                          }`}
+                          style={{
+                            color:
+                              theme === "light"
+                                ? undefined
+                                : themeClasses.textSecondary,
+                          }}
+                        />
+                      </motion.div>
+                    </motion.a>
+                  )}
+
+                  {/* Email */}
+                  {contactData?.email && (
+                    <motion.a
+                      href={`mailto:${contactData.email}`}
+                      className={`group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border hover:shadow-lg ${
+                        theme === "light"
+                          ? "bg-white/60 backdrop-blur-sm border-gray-200/60 hover:bg-white/80 hover:shadow-orange-100/50"
+                          : "backdrop-blur-sm"
+                      }`}
+                      style={{
+                        borderColor:
+                          theme === "light"
+                            ? undefined
+                            : theme === "dark"
+                            ? "rgba(255,255,255,0.1)"
+                            : "rgba(0,0,0,0.15)",
+                        backgroundColor:
+                          theme === "light"
+                            ? undefined
+                            : theme === "dark"
+                            ? "rgba(0,0,0,0.2)"
+                            : "rgba(255,255,255,0.5)",
+                      }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 1.1 }}
+                      whileHover={{ scale: 1.02, x: 5 }}
+                    >
+                      <motion.div
+                        className={`p-1.5 rounded-lg group-hover:from-orange-400/20 group-hover:to-purple-600/20 transition-all duration-300 ${
+                          theme === "light"
+                            ? "bg-gradient-to-br from-orange-50 to-orange-100"
+                            : ""
+                        }`}
+                        style={{
+                          background:
+                            theme === "light"
+                              ? undefined
+                              : themeClasses.gradientHover,
+                        }}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                      >
+                        <Mail
+                          size={16}
+                          className={`group-hover:scale-110 transition-transform ${
+                            theme === "light" ? "text-orange-600" : ""
+                          }`}
+                          style={{
+                            color:
+                              theme === "light"
+                                ? undefined
+                                : themeClasses.textPrimary,
+                          }}
+                        />
+                      </motion.div>
+                      <span
+                        className={`font-medium group-hover:translate-x-1 transition-transform overflow-hidden whitespace-nowrap text-ellipsis flex-1 ${
+                          theme === "light" ? "text-gray-700" : ""
+                        }`}
+                        style={{
+                          color:
+                            theme === "light"
+                              ? undefined
+                              : themeClasses.textSecondary,
+                        }}
+                      >
+                        {contactData.email}
+                      </span>
+                    </motion.a>
+                  )}
+
+                  {/* Location */}
+                  {contactData?.location && (
+                    <motion.div
+                      className={`group flex items-center space-x-3 text-sm transition-all duration-300 p-3 rounded-xl border ${
+                        theme === "light"
+                          ? "bg-white/60 backdrop-blur-sm border-gray-200/60"
+                          : "backdrop-blur-sm"
+                      }`}
+                      style={{
+                        borderColor:
+                          theme === "light"
+                            ? undefined
+                            : theme === "dark"
+                            ? "rgba(255,255,255,0.1)"
+                            : "rgba(0,0,0,0.15)",
+                        backgroundColor:
+                          theme === "light"
+                            ? undefined
+                            : theme === "dark"
+                            ? "rgba(0,0,0,0.2)"
+                            : "rgba(255,255,255,0.5)",
+                      }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 1.2 }}
+                    >
+                      <motion.div
+                        className={`p-1.5 rounded-lg ${
+                          theme === "light"
+                            ? "bg-gradient-to-br from-orange-50 to-orange-100"
+                            : ""
+                        }`}
+                        style={{
+                          background:
+                            theme === "light"
+                              ? undefined
+                              : themeClasses.gradientHover,
+                        }}
+                      >
+                        <MapPin
+                          size={16}
+                          className={`${
+                            theme === "light" ? "text-orange-600" : ""
+                          }`}
+                          style={{
+                            color:
+                              theme === "light"
+                                ? undefined
+                                : themeClasses.textPrimary,
+                          }}
+                        />
+                      </motion.div>
+                      <span
+                        className={`font-medium overflow-hidden whitespace-nowrap text-ellipsis flex-1 ${
+                          theme === "light" ? "text-gray-700" : ""
+                        }`}
+                        style={{
+                          color:
+                            theme === "light"
+                              ? undefined
+                              : themeClasses.textSecondary,
+                        }}
+                      >
+                        {contactData.location}
+                      </span>
+                    </motion.div>
+                  )}
                 </motion.div>
 
                 <div className="absolute -right-24 top-8">

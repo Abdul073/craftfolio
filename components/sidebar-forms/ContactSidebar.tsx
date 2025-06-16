@@ -22,9 +22,16 @@ import { Cloud, X, Plus } from "lucide-react";
 import { ColorTheme } from "@/lib/colorThemes";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 
-interface SocialLink {
-  href: string;
-  [key: string]: string;
+interface ContentType {
+  github: string;
+  linkedin: string;
+  resumeLink: string;
+  shortSummary: string;
+  name: string;
+  title: string;
+  email: string;
+  location: string;
+  profileImage?: string;
 }
 
 const ContactSidebar = () => {
@@ -44,64 +51,48 @@ const ContactSidebar = () => {
   );
   const [hasHeaderChanges, setHasHeaderChanges] = useState(false);
 
-  const emptyContent = {
-    socialLinks: [] as SocialLink[],
+  console.log(portfolioData)
+
+  const emptyContent: ContentType = {
+    github: "",
+    linkedin: "",
     resumeLink: "",
     shortSummary: "",
-    resumeFile: "",
     name: "",
     title: "",
-    profileImage: "",
+    email: "",
+    location: "",
   };
 
-  const [content, setContent] = useState(emptyContent);
+  const [content, setContent] = useState<ContentType>(emptyContent);
   const [isLoading, setIsLoading] = useState(false);
   const [originalContent, setOriginalContent] = useState({});
   const [isUploaded, setIsUploaded] = useState(false);
   const [isProfileImageUploaded, setIsProfileImageUploaded] = useState(false);
+  console.log(content,contactData)
 
   useEffect(() => {
     if (contactData && Object.keys(contactData).length > 0) {
-      const initialSocialLinks: SocialLink[] = [];
-
-      if (contactData.email) {
-        initialSocialLinks.push({
-          href: `mailto:${contactData.email}`,
-          email: contactData.email,
-        });
-      }
-      if (contactData.linkedin) {
-        initialSocialLinks.push({
-          href: contactData.linkedin,
-          linkedin: "LinkedIn",
-        });
-      }
-      if (contactData.github) {
-        initialSocialLinks.push({ href: contactData.github, github: "GitHub" });
-      }
-      if (contactData.location) {
-        initialSocialLinks.push({
-          href: contactData.location,
-          location: contactData.location,
-        });
-      }
-
-      // Add any other social links that might be in the socialLinks array directly
-      if (contactData.socialLinks && Array.isArray(contactData.socialLinks)) {
-        initialSocialLinks.push(...contactData.socialLinks);
-      }
-
-      setContent({
-        socialLinks: initialSocialLinks,
+      // Create base content without profileImage
+      const baseContent = {
+        github: contactData.github || "",
+        linkedin: contactData.linkedin || "",
         resumeLink: contactData.resumeLink || "",
         shortSummary: contactData.shortSummary || "",
-        resumeFile: contactData.resumeFile || "",
         name: contactData.name || "",
         title: contactData.title || "",
-        profileImage: contactData.profileImage || "",
-      });
+        email: contactData.email || "",
+        location: contactData.location || "",
+      };
+
+      // Only add profileImage if it exists in contactData
+      const finalContent = contactData.profileImage 
+        ? { ...baseContent, profileImage: contactData.profileImage }
+        : baseContent;
+
+      setContent(finalContent);
       setOriginalContent(contactData);
-      setIsUploaded(!!contactData.resumeFile);
+      setIsUploaded(!!contactData.resumeLink);
       setIsProfileImageUploaded(!!contactData.profileImage);
     } else {
       setContent(emptyContent);
@@ -202,7 +193,7 @@ const ContactSidebar = () => {
       }
 
       const data = await response.json();
-      setContent({ ...content, resumeFile: data.secure_url });
+      setContent({ ...content, resumeLink: data.secure_url });
       setIsUploaded(true);
       toast.success("Resume uploaded successfully!", { id: "resumeUpload" });
     } catch (error) {
@@ -212,7 +203,7 @@ const ContactSidebar = () => {
   };
 
   const removeResume = () => {
-    setContent({ ...content, resumeFile: "" });
+    setContent({ ...content, resumeLink: "" });
     setIsUploaded(false);
   };
 
@@ -262,28 +253,6 @@ const ContactSidebar = () => {
         "Failed to update section header. Changes have been reverted."
       );
     }
-  };
-
-  const addSocialLink = () => {
-    setContent({
-      ...content,
-      socialLinks: [...content.socialLinks, { href: "", type: "" }],
-    });
-  };
-
-  const updateSocialLink = (index: number, field: string, value: string) => {
-    const newSocialLinks = [...content.socialLinks];
-    newSocialLinks[index] = {
-      ...newSocialLinks[index],
-      [field]: value,
-      href: field === "href" ? value : newSocialLinks[index].href,
-    };
-    setContent({ ...content, socialLinks: newSocialLinks });
-  };
-
-  const removeSocialLink = (index: number) => {
-    const newSocialLinks = content.socialLinks.filter((_, i) => i !== index);
-    setContent({ ...content, socialLinks: newSocialLinks });
   };
 
   const handleProfileImageUpload = async(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -412,11 +381,10 @@ const ContactSidebar = () => {
                 </div>
 
                 {/* Profile Image Field */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Profile Image</Label>
-                  
-                  <div className="mt-1 flex flex-col items-center">
-                    {content.profileImage ? (
+                {content.profileImage && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Profile Image</Label>
+                    <div className="mt-1 flex flex-col items-center">
                       <div className="relative w-full">
                         <img 
                           src={content.profileImage} 
@@ -436,47 +404,9 @@ const ContactSidebar = () => {
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
-                    ) : (
-                      <label className="w-full cursor-pointer">
-                        <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center h-48 transition-colors"
-                          style={{ 
-                            borderColor: ColorTheme.borderLight,
-                            color: ColorTheme.textSecondary
-                          }}
-                        >
-                          <Cloud className="h-12 w-12" style={{ color: ColorTheme.textSecondary }} />
-                          <p className="mt-2 text-sm">Upload profile image</p>
-                          <p className="mt-1 text-xs" style={{ color: ColorTheme.textMuted }}>PNG, JPG, GIF up to 10MB</p>
-                          <input
-                            type="file"
-                            id="profileImage"
-                            accept="image/*"
-                            onChange={handleProfileImageUpload}
-                            className="hidden"
-                          />
-                        </div>
-                      </label>
-                    )}
-                  </div>
-                  
-                  {!isProfileImageUploaded && !content.profileImage && (
-                    <div className="mt-2">
-                      <Label htmlFor="profileImageUrl" className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Or paste image URL</Label>
-                      <Input 
-                        id="profileImageUrl" 
-                        value={content.profileImage || ""} 
-                        onChange={(e) => setContent({...content, profileImage: e.target.value})} 
-                        placeholder="Enter image URL" 
-                        className="mt-1"
-                        style={{ 
-                          backgroundColor: ColorTheme.bgCard,
-                          borderColor: ColorTheme.borderLight,
-                          color: ColorTheme.textPrimary
-                        }}
-                      />
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {contactSectionData?.sectionTitle && (
                   <div className="space-y-2">
@@ -539,98 +469,52 @@ const ContactSidebar = () => {
                   </Button>
                 )}
 
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <Label
-                      className="text-sm font-medium"
-                      style={{ color: ColorTheme.textPrimary }}
-                    >
-                      Social Links
-                    </Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={addSocialLink}
-                      style={{
-                        backgroundColor: ColorTheme.bgCardHover,
-                        color: ColorTheme.textPrimary,
-                      }}
-                      className="h-8 w-8 p-0 hover:bg-opacity-50 rounded-full"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
+                {/* GitHub Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="github"
+                    className="text-sm font-medium"
+                    style={{ color: ColorTheme.textPrimary }}
+                  >
+                    GitHub
+                  </Label>
+                  <Input
+                    id="github"
+                    value={content.github}
+                    onChange={(e) =>
+                      setContent({ ...content, github: e.target.value })
+                    }
+                    placeholder="Enter your GitHub URL"
+                    style={{
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                      color: ColorTheme.textPrimary,
+                    }}
+                  />
+                </div>
 
-                  {content.socialLinks.map((link, index) => (
-                    <div key={index} className="space-y-4 border p-4 rounded-md"
-                         style={{ borderColor: ColorTheme.borderLight }}>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor={`social-link-url-${index}`}
-                          className="text-sm font-medium"
-                          style={{ color: ColorTheme.textPrimary }}
-                        >
-                          URL
-                        </Label>
-                        <Input
-                          id={`social-link-url-${index}`}
-                          value={link.href}
-                          onChange={(e) =>
-                            updateSocialLink(index, "href", e.target.value)
-                          }
-                          placeholder="Enter social media URL"
-                          style={{
-                            backgroundColor: ColorTheme.bgCard,
-                            borderColor: ColorTheme.borderLight,
-                            color: ColorTheme.textPrimary,
-                          }}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor={`social-link-label-${index}`}
-                          className="text-sm font-medium"
-                          style={{ color: ColorTheme.textPrimary }}
-                        >
-                          Label
-                        </Label>
-                        <Input
-                          id={`social-link-label-${index}`}
-                          value={Object.entries(link)
-                            .filter(([key]) => key !== "href")[0]?.[1] || ""}
-                          onChange={(e) =>
-                            updateSocialLink(
-                              index,
-                              Object.keys(link).find((key) => key !== "href") ||
-                                "type",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Enter label (e.g., LinkedIn, GitHub)"
-                          style={{
-                            backgroundColor: ColorTheme.bgCard,
-                            borderColor: ColorTheme.borderLight,
-                            color: ColorTheme.textPrimary,
-                          }}
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeSocialLink(index)}
-                        style={{
-                          backgroundColor: ColorTheme.primary,
-                          color: ColorTheme.textPrimary,
-                          boxShadow: `0 4px 14px ${ColorTheme.primaryGlow}`,
-                        }}
-                        className="w-full mt-4"
-                      >
-                        Remove Social Link
-                      </Button>
-                    </div>
-                  ))}
+                {/* LinkedIn Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="linkedin"
+                    className="text-sm font-medium"
+                    style={{ color: ColorTheme.textPrimary }}
+                  >
+                    LinkedIn
+                  </Label>
+                  <Input
+                    id="linkedin"
+                    value={content.linkedin}
+                    onChange={(e) =>
+                      setContent({ ...content, linkedin: e.target.value })
+                    }
+                    placeholder="Enter your LinkedIn URL"
+                    style={{
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                      color: ColorTheme.textPrimary,
+                    }}
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -642,7 +526,7 @@ const ContactSidebar = () => {
                     Resume
                   </Label>
                   <div className="mt-1 flex flex-col items-center">
-                    {content.resumeFile ? (
+                    {content.resumeLink ? (
                       <div className="relative w-full">
                         <div
                           className="flex items-center justify-between w-full p-3 rounded-md"
@@ -735,7 +619,7 @@ const ContactSidebar = () => {
                     )}
                   </div>
 
-                  {!isUploaded && !content.resumeFile && (
+                  {!isUploaded && !content.resumeLink && (
                     <div className="mt-2">
                       <Label
                         htmlFor="resumeLink"
@@ -766,6 +650,54 @@ const ContactSidebar = () => {
                       </p>
                     </div>
                   )}
+                </div>
+
+                {/* Email Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="email"
+                    className="text-sm font-medium"
+                    style={{ color: ColorTheme.textPrimary }}
+                  >
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    value={content.email}
+                    onChange={(e) =>
+                      setContent({ ...content, email: e.target.value })
+                    }
+                    placeholder="Enter your email"
+                    style={{
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                      color: ColorTheme.textPrimary,
+                    }}
+                  />
+                </div>
+
+                {/* Location Field */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="location"
+                    className="text-sm font-medium"
+                    style={{ color: ColorTheme.textPrimary }}
+                  >
+                    Location
+                  </Label>
+                  <Input
+                    id="location"
+                    value={content.location}
+                    onChange={(e) =>
+                      setContent({ ...content, location: e.target.value })
+                    }
+                    placeholder="Enter your location"
+                    style={{
+                      backgroundColor: ColorTheme.bgCard,
+                      borderColor: ColorTheme.borderLight,
+                      color: ColorTheme.textPrimary,
+                    }}
+                  />
                 </div>
               </CardContent>
             </TabsContent>

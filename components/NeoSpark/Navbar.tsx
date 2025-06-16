@@ -80,8 +80,8 @@ const Navbar = ({ currentPortTheme, customCSS }: any) => {
   }, [portfolioId, isLoading]);
 
   const handleResumeDownload = () => {
-    if (userInfo?.resumeFile) {
-      window.open(userInfo.resumeFile, '_blank');
+    if (userInfo?.resumeLink) {
+      window.open(userInfo.resumeLink, '_blank');
       return;
     }
 

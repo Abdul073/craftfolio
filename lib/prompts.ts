@@ -16,6 +16,5 @@ export const prompts : any = {
         titlePrompt : true,
         longSummaryPrompt : true,
         title : true,
-        socialLinks : true
     }
 }

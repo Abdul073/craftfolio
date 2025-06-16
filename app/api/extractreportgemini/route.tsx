@@ -511,10 +511,10 @@ function convertToPortfolioFormat(
   // User Info with dynamic shortSummary
   if (resumeData.personalInfo) {
     const userInfoData: any = {
-      github: resumeData.personalInfo.github || "alexmorgan",
-      linkedin: resumeData.personalInfo.linkedin || "alexmorgan",
-      email: resumeData.personalInfo.email || "alexmorgan@gmail.com",
-      location: resumeData.personalInfo.location || "San Francisco, CA",
+      github: resumeData.personalInfo.github || "",
+      linkedin: resumeData.personalInfo.linkedin || "",
+      email: resumeData.personalInfo.email || "",
+      location: resumeData.personalInfo.location || "",
       resumeLink: resumeData.personalInfo.resumeLink || "",
       name: resumeData.personalInfo.name || "Alex Morgan",
     };
@@ -532,45 +532,6 @@ function convertToPortfolioFormat(
     } else {
       // Fallback to first experience role or default
       userInfoData.title = resumeData.experience?.[0]?.role || "Software Developer";
-    }
-
-    // Add socialLinks if template has socialLinks enabled
-    if (themePrompts?.socialLinks) {
-      const socialLinks = [];
-      
-      // Only add location if it exists
-      if (userInfoData.location) {
-        socialLinks.push({
-          href: userInfoData.location,
-          location: userInfoData.location
-        });
-      }
-      
-      // Only add email if it exists
-      if (userInfoData.email) {
-        socialLinks.push({
-          href: `mailto:${userInfoData.email}`,
-          email: userInfoData.email
-        });
-      }
-      
-      // Only add GitHub if it exists and doesn't match the default
-      if (userInfoData.github && userInfoData.github !== "alexmorgan") {
-        socialLinks.push({
-          href: userInfoData.github,
-          github: "GitHub"
-        });
-      }
-      
-      // Only add LinkedIn if it exists and doesn't match the default
-      if (userInfoData.linkedin && userInfoData.linkedin !== "alexmorgan") {
-        socialLinks.push({
-          href: userInfoData.linkedin,
-          linkedin: "LinkedIn"
-        });
-      }
-      
-      userInfoData.socialLinks = socialLinks;
     }
 
     sections.push({
