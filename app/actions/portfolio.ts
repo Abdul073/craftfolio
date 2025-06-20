@@ -47,26 +47,35 @@ export async function createPortfolio(
           if (customSection) {
             // Create a deep copy of the template data
             const mergedData = JSON.parse(JSON.stringify(section.data));
-            
+
             // Merge custom data while preserving arrays
-            Object.keys(customSection.data).forEach(key => {
+            Object.keys(customSection.data).forEach((key) => {
               const customValue = customSection.data[key];
               const templateValue = section.data[key];
-              
+
               if (Array.isArray(customValue)) {
                 // If custom value is an array, use it directly
                 mergedData[key] = customValue;
-              } else if (Array.isArray(templateValue) && typeof customValue === 'object' && customValue !== null) {
+              } else if (
+                Array.isArray(templateValue) &&
+                typeof customValue === "object" &&
+                customValue !== null
+              ) {
                 // If template has an array and custom has an object, merge array items
-                mergedData[key] = templateValue.map((item: any, index: number) => ({
-                  ...item,
-                  ...(customValue[index] || {})
-                }));
-              } else if (typeof customValue === 'object' && customValue !== null) {
+                mergedData[key] = templateValue.map(
+                  (item: any, index: number) => ({
+                    ...item,
+                    ...(customValue[index] || {}),
+                  })
+                );
+              } else if (
+                typeof customValue === "object" &&
+                customValue !== null
+              ) {
                 // For objects, merge them
                 mergedData[key] = {
                   ...templateValue,
-                  ...customValue
+                  ...customValue,
                 };
               } else {
                 // For primitives, use custom value
@@ -199,16 +208,16 @@ export async function fetchThemesApi() {
   try {
     const themes = await prisma.template.findMany({
       orderBy: {
-        name: 'asc'
-      }
+        name: "asc",
+      },
     });
-    
+
     // Reorder themes to match desired order
     const orderedThemes = themes.sort((a, b) => {
       const order: Record<string, number> = {
-        'LumenFlow': 1,
-        'NeoSpark': 2,
-        'SimpleWhite': 3
+        LumenFlow: 1,
+        NeoSpark: 2,
+        SimpleWhite: 3,
       };
       return (order[a.name] || 999) - (order[b.name] || 999);
     });
@@ -336,38 +345,63 @@ export async function deployPortfolio(
   userId: string,
   portfolioId: string,
   value: string,
-  isSubdomain: boolean = false
+  isSubdomain: boolean = false,
+  isCustomDomain: boolean = false
 ) {
   try {
-    if (value.length < 3 || value.length > 30) {
-      return {
-        success: false,
-        error: `${
-          isSubdomain ? "Subdomain" : "Portfolio Slug"
-        } must be between 3 and 30 characters`,
-      };
-    }
-    if (!/^[a-z0-9-]+$/.test(value)) {
-      return {
-        success: false,
-        error: `${
-          isSubdomain ? "Subdomain" : "Portfolio Slug"
-        } can only contain lowercase letters, numbers, and hyphens`,
-      };
-    }
-    if (value.startsWith("-") || value.endsWith("-")) {
-      return {
-        success: false,
-        error: `${
-          isSubdomain ? "Subdomain" : "Portfolio Slug"
-        } cannot start or end with a hyphen`,
-      };
+    // Different validation rules for custom domains
+    if (!isCustomDomain) {
+      if (value.length < 3 || value.length > 30) {
+        return {
+          success: false,
+          error: `${
+            isSubdomain ? "Subdomain" : "Portfolio Slug"
+          } must be between 3 and 30 characters`,
+        };
+      }
+      if (!/^[a-z0-9-]+$/.test(value)) {
+        return {
+          success: false,
+          error: `${
+            isSubdomain ? "Subdomain" : "Portfolio Slug"
+          } can only contain lowercase letters, numbers, and hyphens`,
+        };
+      }
+      if (value.startsWith("-") || value.endsWith("-")) {
+        return {
+          success: false,
+          error: `${
+            isSubdomain ? "Subdomain" : "Portfolio Slug"
+          } cannot start or end with a hyphen`,
+        };
+      }
+    } else {
+      // Custom domain validation
+      if (!value.includes(".")) {
+        return {
+          success: false,
+          error: "Please enter a valid domain name (e.g., example.com)",
+        };
+      }
+      if (value.length < 4 || value.length > 255) {
+        return {
+          success: false,
+          error: "Domain name must be between 4 and 255 characters",
+        };
+      }
+      // Basic domain format validation
+      if (!/^[a-zA-Z0-9][a-zA-Z0-9-_.]*[a-zA-Z0-9]$/.test(value)) {
+        return {
+          success: false,
+          error: "Please enter a valid domain name",
+        };
+      }
     }
 
     // Check if the value is already taken
     const existingPortfolio = await prisma.portfolioLink.findFirst({
       where: {
-        OR: [{ slug: value }, { subdomain: value }],
+        OR: [{ slug: value }, { subdomain: value }, { custom_domain: value }],
       },
     });
 
@@ -375,7 +409,11 @@ export async function deployPortfolio(
       return {
         success: false,
         error: `This ${
-          isSubdomain ? "subdomain" : "portfolio slug"
+          isCustomDomain
+            ? "domain"
+            : isSubdomain
+            ? "subdomain"
+            : "portfolio slug"
         } is already taken`,
       };
     }
@@ -386,16 +424,23 @@ export async function deployPortfolio(
         portfolioId: portfolioId,
       },
       update: {
-        [isSubdomain ? "subdomain" : "slug"]: value,
+        ...(isCustomDomain
+          ? { custom_domain: value }
+          : { [isSubdomain ? "subdomain" : "slug"]: value }),
       },
       create: {
-        [isSubdomain ? "subdomain" : "slug"]: value,
+        ...(isCustomDomain
+          ? { custom_domain: value }
+          : { [isSubdomain ? "subdomain" : "slug"]: value }),
         portfolioId: portfolioId,
         userId: userId,
       },
     });
 
-    const finalUrl = isSubdomain
+    // Generate the appropriate URL based on the type
+    const finalUrl = isCustomDomain
+      ? `https://${value}`
+      : isSubdomain
       ? `https://${value}.craftfolio.live`
       : `https://craftfolio.live/p/${value}`;
 

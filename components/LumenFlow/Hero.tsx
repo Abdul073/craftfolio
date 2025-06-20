@@ -72,10 +72,10 @@ const MobileProfileCard = ({
             } overflow-hidden shadow-lg`}>
               <img
                 src={
-                  heroData?.profileImage ||
+                  contactData?.profileImage ||
                   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
                 }
-                alt={heroData?.name || "Profile"}
+                alt={contactData?.name || "Profile"}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -144,7 +144,7 @@ const MobileProfileCard = ({
               theme === "light" ? "text-gray-900" : "text-white"
             }`}
           >
-            {heroData?.name || "Your Name"}
+            {contactData?.name || "Your Name"}
           </div>
 
           <div
@@ -160,7 +160,7 @@ const MobileProfileCard = ({
               theme === "light" ? "text-gray-600" : "text-gray-300"
             }`}
           >
-            {contactData?.email || heroData?.email || "your@email.com"}
+            {contactData?.email || "your@email.com"}
           </div>
         </div>
 

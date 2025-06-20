@@ -32,21 +32,22 @@ model Template {
   defaultContent  Json
   createdAt       DateTime @default(now())
   previewImageUrl String[]
-  liveUrl         String  
+  liveUrl         String
 }
 
 model PortfolioLink {
-  id          String   @id @default(uuid())
-  portfolioId String   @unique
-  userId      String
-  slug        String?  @unique
-  subdomain   String?  @unique
-  template    Portfolio @relation(fields: [portfolioId], references: [id])
+  id            String    @id @default(uuid())
+  portfolioId   String    @unique
+  userId        String
+  slug          String?   @unique
+  subdomain     String?   @unique
+  custom_domain String?   @unique
+  template      Portfolio @relation(fields: [portfolioId], references: [id])
 }
 
 model PremiumUser {
-  id          String   @id @default(uuid())
-  userId      String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id        String   @id @default(uuid())
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

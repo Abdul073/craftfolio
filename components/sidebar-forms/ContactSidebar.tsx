@@ -86,9 +86,10 @@ const ContactSidebar = () => {
       };
 
       // Only add profileImage if it exists in contactData
-      const finalContent = contactData.profileImage 
-        ? { ...baseContent, profileImage: contactData.profileImage }
-        : baseContent;
+      const finalContent: ContentType = { ...baseContent };
+      if ("profileImage" in contactData) {
+        finalContent.profileImage = contactData.profileImage;
+      }
 
       setContent(finalContent);
       setOriginalContent(contactData);
@@ -381,30 +382,70 @@ const ContactSidebar = () => {
                 </div>
 
                 {/* Profile Image Field */}
-                {content.profileImage && (
+                {"profileImage" in content && (
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium" style={{ color: ColorTheme.textPrimary }}>Profile Image</Label>
-                    <div className="mt-1 flex flex-col items-center">
-                      <div className="relative w-full">
-                        <img 
-                          src={content.profileImage} 
-                          alt="Profile Preview" 
-                          className="w-full h-48 object-cover rounded-md"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={removeProfileImage}
-                          style={{ 
-                            backgroundColor: ColorTheme.bgCard,
-                            color: ColorTheme.textPrimary
+                    <Label
+                      className="text-sm font-medium"
+                      style={{ color: ColorTheme.textPrimary }}
+                    >
+                      Profile Image
+                    </Label>
+                    {content.profileImage ? (
+                      <div className="mt-1 flex flex-col items-center">
+                        <div className="relative w-full">
+                          <img
+                            src={content.profileImage}
+                            alt="Profile Preview"
+                            className="w-full h-48 object-cover rounded-md"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={removeProfileImage}
+                            style={{
+                              backgroundColor: ColorTheme.bgCard,
+                              color: ColorTheme.textPrimary,
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="w-full cursor-pointer">
+                        <div
+                          className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center h-32 hover:border-opacity-50 transition-colors"
+                          style={{
+                            borderColor: ColorTheme.borderLight,
                           }}
                         >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
+                          <Cloud
+                            className="h-8 w-8"
+                            style={{ color: ColorTheme.textSecondary }}
+                          />
+                          <p
+                            className="mt-2 text-sm"
+                            style={{ color: ColorTheme.textSecondary }}
+                          >
+                            Upload profile image
+                          </p>
+                          <p
+                            className="mt-1 text-xs"
+                            style={{ color: ColorTheme.textMuted }}
+                          >
+                            Image up to 10MB
+                          </p>
+                          <input
+                            type="file"
+                            id="profileImageUpload"
+                            accept="image/*"
+                            onChange={handleProfileImageUpload}
+                            className="hidden"
+                          />
+                        </div>
+                      </label>
+                    )}
                   </div>
                 )}
 

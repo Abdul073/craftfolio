@@ -48,6 +48,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface Message {
   id: number;
@@ -160,6 +161,7 @@ const PortfolioChatbot = ({
   const { user, isLoaded } = useUser();
   const { portfolioUserId } = useSelector((state: RootState) => state.data);
   const pathname = usePathname();
+  const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -804,7 +806,7 @@ const PortfolioChatbot = ({
       });
       return;
     }
-    setShowDeployModal(true);
+    window.open(`/deploy/${portfolioId}`, '_blank');
   };
 
   const handleSaveSEOSettings = async () => {

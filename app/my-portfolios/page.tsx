@@ -196,8 +196,7 @@ export default function MyPortfoliosPage() {
                   ) : (
                     <motion.button
                       onClick={() => {
-                        setSelectedPortfolioId(portfolio.id);
-                        setIsDeployModalOpen(true);
+                        window.open(`/deploy/${portfolio.id}`, '_blank');
                       }}
                       className="px-4 py-2 rounded-lg cursor-pointer text-sm font-medium flex items-center gap-2"
                       style={{
