@@ -402,7 +402,7 @@ const DeployPage = () => {
               className="w-full"
             >
               <TabsList
-                className="w-full grid grid-cols-2 mb-6 h-full border rounded-lg "
+                className="w-full grid grid-cols-3 mb-6 h-full border rounded-lg "
                 style={{
                   backgroundColor: ColorTheme.bgNav,
                   borderColor: "rgba(75, 85, 99, 0.3)",
@@ -428,7 +428,7 @@ const DeployPage = () => {
                 >
                   Subdomain
                 </TabsTrigger>
-                {/* <TabsTrigger
+                <TabsTrigger
                   value="custom"
                   className="data-[state=active]:bg-gray-700 rounded-r-lg cursor-pointer py-4"
                   style={{
@@ -439,7 +439,7 @@ const DeployPage = () => {
                     Custom Domain
                     <Crown className="w-4 h-4 text-yellow-400" />
                   </span>
-                </TabsTrigger> */}
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="slug">
@@ -695,7 +695,7 @@ const DeployPage = () => {
                 )}
               </TabsContent>
 
-              {/* <TabsContent value="custom">
+              <TabsContent value="custom">
                 {isLoadingDeployments ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="animate-spin">
@@ -782,7 +782,7 @@ const DeployPage = () => {
                     }}
                   />
                 )}
-              </TabsContent> */}
+              </TabsContent>
             </Tabs>
 
             {activeTab !== "custom" && !getExistingDeployment(activeTab as 'slug' | 'subdomain' | 'custom') && (
