@@ -45,12 +45,6 @@ export type FontName =
   | "PlusJakartaSans"
   | "DMSans"
   | "Sora"
-  | "Figtree"
-  | "Syne"
-  | "Lora"
-  | "Oswald"
-  | "DancingScript"
-  | "CrimsonText";
 
 export const interFont = Inter({ subsets: ["latin"] });
 export const montserratFont = Montserrat({ subsets: ["latin"] });
@@ -116,32 +110,7 @@ export const soraFont = Sora({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
 });
-export const figtreeFont = Figtree({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-});
-export const syneFont = Syne({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
-export const loraFont = Lora({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-});
-export const oswaldFont = Oswald({
-  subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700"],
-});
-export const dancingScriptFont = Dancing_Script({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-export const crimsonTextFont = Crimson_Text({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  style: ["normal", "italic"],
-});
+
 
 export const fontOptions = [
   "Poppins",
@@ -162,12 +131,6 @@ export const fontOptions = [
   "PlusJakartaSans",
   "DMSans",
   "Sora",
-  "Figtree",
-  "Syne",
-  "Lora",
-  "Oswald",
-  "DancingScript",
-  "CrimsonText",
 ];
 
 export const fontClassMap: Record<string, string | undefined> = {
@@ -189,10 +152,4 @@ export const fontClassMap: Record<string, string | undefined> = {
   PlusJakartaSans: plusJakartaSansFont.className,
   DMSans: dmSansFont.className,
   Sora: soraFont.className,
-  Figtree: figtreeFont.className,
-  Syne: syneFont.className,
-  Lora: loraFont.className,
-  Oswald: oswaldFont.className,
-  DancingScript: dancingScriptFont.className,
-  CrimsonText: crimsonTextFont.className,
 };
