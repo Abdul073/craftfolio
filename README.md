@@ -61,33 +61,82 @@ craftfolio/
 
 ## 🚀 Getting Started
 
-1. Clone the repository:
+Follow these steps to set up and run the project locally.
+
+### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/AdityaRai24/Craft-folio.git
+cd Craft-folio
 ```
 
-2. Install dependencies:
+### 2. Install Dependencies
+
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
-Create a `.env` file with the following variables:
-```env
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
-CLERK_SECRET_KEY=your_clerk_secret
-DATABASE_URL=your_database_url
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
-GOOGLE_AI_API_KEY=your_google_ai_key
+### 3. Set Up Environment Variables
+
+First, copy the `.env.example` file to a new `.env` file in the root of your project.
+
+```bash
+cp .env.example .env
 ```
 
-4. Run the development server:
+Next, you'll need to fill in the values in the `.env` file. Here's how to get them:
+
+-   **Clerk**: Go to your [Clerk Dashboard](https://dashboard.clerk.com/). Create a new application and navigate to the "API Keys" section.
+    -   `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: Use the "Publishable key".
+    -   `CLERK_SECRET_KEY`: Use the "Secret key".
+    - The sign-in and sign-up redirect URLs can be left as they are in the `.env.example` file.
+
+-   **Cloudinary**: This is used for image uploads. Go to your [Cloudinary Dashboard](https://cloudinary.com/console).
+    -   `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`: This is your "Cloud Name" found on the dashboard.
+    -   `NEXT_PUBLIC_CLOUDINARY_PRESET`: Go to Settings (gear icon) -> Upload. Find the "Upload presets" section and either use an existing one or create a new one. Copy the preset name.
+
+-   **Google Gemini**: For AI features. Go to the [Google AI Platform](https://makersuite.google.com/app/apikey).
+    -   `GEMINI_API_KEY`: Create a new API key.
+
+-   **Supabase**: This is for your database and storage.
+    1.  Go to your [Supabase Dashboard](https://app.supabase.io/) and create a new project.
+    2.  Once the project is ready, go to Connect Button in Navbar.
+        -----  GO TO THE APP FRAME WORKS TAB. MAKE SURE FRAMEWORK IS SET TO NEXTJS.
+        -   `NEXT_PUBLIC_SUPABASE_URL`: This is the "Project URL".
+        -   `NEXT_PUBLIC_SUPABASE_ANON_KEY`: This is the "Project API Key" (the `public` `anon` key).
+        -----  GO TO THE ORMS TAB. MAKE SURE TOOL IS SET TO PRISMA.
+        -   `DATABASE_URL`: DB URL
+        -   `DIRECT_URL`: Direct url
+    3. Copy and paste these 4 values in your .env file
+    
+### 4. Set Up the Database
+
+Run the following commands to sync your schema with the database:
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+After running these commands, go to the "Table Editor" in your Supabase project. You should see four new tables created.
+
+### 5. Seed the Database
+
+The project includes a SQL dump file with necessary initial data.
+
+1.  Open the `db_dump.sql` file in the root of this project and copy its entire contents.
+2.  In your Supabase project, navigate to the "SQL Editor".
+3.  Paste the copied SQL into a new query and click "RUN".
+
+### 6. Run the Development Server
+
+Now you are all set! Run the development server:
+
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
 ## 🐳 Docker Support
 
