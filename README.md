@@ -19,6 +19,7 @@ CraftFolio is a modern, AI-powered portfolio builder that helps users create stu
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **Framework**: Next.js 15.3.1
 - **Language**: TypeScript
 - **UI Library**: React 19
@@ -31,6 +32,7 @@ CraftFolio is a modern, AI-powered portfolio builder that helps users create stu
 - **PDF Processing**: PDF.js
 
 ### Backend
+
 - **API**: Next.js API Routes
 - **Database**: Prisma ORM
 - **Cloud Storage**: Supabase
@@ -38,6 +40,7 @@ CraftFolio is a modern, AI-powered portfolio builder that helps users create stu
 - **Validation**: Zod
 
 ### Development Tools
+
 - **Package Manager**: npm
 - **Linting**: ESLint
 - **Type Checking**: TypeScript
@@ -66,7 +69,7 @@ Follow these steps to set up and run the project locally.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/AdityaRai24/Craft-folio.git
+git clone https://github.com/Abdul073/Craft-folio.git
 cd Craft-folio
 ```
 
@@ -86,29 +89,32 @@ cp .env.example .env
 
 Next, you'll need to fill in the values in the `.env` file. Here's how to get them:
 
--   **Clerk**: Go to your [Clerk Dashboard](https://dashboard.clerk.com/). Create a new application and navigate to the "API Keys" section.
-    -   `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: Use the "Publishable key".
-    -   `CLERK_SECRET_KEY`: Use the "Secret key".
-    - The sign-in and sign-up redirect URLs can be left as they are in the `.env.example` file.
+- **Clerk**: Go to your [Clerk Dashboard](https://dashboard.clerk.com/). Create a new application and navigate to the "API Keys" section.
 
--   **Cloudinary**: This is used for image uploads. Go to your [Cloudinary Dashboard](https://cloudinary.com/console).
-    -   `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`: This is your "Cloud Name" found on the dashboard.
-    -   `NEXT_PUBLIC_CLOUDINARY_PRESET`: Go to Settings (gear icon) -> Upload. Find the "Upload presets" section and either use an existing one or create a new one. Copy the preset name.
+  - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: Use the "Publishable key".
+  - `CLERK_SECRET_KEY`: Use the "Secret key".
+  - The sign-in and sign-up redirect URLs can be left as they are in the `.env.example` file.
 
--   **Google Gemini**: For AI features. Go to the [Google AI Platform](https://makersuite.google.com/app/apikey).
-    -   `GEMINI_API_KEY`: Create a new API key.
+- **Cloudinary**: This is used for image uploads. Go to your [Cloudinary Dashboard](https://cloudinary.com/console).
 
--   **Supabase**: This is for your database and storage.
-    1.  Go to your [Supabase Dashboard](https://app.supabase.io/) and create a new project.
-    2.  Once the project is ready, go to Connect Button in Navbar.
-        -----  GO TO THE APP FRAME WORKS TAB. MAKE SURE FRAMEWORK IS SET TO NEXTJS.
-        -   `NEXT_PUBLIC_SUPABASE_URL`: This is the "Project URL".
-        -   `NEXT_PUBLIC_SUPABASE_ANON_KEY`: This is the "Project API Key" (the `public` `anon` key).
-        -----  GO TO THE ORMS TAB. MAKE SURE TOOL IS SET TO PRISMA.
-        -   `DATABASE_URL`: DB URL
-        -   `DIRECT_URL`: Direct url
-    3. Copy and paste these 4 values in your .env file
-    
+  - `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`: This is your "Cloud Name" found on the dashboard.
+  - `NEXT_PUBLIC_CLOUDINARY_PRESET`: Go to Settings (gear icon) -> Upload. Find the "Upload presets" section and either use an existing one or create a new one. Copy the preset name.
+
+- **Google Gemini**: For AI features. Go to the [Google AI Platform](https://makersuite.google.com/app/apikey).
+
+  - `GEMINI_API_KEY`: Create a new API key.
+
+- **Supabase**: This is for your database and storage.
+  1.  Go to your [Supabase Dashboard](https://app.supabase.io/) and create a new project.
+  2.  Once the project is ready, go to Connect Button in Navbar.
+      ----- GO TO THE APP FRAME WORKS TAB. MAKE SURE FRAMEWORK IS SET TO NEXTJS.
+      - `NEXT_PUBLIC_SUPABASE_URL`: This is the "Project URL".
+      - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: This is the "Project API Key" (the `public` `anon` key).
+        ----- GO TO THE ORMS TAB. MAKE SURE TOOL IS SET TO PRISMA.
+      - `DATABASE_URL`: DB URL
+      - `DIRECT_URL`: Direct url
+  3.  Copy and paste these 4 values in your .env file
+
 ### 4. Set Up the Database
 
 Run the following commands to sync your schema with the database:
@@ -138,30 +144,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-## 🐳 Docker Support
-
-The project includes Docker configuration for easy deployment:
-
-# Build the Docker image
-docker build -t adityarai24/craft-folio-app .
-
-# Run the container
-docker run -p 3000:3000 adityarai24/craft-folio-app
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ## 📧 Contact
 
-For any queries or support, please reach out to [adityarai407@example.com]
+For any queries or support, please reach out to [abdulgaffar7274@gmail.com]
