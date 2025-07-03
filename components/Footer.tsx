@@ -9,26 +9,19 @@ const Footer = () => {
         <div className="flex flex-col items-center justify-center space-y-8">
           {/* Logo and Title */}
           <div className="flex items-center gap-2">
-            <img
-              src="/craftfolioicon.png"
-              alt="CraftFolio"
-              className="w-10"
-            />
-            <img
-              src="/craftfolio.png"
-              alt="CraftFolio"
-              className="w-36"
-            />
+            <img src="/craftfolioicon.png" alt="CraftFolio" className="w-10" />
+            <img src="/craftfolio.png" alt="CraftFolio" className="w-36" />
           </div>
 
           {/* Description */}
           <p className="text-center max-w-2xl text-gray-400">
-            Create beautiful, professional portfolios in minutes. Showcase your work with stunning templates and custom domains.
+            Create beautiful, professional portfolios in minutes. Showcase your
+            work with stunning templates and custom domains.
           </p>
 
           {/* GitHub Star Button */}
           <motion.a
-            href="https://github.com/AdityaRai24/Craft-folio"
+            href="https://github.com/Abdul073"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all"
@@ -79,4 +72,4 @@ const Footer = () => {
   );
 };
 
-export default Footer; 
+export default Footer;

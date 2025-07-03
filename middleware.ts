@@ -12,7 +12,6 @@ export async function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
   const isDev = host.includes("localhost");
 
-  
   // 👇 Skip system routes
   const isSystemPath =
     url.pathname.startsWith("/_next") ||
@@ -29,7 +28,7 @@ export async function middleware(req: NextRequest) {
     if (hostWithoutPort.endsWith(".localhost")) {
       subdomain = hostWithoutPort.replace(".localhost", "");
     }
-  } else if (host.endsWith("craftfolio.live")) {
+  } else if (host.endsWith("craftfolio.shop")) {
     subdomain = host.split(".")[0];
   }
 
@@ -42,11 +41,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  console.log('Host:', req.headers.get('host'));
-
+  console.log("Host:", req.headers.get("host"));
 
   // 🌐 CUSTOM DOMAIN HANDLING
-  if (!host.endsWith("craftfolio.live")) {
+  if (!host.endsWith("craftfolio.shop")) {
     // Check if host is a mapped custom domain
     const { data, error } = await supabase
       .from("custom_domains")

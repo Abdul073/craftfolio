@@ -101,7 +101,6 @@ export default function MyPortfoliosPage() {
     return <LoadingSpinner loadingMessages={myPortfoliosMessages} />;
   }
 
-
   return (
     <div className="main-bg-noise">
       <MainNavbar />
@@ -115,8 +114,13 @@ export default function MyPortfoliosPage() {
           My Portfolios
         </h1>
         {portfolios.length === 0 ? (
-          <div className="w-full max-w-md p-6 rounded-xl bg-[var(--bg-card)] shadow-lg border text-center" style={{ borderColor: "var(--border-light)" }}>
-            <p className="text-gray-500">No portfolios found. Create your first portfolio to get started!</p>
+          <div
+            className="w-full max-w-md p-6 rounded-xl bg-[var(--bg-card)] shadow-lg border text-center"
+            style={{ borderColor: "var(--border-light)" }}
+          >
+            <p className="text-gray-500">
+              No portfolios found. Create your first portfolio to get started!
+            </p>
           </div>
         ) : (
           <ul className="w-full max-w-full sm:max-w-2xl space-y-3 sm:space-y-4">
@@ -151,8 +155,8 @@ export default function MyPortfoliosPage() {
                       <a
                         href={
                           portfolio.PortfolioLink.subdomain
-                            ? `https://${portfolio.PortfolioLink.subdomain}.craftfolio.live`
-                            : `https://craftfolio.live/p/${portfolio.PortfolioLink.slug}`
+                            ? `https://${portfolio.PortfolioLink.subdomain}.craftfolio.shop`
+                            : `https://craftfolio.shop/p/${portfolio.PortfolioLink.slug}`
                         }
                         target="_blank"
                         rel="noopener noreferrer"
@@ -160,15 +164,21 @@ export default function MyPortfoliosPage() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         {portfolio.PortfolioLink.subdomain
-                          ? `${portfolio.PortfolioLink.subdomain}.craftfolio.live`
-                          : `craftfolio.live/p/${portfolio.PortfolioLink.slug}`}
+                          ? `${portfolio.PortfolioLink.subdomain}.craftfolio.shop`
+                          : `craftfolio.shop/p/${portfolio.PortfolioLink.slug}`}
                       </a>
                     </span>
                   )}
                 </div>
                 <div className="ml-4 flex items-center gap-2">
                   <motion.button
-                    onClick={() => window.open(`/p/${portfolio.id}`, '_blank', 'noopener,noreferrer')}
+                    onClick={() =>
+                      window.open(
+                        `/p/${portfolio.id}`,
+                        "_blank",
+                        "noopener,noreferrer"
+                      )
+                    }
                     className="px-4 py-2 rounded-lg cursor-pointer text-sm font-medium flex items-center gap-2"
                     style={{
                       backgroundColor: "var(--bg-card)",
@@ -196,7 +206,7 @@ export default function MyPortfoliosPage() {
                   ) : (
                     <motion.button
                       onClick={() => {
-                        window.open(`/deploy/${portfolio.id}`, '_blank');
+                        window.open(`/deploy/${portfolio.id}`, "_blank");
                       }}
                       className="px-4 py-2 rounded-lg cursor-pointer text-sm font-medium flex items-center gap-2"
                       style={{

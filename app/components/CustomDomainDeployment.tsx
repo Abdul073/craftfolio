@@ -19,7 +19,9 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
   const [customDomain, setCustomDomain] = useState("");
   const [isCheckingDomain, setIsCheckingDomain] = useState(false);
   const [showDomainInstructions, setShowDomainInstructions] = useState(false);
-  const [domainCheckStatus, setDomainCheckStatus] = useState<'idle' | 'checking' | 'failed'>('idle');
+  const [domainCheckStatus, setDomainCheckStatus] = useState<
+    "idle" | "checking" | "failed"
+  >("idle");
   const [isDomainConnected, setIsDomainConnected] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
 
@@ -31,8 +33,8 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
 
     try {
       setIsCheckingDomain(true);
-      setDomainCheckStatus('checking');
-      
+      setDomainCheckStatus("checking");
+
       const result = await deployPortfolio(
         userId,
         portfolioId,
@@ -44,15 +46,15 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
       if (result.success) {
         setShowDomainInstructions(true);
         setIsDomainConnected(true);
-        setDomainCheckStatus('idle');
+        setDomainCheckStatus("idle");
         toast.success("Domain connected successfully!");
       } else {
-        setDomainCheckStatus('failed');
+        setDomainCheckStatus("failed");
         toast.error(result.error || "Failed to connect domain");
       }
     } catch (error) {
       console.error("Error connecting domain:", error);
-      setDomainCheckStatus('failed');
+      setDomainCheckStatus("failed");
       toast.error("Failed to connect domain");
     } finally {
       setIsCheckingDomain(false);
@@ -61,8 +63,8 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
 
   const handleDomainCheck = async () => {
     try {
-      setDomainCheckStatus('checking');
-      
+      setDomainCheckStatus("checking");
+
       const result = await deployPortfolio(
         userId,
         portfolioId,
@@ -72,15 +74,15 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
       );
 
       if (result.success) {
-        setDomainCheckStatus('idle');
+        setDomainCheckStatus("idle");
         toast.success("Domain configuration verified!");
       } else {
-        setDomainCheckStatus('failed');
+        setDomainCheckStatus("failed");
         toast.error(result.error || "Domain configuration failed");
       }
     } catch (error) {
       console.error("Error checking domain:", error);
-      setDomainCheckStatus('failed');
+      setDomainCheckStatus("failed");
       toast.error("Failed to verify domain configuration");
     }
   };
@@ -125,11 +127,10 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
             <h4 className="font-medium text-yellow-400 mb-1">
               Recommended Option
             </h4>
-            <p
-              className="text-sm"
-              style={{ color: ColorTheme.textSecondary }}
-            >
-              Connect your own custom domain for a professional look. This option is recommended for serious portfolio owners who want complete control over their domain.
+            <p className="text-sm" style={{ color: ColorTheme.textSecondary }}>
+              Connect your own custom domain for a professional look. This
+              option is recommended for serious portfolio owners who want
+              complete control over their domain.
             </p>
           </div>
         </div>
@@ -198,11 +199,20 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
 
       {showDomainInstructions && (
         <div className="mt-6 space-y-6">
-          <div className="p-4 rounded-lg border" style={{ borderColor: "rgba(75, 85, 99, 0.3)" }}>
-            <h4 className="font-medium mb-3" style={{ color: ColorTheme.textPrimary }}>
+          <div
+            className="p-4 rounded-lg border"
+            style={{ borderColor: "rgba(75, 85, 99, 0.3)" }}
+          >
+            <h4
+              className="font-medium mb-3"
+              style={{ color: ColorTheme.textPrimary }}
+            >
               Domain Configuration Instructions
             </h4>
-            <div className="space-y-4" style={{ color: ColorTheme.textSecondary }}>
+            <div
+              className="space-y-4"
+              style={{ color: ColorTheme.textSecondary }}
+            >
               <div>
                 <p className="font-medium mb-2">1. Add CNAME Records</p>
                 <div className="space-y-3">
@@ -210,15 +220,21 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <p className="text-sm text-gray-400 mb-1">Type</p>
-                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">CNAME</div>
+                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">
+                          CNAME
+                        </div>
                       </div>
                       <div>
                         <p className="text-sm text-gray-400 mb-1">Name</p>
-                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">@</div>
+                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">
+                          @
+                        </div>
                       </div>
                       <div>
                         <p className="text-sm text-gray-400 mb-1">Value</p>
-                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">craftfolio.live</div>
+                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">
+                          craftfolio.shop
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -226,15 +242,21 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <p className="text-sm text-gray-400 mb-1">Type</p>
-                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">CNAME</div>
+                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">
+                          CNAME
+                        </div>
                       </div>
                       <div>
                         <p className="text-sm text-gray-400 mb-1">Name</p>
-                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">www</div>
+                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">
+                          www
+                        </div>
                       </div>
                       <div>
                         <p className="text-sm text-gray-400 mb-1">Value</p>
-                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">craftfolio.live</div>
+                        <div className="bg-[rgba(75,85,99,0.2)] px-3 py-2 rounded">
+                          craftfolio.shop
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -244,11 +266,17 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
               <div>
                 <p className="font-medium mb-2">2. General Instructions</p>
                 <ul className="list-disc list-inside space-y-1">
-                  <li>Log in to your domain provider's website (e.g., GoDaddy, Namecheap, etc.)</li>
+                  <li>
+                    Log in to your domain provider's website (e.g., GoDaddy,
+                    Namecheap, etc.)
+                  </li>
                   <li>Navigate to the DNS management section</li>
                   <li>Add the CNAME records as shown above</li>
                   <li>Wait for DNS propagation (can take up to 48 hours)</li>
-                  <li>Click the "Check Again" button below after adding the records</li>
+                  <li>
+                    Click the "Check Again" button below after adding the
+                    records
+                  </li>
                 </ul>
               </div>
 
@@ -264,10 +292,13 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
             </div>
           </div>
 
-          <div className="p-4 rounded-lg border" style={{ borderColor: "rgba(75, 85, 99, 0.3)" }}>
+          <div
+            className="p-4 rounded-lg border"
+            style={{ borderColor: "rgba(75, 85, 99, 0.3)" }}
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {domainCheckStatus === 'checking' ? (
+                {domainCheckStatus === "checking" ? (
                   <>
                     <div className="animate-spin">
                       <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -287,16 +318,30 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
                         />
                       </svg>
                     </div>
-                    <p style={{ color: ColorTheme.textPrimary }}>Checking domain configuration...</p>
+                    <p style={{ color: ColorTheme.textPrimary }}>
+                      Checking domain configuration...
+                    </p>
                   </>
-                ) : domainCheckStatus === 'failed' ? (
+                ) : domainCheckStatus === "failed" ? (
                   <>
                     <div className="text-red-400">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                     </div>
-                    <p style={{ color: ColorTheme.textPrimary }}>Domain not configured correctly</p>
+                    <p style={{ color: ColorTheme.textPrimary }}>
+                      Domain not configured correctly
+                    </p>
                   </>
                 ) : null}
               </div>
@@ -372,4 +417,4 @@ const CustomDomainDeployment: React.FC<CustomDomainDeploymentProps> = ({
   );
 };
 
-export default CustomDomainDeployment; 
+export default CustomDomainDeployment;

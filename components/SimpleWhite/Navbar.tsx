@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa6";
 
 // @ts-ignore
-import { Link } from 'react-scroll';  // Importing Link component from react-scroll
+import { Link } from "react-scroll"; // Importing Link component from react-scroll
 
 const menuItems = [
   { title: "About Me", href: "hero" },
@@ -14,7 +14,7 @@ const menuItems = [
   { title: "Experience", href: "experience" },
 ];
 
- const Navbar = () => {
+const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   // const { personal } = usePortfolioConfig();
 
@@ -124,16 +124,19 @@ const menuItems = [
           className="mb-12"
         >
           <h1 className="font-display text-3xl font-extrabold tracking-tight text-primary-900">
-            Aditya Rai{/* {personal.name} Aditya Rai */}
+            Abdul gaffar{/* {personal.name} */}
           </h1>
           <p className="text-primary-600 mt-2 font-title">
             {/* {personal.role} */}
             Software Developer
-            </p>
+          </p>
         </motion.div>
 
         {/* Navigation Items */}
-        <motion.ul variants={containerVariants} className="space-y-5 text-black">
+        <motion.ul
+          variants={containerVariants}
+          className="space-y-5 text-black"
+        >
           {menuItems.map((item) => {
             // eslint-disable-next-line react-hooks/rules-of-hooks
             const [isHovered, setIsHovered] = useState(false);
@@ -146,9 +149,9 @@ const menuItems = [
                 className="relative cursor-pointer"
               >
                 <Link
-                    to={item.href}
-                    smooth={true}
-                    duration={500}
+                  to={item.href}
+                  smooth={true}
+                  duration={500}
                   onClick={() => setIsOpen(false)}
                   className="block text-lg font-title text-primary-800 hover:text-white hover:bg-black hover:font-semibold transition-all  duration-200 py-4 px-4 relative overflow-hidden"
                 >
@@ -208,4 +211,4 @@ const menuItems = [
   );
 };
 
-export default Navbar
+export default Navbar;

@@ -14,7 +14,11 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ColorTheme } from "@/lib/colorThemes";
 import { useUser } from "@clerk/nextjs";
-import { deployPortfolio, checkUserSubdomain, getThemeNameApi } from "@/app/actions/portfolio";
+import {
+  deployPortfolio,
+  checkUserSubdomain,
+  getThemeNameApi,
+} from "@/app/actions/portfolio";
 import toast from "react-hot-toast";
 import Confetti from "react-confetti";
 import MainNavbar from "@/components/MainNavbar";
@@ -23,7 +27,7 @@ import CustomDomainDeployment from "../../components/CustomDomainDeployment";
 
 interface DeploymentInfo {
   url: string;
-  type: 'slug' | 'subdomain' | 'custom';
+  type: "slug" | "subdomain" | "custom";
 }
 
 const DeployPage = () => {
@@ -37,41 +41,43 @@ const DeployPage = () => {
   const [deployedUrl, setDeployedUrl] = useState("");
   const [activeTab, setActiveTab] = useState("slug");
   const [isDeploying, setIsDeploying] = useState(false);
-  const [existingDeployments, setExistingDeployments] = useState<DeploymentInfo[]>([]);
+  const [existingDeployments, setExistingDeployments] = useState<
+    DeploymentInfo[]
+  >([]);
   const [isLoadingDeployments, setIsLoadingDeployments] = useState(true);
 
   useEffect(() => {
     const checkExistingDeployments = async () => {
       if (!user || !portfolioId) return;
-      
+
       try {
         setIsLoadingDeployments(true);
         const result = await getThemeNameApi({ portfolioId });
-        
+
         if (result.success && result.data?.PortfolioLink) {
           const deployments: DeploymentInfo[] = [];
-          
+
           if (result.data.PortfolioLink.slug) {
             deployments.push({
-              url: `https://craftfolio.live/p/${result.data.PortfolioLink.slug}`,
-              type: 'slug'
+              url: `https://craftfolio.shop/p/${result.data.PortfolioLink.slug}`,
+              type: "slug",
             });
           }
-          
+
           if (result.data.PortfolioLink.subdomain) {
             deployments.push({
-              url: `https://${result.data.PortfolioLink.subdomain}.craftfolio.live`,
-              type: 'subdomain'
+              url: `https://${result.data.PortfolioLink.subdomain}.craftfolio.shop`,
+              type: "subdomain",
             });
           }
-          
+
           if (result.data.PortfolioLink.custom_domain) {
             deployments.push({
               url: `https://${result.data.PortfolioLink.custom_domain}`,
-              type: 'custom'
+              type: "custom",
             });
           }
-          
+
           setExistingDeployments(deployments);
         }
       } catch (error) {
@@ -85,8 +91,8 @@ const DeployPage = () => {
     checkExistingDeployments();
   }, [user, portfolioId]);
 
-  const getExistingDeployment = (type: 'slug' | 'subdomain' | 'custom') => {
-    return existingDeployments.find(d => d.type === type);
+  const getExistingDeployment = (type: "slug" | "subdomain" | "custom") => {
+    return existingDeployments.find((d) => d.type === type);
   };
 
   const validatePortfolioSlug = (slug: string) => {
@@ -464,54 +470,97 @@ const DeployPage = () => {
                       </svg>
                     </div>
                   </div>
-                ) : getExistingDeployment('slug') ? (
-                  <div className="p-6 rounded-lg border" style={{ borderColor: "rgba(75, 85, 99, 0.3)" }}>
+                ) : getExistingDeployment("slug") ? (
+                  <div
+                    className="p-6 rounded-lg border"
+                    style={{ borderColor: "rgba(75, 85, 99, 0.3)" }}
+                  >
                     <div className="flex items-center gap-3 mb-4">
                       <CheckCircle className="w-6 h-6 text-green-400" />
-                      <h3 className="text-lg font-medium" style={{ color: ColorTheme.textPrimary }}>
+                      <h3
+                        className="text-lg font-medium"
+                        style={{ color: ColorTheme.textPrimary }}
+                      >
                         Portfolio Already Deployed
                       </h3>
                     </div>
-                    <p className="mb-4" style={{ color: ColorTheme.textSecondary }}>
+                    <p
+                      className="mb-4"
+                      style={{ color: ColorTheme.textSecondary }}
+                    >
                       Your portfolio is already deployed at:
                     </p>
                     <div className="flex items-center gap-2 mb-4">
-                      <code className="px-3 py-2 rounded bg-[rgba(28,28,30,0.9)]" style={{ color: ColorTheme.textPrimary }}>
-                        {getExistingDeployment('slug')?.url}
+                      <code
+                        className="px-3 py-2 rounded bg-[rgba(28,28,30,0.9)]"
+                        style={{ color: ColorTheme.textPrimary }}
+                      >
+                        {getExistingDeployment("slug")?.url}
                       </code>
                       <motion.button
-                        onClick={() => handleCopyUrl(getExistingDeployment('slug')?.url || '')}
+                        onClick={() =>
+                          handleCopyUrl(
+                            getExistingDeployment("slug")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Link2 className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Link2
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                     </div>
                     <div className="flex gap-2">
                       <motion.button
-                        onClick={() => handleShare("twitter", getExistingDeployment('slug')?.url || '')}
+                        onClick={() =>
+                          handleShare(
+                            "twitter",
+                            getExistingDeployment("slug")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Twitter className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Twitter
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                       <motion.button
-                        onClick={() => handleShare("linkedin", getExistingDeployment('slug')?.url || '')}
+                        onClick={() =>
+                          handleShare(
+                            "linkedin",
+                            getExistingDeployment("slug")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Linkedin className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Linkedin
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                       <motion.button
-                        onClick={() => handleShare("facebook", getExistingDeployment('slug')?.url || '')}
+                        onClick={() =>
+                          handleShare(
+                            "facebook",
+                            getExistingDeployment("slug")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Facebook className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Facebook
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                     </div>
                   </div>
@@ -532,7 +581,7 @@ const DeployPage = () => {
                             backgroundColor: "rgba(16, 185, 129, 0.1)",
                           }}
                         >
-                          craftfolio.live/p/
+                          craftfolio.shop/p/
                         </div>
                         <input
                           type="text"
@@ -547,7 +596,7 @@ const DeployPage = () => {
                         style={{ color: ColorTheme.textSecondary }}
                       >
                         Your portfolio will be available at:
-                        https://craftfolio.live/p/
+                        https://craftfolio.shop/p/
                         {portfolioSlug || "your-portfolio-slug"}
                       </p>
                       <div
@@ -592,54 +641,97 @@ const DeployPage = () => {
                       </svg>
                     </div>
                   </div>
-                ) : getExistingDeployment('subdomain') ? (
-                  <div className="p-6 rounded-lg border" style={{ borderColor: "rgba(75, 85, 99, 0.3)" }}>
+                ) : getExistingDeployment("subdomain") ? (
+                  <div
+                    className="p-6 rounded-lg border"
+                    style={{ borderColor: "rgba(75, 85, 99, 0.3)" }}
+                  >
                     <div className="flex items-center gap-3 mb-4">
                       <CheckCircle className="w-6 h-6 text-green-400" />
-                      <h3 className="text-lg font-medium" style={{ color: ColorTheme.textPrimary }}>
+                      <h3
+                        className="text-lg font-medium"
+                        style={{ color: ColorTheme.textPrimary }}
+                      >
                         Subdomain Already Deployed
                       </h3>
                     </div>
-                    <p className="mb-4" style={{ color: ColorTheme.textSecondary }}>
+                    <p
+                      className="mb-4"
+                      style={{ color: ColorTheme.textSecondary }}
+                    >
                       Your portfolio is already deployed at:
                     </p>
                     <div className="flex items-center gap-2 mb-4">
-                      <code className="px-3 py-2 rounded bg-[rgba(28,28,30,0.9)]" style={{ color: ColorTheme.textPrimary }}>
-                        {getExistingDeployment('subdomain')?.url}
+                      <code
+                        className="px-3 py-2 rounded bg-[rgba(28,28,30,0.9)]"
+                        style={{ color: ColorTheme.textPrimary }}
+                      >
+                        {getExistingDeployment("subdomain")?.url}
                       </code>
                       <motion.button
-                        onClick={() => handleCopyUrl(getExistingDeployment('subdomain')?.url || '')}
+                        onClick={() =>
+                          handleCopyUrl(
+                            getExistingDeployment("subdomain")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Link2 className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Link2
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                     </div>
                     <div className="flex gap-2">
                       <motion.button
-                        onClick={() => handleShare("twitter", getExistingDeployment('subdomain')?.url || '')}
+                        onClick={() =>
+                          handleShare(
+                            "twitter",
+                            getExistingDeployment("subdomain")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Twitter className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Twitter
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                       <motion.button
-                        onClick={() => handleShare("linkedin", getExistingDeployment('subdomain')?.url || '')}
+                        onClick={() =>
+                          handleShare(
+                            "linkedin",
+                            getExistingDeployment("subdomain")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Linkedin className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Linkedin
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                       <motion.button
-                        onClick={() => handleShare("facebook", getExistingDeployment('subdomain')?.url || '')}
+                        onClick={() =>
+                          handleShare(
+                            "facebook",
+                            getExistingDeployment("subdomain")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Facebook className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Facebook
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                     </div>
                   </div>
@@ -660,12 +752,14 @@ const DeployPage = () => {
                             backgroundColor: "rgba(16, 185, 129, 0.1)",
                           }}
                         >
-                          .craftfolio.live
+                          .craftfolio.shop
                         </div>
                         <input
                           type="text"
                           value={portfolioSubdomain}
-                          onChange={(e) => setPortfolioSubdomain(e.target.value)}
+                          onChange={(e) =>
+                            setPortfolioSubdomain(e.target.value)
+                          }
                           placeholder="your-name"
                           className="w-full pr-[180px] pl-4 py-2 bg-[rgba(28,28,30,0.9)] focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981] outline-none transition-colors"
                         />
@@ -675,7 +769,7 @@ const DeployPage = () => {
                         style={{ color: ColorTheme.textSecondary }}
                       >
                         Your portfolio will be available at: https://
-                        {portfolioSubdomain || "your-name"}.craftfolio.live
+                        {portfolioSubdomain || "your-name"}.craftfolio.shop
                       </p>
                       <div
                         className="text-xs space-y-1 my-2"
@@ -717,54 +811,97 @@ const DeployPage = () => {
                       </svg>
                     </div>
                   </div>
-                ) : getExistingDeployment('custom') ? (
-                  <div className="p-6 rounded-lg border" style={{ borderColor: "rgba(75, 85, 99, 0.3)" }}>
+                ) : getExistingDeployment("custom") ? (
+                  <div
+                    className="p-6 rounded-lg border"
+                    style={{ borderColor: "rgba(75, 85, 99, 0.3)" }}
+                  >
                     <div className="flex items-center gap-3 mb-4">
                       <CheckCircle className="w-6 h-6 text-green-400" />
-                      <h3 className="text-lg font-medium" style={{ color: ColorTheme.textPrimary }}>
+                      <h3
+                        className="text-lg font-medium"
+                        style={{ color: ColorTheme.textPrimary }}
+                      >
                         Custom Domain Already Connected
                       </h3>
                     </div>
-                    <p className="mb-4" style={{ color: ColorTheme.textSecondary }}>
+                    <p
+                      className="mb-4"
+                      style={{ color: ColorTheme.textSecondary }}
+                    >
                       Your portfolio is already deployed at:
                     </p>
                     <div className="flex items-center gap-2 mb-4">
-                      <code className="px-3 py-2 rounded bg-[rgba(28,28,30,0.9)]" style={{ color: ColorTheme.textPrimary }}>
-                        {getExistingDeployment('custom')?.url}
+                      <code
+                        className="px-3 py-2 rounded bg-[rgba(28,28,30,0.9)]"
+                        style={{ color: ColorTheme.textPrimary }}
+                      >
+                        {getExistingDeployment("custom")?.url}
                       </code>
                       <motion.button
-                        onClick={() => handleCopyUrl(getExistingDeployment('custom')?.url || '')}
+                        onClick={() =>
+                          handleCopyUrl(
+                            getExistingDeployment("custom")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Link2 className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Link2
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                     </div>
                     <div className="flex gap-2">
                       <motion.button
-                        onClick={() => handleShare("twitter", getExistingDeployment('custom')?.url || '')}
+                        onClick={() =>
+                          handleShare(
+                            "twitter",
+                            getExistingDeployment("custom")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Twitter className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Twitter
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                       <motion.button
-                        onClick={() => handleShare("linkedin", getExistingDeployment('custom')?.url || '')}
+                        onClick={() =>
+                          handleShare(
+                            "linkedin",
+                            getExistingDeployment("custom")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Linkedin className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Linkedin
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                       <motion.button
-                        onClick={() => handleShare("facebook", getExistingDeployment('custom')?.url || '')}
+                        onClick={() =>
+                          handleShare(
+                            "facebook",
+                            getExistingDeployment("custom")?.url || ""
+                          )
+                        }
                         className="p-2 rounded-lg hover:bg-[rgba(28,28,30,0.9)]"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Facebook className="w-4 h-4" style={{ color: ColorTheme.textPrimary }} />
+                        <Facebook
+                          className="w-4 h-4"
+                          style={{ color: ColorTheme.textPrimary }}
+                        />
                       </motion.button>
                     </div>
                   </div>
@@ -785,53 +922,56 @@ const DeployPage = () => {
               </TabsContent>
             </Tabs>
 
-            {activeTab !== "custom" && !getExistingDeployment(activeTab as 'slug' | 'subdomain' | 'custom') && (
-              <motion.button
-                onClick={handleDeploy}
-                disabled={isDeploying}
-                className="w-full px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 cursor-pointer mt-6"
-                style={{
-                  backgroundColor: ColorTheme.primary,
-                  color: "#000",
-                  boxShadow: `0 4px 10px ${ColorTheme.primaryGlow}`,
-                  opacity: isDeploying ? 0.7 : 1,
-                }}
-                whileHover={{
-                  boxShadow: `0 6px 14px ${ColorTheme.primaryGlow}`,
-                  scale: 1.02,
-                }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {isDeploying ? (
-                  <>
-                    <div className="animate-spin">
-                      <svg className="w-5 h-5" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                    </div>
-                    Deploying...
-                  </>
-                ) : (
-                  <>
-                    <Rocket className="h-4 w-4" />
-                    Deploy Portfolio
-                  </>
-                )}
-              </motion.button>
-            )}
+            {activeTab !== "custom" &&
+              !getExistingDeployment(
+                activeTab as "slug" | "subdomain" | "custom"
+              ) && (
+                <motion.button
+                  onClick={handleDeploy}
+                  disabled={isDeploying}
+                  className="w-full px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 cursor-pointer mt-6"
+                  style={{
+                    backgroundColor: ColorTheme.primary,
+                    color: "#000",
+                    boxShadow: `0 4px 10px ${ColorTheme.primaryGlow}`,
+                    opacity: isDeploying ? 0.7 : 1,
+                  }}
+                  whileHover={{
+                    boxShadow: `0 6px 14px ${ColorTheme.primaryGlow}`,
+                    scale: 1.02,
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {isDeploying ? (
+                    <>
+                      <div className="animate-spin">
+                        <svg className="w-5 h-5" viewBox="0 0 24 24">
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                      </div>
+                      Deploying...
+                    </>
+                  ) : (
+                    <>
+                      <Rocket className="h-4 w-4" />
+                      Deploy Portfolio
+                    </>
+                  )}
+                </motion.button>
+              )}
           </div>
         </div>
       </div>

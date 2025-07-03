@@ -101,8 +101,10 @@ const Page = () => {
 
           // If portfolio belongs to guest, only allow access if portfolioId is in sessionStorage.guestPortfolioIds
           if (themeResult.data.userId === "guest") {
-            if (typeof window !== 'undefined') {
-              const guestIds = JSON.parse(sessionStorage.getItem('guestPortfolioIds') || '[]');
+            if (typeof window !== "undefined") {
+              const guestIds = JSON.parse(
+                sessionStorage.getItem("guestPortfolioIds") || "[]"
+              );
               if (!guestIds.includes(portfolioId)) {
                 setPortfolioNotFound(true);
                 return;
@@ -144,11 +146,13 @@ const Page = () => {
           return;
         }
         if (themeResult.success) {
-          setPortfolioLink(themeResult?.data?.PortfolioLink?.subdomain 
-            ? `https://${themeResult?.data?.PortfolioLink?.subdomain}.craftfolio.live`
-            : themeResult?.data?.PortfolioLink?.slug 
-              ? `https://craftfolio.live/p/${themeResult?.data?.PortfolioLink?.slug}`
-              : "");
+          setPortfolioLink(
+            themeResult?.data?.PortfolioLink?.subdomain
+              ? `https://${themeResult?.data?.PortfolioLink?.subdomain}.craftfolio.shop`
+              : themeResult?.data?.PortfolioLink?.slug
+              ? `https://craftfolio.shop/p/${themeResult?.data?.PortfolioLink?.slug}`
+              : ""
+          );
           dispatch(setPortFolioUserId(themeResult?.data?.userId || ""));
           dispatch(
             setTemplateName(themeResult?.data?.templateName || "default")
@@ -165,7 +169,7 @@ const Page = () => {
         if (!contentResult.success) {
           setPortfolioNotFound(true);
           return;
-        } 
+        }
         if (contentResult.success) {
           dispatch(setPortfolioData(contentResult?.data?.sections));
         }
@@ -200,7 +204,7 @@ const Page = () => {
   const getComponentForSection = (sectionType: string) => {
     if (!Template || !Template.sections || !Template.sections[sectionType]) {
       return null;
-    } 
+    }
     const SectionComponent: any = Template.sections[sectionType];
     return SectionComponent ? (
       <SectionComponent
@@ -229,13 +233,13 @@ const Page = () => {
   const hasSpotlight = Template.spotlight;
   const selectedFontClass = fontClassMap[fontName] || fontClassMap["raleway"];
 
-
   return (
     <>
-      <GuestWarningModal open={showGuestModal} onClose={() => setShowGuestModal(false)} />
+      <GuestWarningModal
+        open={showGuestModal}
+        onClose={() => setShowGuestModal(false)}
+      />
       <div className="min-h-screen flex flex-col overflow-x-hidden">
-        
-
         {hasSpotlight && (
           <div className="absolute inset-0">
             <Spotlight

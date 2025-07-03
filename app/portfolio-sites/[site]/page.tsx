@@ -83,7 +83,7 @@ const Page = () => {
         }
         if (response.success && response.portfolioId) {
           setFinalPortfolioId(response.portfolioId);
-          
+
           // Fetch theme data
           const themeResult = await getThemeNameApi({
             portfolioId: response.portfolioId,
@@ -93,11 +93,13 @@ const Page = () => {
             return;
           }
           if (themeResult.success) {
-            setPortfolioLink(themeResult?.data?.PortfolioLink?.subdomain 
-              ? `https://${themeResult?.data?.PortfolioLink?.subdomain}.craftfolio.live`
-              : themeResult?.data?.PortfolioLink?.slug 
-                ? `https://craftfolio.live/p/${themeResult?.data?.PortfolioLink?.slug}`
-                : "");
+            setPortfolioLink(
+              themeResult?.data?.PortfolioLink?.subdomain
+                ? `https://${themeResult?.data?.PortfolioLink?.subdomain}.craftfolio.shop`
+                : themeResult?.data?.PortfolioLink?.slug
+                ? `https://craftfolio.shop/p/${themeResult?.data?.PortfolioLink?.slug}`
+                : ""
+            );
             dispatch(setPortFolioUserId(themeResult?.data?.userId || ""));
             dispatch(
               setTemplateName(themeResult?.data?.templateName || "default")
@@ -146,7 +148,7 @@ const Page = () => {
   const getComponentForSection = (sectionType: string) => {
     if (!Template || !Template.sections || !Template.sections[sectionType]) {
       return null;
-    } 
+    }
     const SectionComponent: any = Template.sections[sectionType];
     return SectionComponent ? (
       <SectionComponent

@@ -441,8 +441,8 @@ export async function deployPortfolio(
     const finalUrl = isCustomDomain
       ? `https://${value}`
       : isSubdomain
-      ? `https://${value}.craftfolio.live`
-      : `https://craftfolio.live/p/${value}`;
+      ? `https://${value}.craftfolio.shop`
+      : `https://craftfolio.shop/p/${value}`;
 
     return {
       success: true,
