@@ -772,10 +772,9 @@ const PortfolioChatbot = ({
   const handleGenerateSEO = async () => {
     try {
       setIsGeneratingSEO(true);
-      const response = await axios.post(
-        `/api/seo-settings`,
-        { portfolioData: portfolioData }
-      );
+      const response = await axios.post(`/api/seo-settings`, {
+        portfolioData: portfolioData,
+      });
       setSeoTitle(response.data.seoTitle);
       setSeoDescription(response.data.seoDescription);
       toast.success("SEO content generated successfully!");
@@ -806,7 +805,7 @@ const PortfolioChatbot = ({
       });
       return;
     }
-    window.open(`/deploy/${portfolioId}`, '_blank');
+    window.open(`/deploy/${portfolioId}`, "_blank");
   };
 
   const handleSaveSEOSettings = async () => {
@@ -817,10 +816,10 @@ const PortfolioChatbot = ({
         sectionContent: {
           title: seoTitle,
           description: seoDescription,
-          favicon: faviconUrl
+          favicon: faviconUrl,
         },
         sectionTitle: "SEO Settings",
-        sectionDescription: "SEO settings for your portfolio"
+        sectionDescription: "SEO settings for your portfolio",
       });
 
       if (result.success) {
@@ -843,7 +842,9 @@ const PortfolioChatbot = ({
           const themeResult = await getThemeNameApi({ portfolioId });
           if (themeResult.success && themeResult.data?.content) {
             const content = themeResult.data.content as any;
-            const seoSection = content.sections?.find((section: any) => section.type === "seo");
+            const seoSection = content.sections?.find(
+              (section: any) => section.type === "seo"
+            );
             if (seoSection?.data) {
               setSeoTitle(seoSection.data.title || "");
               setSeoDescription(seoSection.data.description || "");
@@ -866,24 +867,39 @@ const PortfolioChatbot = ({
   }, [showSEOSettings, portfolioId]);
 
   const handleCopyUrl = () => {
-    const url = `https://craft-folio-three.vercel.app/p/${portfolioLink}`;
+    const url = `https://craftfolio-three.vercel.app/p/${portfolioLink}`;
     navigator.clipboard.writeText(url);
-    toast.success('Portfolio URL copied to clipboard!');
+    toast.success("Portfolio URL copied to clipboard!");
   };
 
   const handleShare = (platform: string) => {
-    const url = `https://craft-folio-three.vercel.app/p/${portfolioLink}`;
+    const url = `https://craftfolio-three.vercel.app/p/${portfolioLink}`;
     const text = "Check out my portfolio!";
-    
+
     switch (platform) {
-      case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+      case "twitter":
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            text
+          )}&url=${encodeURIComponent(url)}`,
+          "_blank"
+        );
         break;
-      case 'linkedin':
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+      case "linkedin":
+        window.open(
+          `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+            url
+          )}`,
+          "_blank"
+        );
         break;
-      case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+      case "facebook":
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+            url
+          )}`,
+          "_blank"
+        );
         break;
     }
   };
@@ -893,7 +909,13 @@ const PortfolioChatbot = ({
   }
 
   return (
-    <div className={isOpen ? "fixed top-0 right-0 h-screen z-50 w-full md:w-[350px] lg:w-[400px]" : ""}>
+    <div
+      className={
+        isOpen
+          ? "fixed top-0 right-0 h-screen z-50 w-full md:w-[350px] lg:w-[400px]"
+          : ""
+      }
+    >
       {/* Mobile-only overlay: show ONLY when chatbot is open and on mobile */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 text-white text-center px-6 py-12 md:hidden">
@@ -904,8 +926,14 @@ const PortfolioChatbot = ({
           >
             ×
           </button>
-          <div className="text-2xl font-bold mb-4">Editing Unavailable on Mobile</div>
-          <div className="text-lg">Editing is only available on desktop or larger screens.<br/>Please use a laptop or desktop to edit your portfolio.</div>
+          <div className="text-2xl font-bold mb-4">
+            Editing Unavailable on Mobile
+          </div>
+          <div className="text-lg">
+            Editing is only available on desktop or larger screens.
+            <br />
+            Please use a laptop or desktop to edit your portfolio.
+          </div>
         </div>
       )}
       {/* Chatbot content (hidden on mobile by overlay above) */}
@@ -941,12 +969,14 @@ const PortfolioChatbot = ({
                   ⚠️ You are in guest mode. Sign up to save your portfolio and
                   unlock all features including the AI chatbot, theme
                   customization, and more.{" "}
-                  <SignInButton 
+                  <SignInButton
                     mode="modal"
                     fallbackRedirectUrl={pathname}
                     signUpFallbackRedirectUrl={pathname}
                   >
-                    <div className="underline inline-block cursor-pointer text-blue-300">Sign up</div>
+                    <div className="underline inline-block cursor-pointer text-blue-300">
+                      Sign up
+                    </div>
                   </SignInButton>{" "}
                   to get started.
                 </div>
@@ -975,7 +1005,10 @@ const PortfolioChatbot = ({
                   className="font-bold text-lg"
                   style={{ color: themeColors.textPrimary }}
                 >
-                  <Link href="/" className="hover:opacity-80 transition-opacity">
+                  <Link
+                    href="/"
+                    className="hover:opacity-80 transition-opacity"
+                  >
                     CraftFolio Portfolio Assistant
                   </Link>
                 </motion.h3>
@@ -1153,8 +1186,14 @@ const PortfolioChatbot = ({
                     {showThemeOptions && (
                       <div className="grid grid-cols-2 gap-3">
                         {themeOptionsArray.length === 0 ? (
-                          <div className="col-span-2 p-4 rounded-lg text-center" style={{ backgroundColor: themeColors.bgCard }}>
-                            <p className="text-sm" style={{ color: themeColors.textSecondary }}>
+                          <div
+                            className="col-span-2 p-4 rounded-lg text-center"
+                            style={{ backgroundColor: themeColors.bgCard }}
+                          >
+                            <p
+                              className="text-sm"
+                              style={{ color: themeColors.textSecondary }}
+                            >
                               No themes available for this template.
                             </p>
                           </div>
@@ -2248,7 +2287,10 @@ const PortfolioChatbot = ({
                   )}
                   {portfolioLink && (
                     <div className="flex flex-col gap-2 mt-2">
-                      <p className="text-sm font-medium text-center" style={{ color: themeColors.textSecondary }}>
+                      <p
+                        className="text-sm font-medium text-center"
+                        style={{ color: themeColors.textSecondary }}
+                      >
                         Share your portfolio:
                       </p>
                       <div className="flex justify-center gap-2">
@@ -2260,7 +2302,7 @@ const PortfolioChatbot = ({
                           }}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => handleShare('twitter')}
+                          onClick={() => handleShare("twitter")}
                         >
                           <Twitter className="h-5 w-5" />
                         </motion.button>
@@ -2272,7 +2314,7 @@ const PortfolioChatbot = ({
                           }}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => handleShare('linkedin')}
+                          onClick={() => handleShare("linkedin")}
                         >
                           <Linkedin className="h-5 w-5" />
                         </motion.button>
@@ -2284,7 +2326,7 @@ const PortfolioChatbot = ({
                           }}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => handleShare('facebook')}
+                          onClick={() => handleShare("facebook")}
                         >
                           <Facebook className="h-5 w-5" />
                         </motion.button>
@@ -2468,65 +2510,65 @@ const PortfolioChatbot = ({
                 </Button>
               </motion.div>
             )}
-                    {!user && (
-                      <div className="space-y-4">
-                        <div
-                          className="rounded-lg p-4"
-                          style={{ backgroundColor: themeColors.bgCard }}
-                        >
-                          <h5
-                            className="font-semibold mb-2"
-                            style={{ color: themeColors.primary }}
-                          >
-                            Login to Access Premium Features
-                          </h5>
-                          <ul
-                            className="text-sm space-y-2"
-                            style={{ color: themeColors.textSecondary }}
-                          >
-                            <li className="flex items-center gap-2">
-                              <CheckCircle size={16} className="text-green-500" />
-                              Multiple theme options and customization
-                            </li>
-                            <li className="flex items-center gap-2">
-                              <CheckCircle size={16} className="text-green-500" />
-                              Custom subdomain deployment
-                            </li>
-                            <li className="flex items-center gap-2">
-                              <CheckCircle size={16} className="text-green-500" />
-                              Advanced SEO optimization
-                            </li>
-                            <li className="flex items-center gap-2">
-                              <CheckCircle size={16} className="text-green-500" />
-                              Full chatbot functionality
-                            </li>
-                            <li className="flex items-center gap-2">
-                              <CheckCircle size={16} className="text-green-500" />
-                              Section reordering and management
-                            </li>
-                          </ul>
-                          <SignInButton 
-                            mode="modal"
-                            fallbackRedirectUrl={pathname}
-                            signUpFallbackRedirectUrl={pathname}
-                          >
-                            <motion.button
-                              variants={buttonVariants}
-                              whileHover="hover"
-                              whileTap="tap"
-                              className="w-full mt-4 text-sm py-2 px-4 rounded-lg font-medium transition-colors"
-                              style={{
-                                backgroundColor: themeColors.primary,
-                                color: themeColors.textPrimary,
-                                boxShadow: `0 4px 14px ${themeColors.primaryGlow}`,
-                              }}
-                            >
-                              Sign In to Unlock Features
-                            </motion.button>
-                          </SignInButton>
-                        </div>
-                      </div>
-                    )}
+            {!user && (
+              <div className="space-y-4">
+                <div
+                  className="rounded-lg p-4"
+                  style={{ backgroundColor: themeColors.bgCard }}
+                >
+                  <h5
+                    className="font-semibold mb-2"
+                    style={{ color: themeColors.primary }}
+                  >
+                    Login to Access Premium Features
+                  </h5>
+                  <ul
+                    className="text-sm space-y-2"
+                    style={{ color: themeColors.textSecondary }}
+                  >
+                    <li className="flex items-center gap-2">
+                      <CheckCircle size={16} className="text-green-500" />
+                      Multiple theme options and customization
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle size={16} className="text-green-500" />
+                      Custom subdomain deployment
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle size={16} className="text-green-500" />
+                      Advanced SEO optimization
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle size={16} className="text-green-500" />
+                      Full chatbot functionality
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle size={16} className="text-green-500" />
+                      Section reordering and management
+                    </li>
+                  </ul>
+                  <SignInButton
+                    mode="modal"
+                    fallbackRedirectUrl={pathname}
+                    signUpFallbackRedirectUrl={pathname}
+                  >
+                    <motion.button
+                      variants={buttonVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      className="w-full mt-4 text-sm py-2 px-4 rounded-lg font-medium transition-colors"
+                      style={{
+                        backgroundColor: themeColors.primary,
+                        color: themeColors.textPrimary,
+                        boxShadow: `0 4px 14px ${themeColors.primaryGlow}`,
+                      }}
+                    >
+                      Sign In to Unlock Features
+                    </motion.button>
+                  </SignInButton>
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

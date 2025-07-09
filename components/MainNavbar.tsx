@@ -124,7 +124,7 @@ const MainNavbar = () => {
 
             {/* GitHub Star Button - styled as bordered button */}
             <motion.a
-              href="https://github.com/Abdul073"
+              href="https://github.com/Abdul073/craftfolio"
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-1.5 rounded-md text-base font-medium transition-all ml-2 border"

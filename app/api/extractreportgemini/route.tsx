@@ -196,10 +196,23 @@ export async function POST(req: Request) {
 
     // Extract text content from resume image
     const extractionPrompt = "Extract all text content from this resume image.";
-    const extractedContent = await model.generateContent([
-      extractionPrompt,
-      filePart,
-    ]);
+    let extractedContent;
+    try {
+      extractedContent = await model.generateContent([
+        extractionPrompt,
+        filePart,
+      ]);
+    } catch (error) {
+      console.log("Error processing resume:", error);
+
+      return new Response(
+        JSON.stringify({
+          error:
+            "Gemini is currently overloaded. Please try again in a few seconds.",
+        }),
+        { status: 503 }
+      );
+    }
     const resumeContent = extractedContent.response.text();
 
     // Use a direct approach with Gemini instead of template if issues persist
@@ -249,7 +262,7 @@ export async function POST(req: Request) {
       const titlePrompt = await titleGeneratorTemplate.format({
         resume_data: JSON.stringify(resumeData),
       });
-      
+
       const titleResponse = await model.generateContent({
         contents: [{ role: "user", parts: [{ text: titlePrompt }] }],
         generationConfig: {
@@ -257,14 +270,14 @@ export async function POST(req: Request) {
           maxOutputTokens: 500,
         },
       });
-      
+
       const titleData = titleResponse.response.text();
       titleInfo = JSON.parse(cleanJsonOutput(titleData));
     } else if (themePrompts?.title) {
       const titlePrompt = await onlyTitleTemplate.format({
         resume_data: JSON.stringify(resumeData),
       });
-      
+
       const titleResponse = await model.generateContent({
         contents: [{ role: "user", parts: [{ text: titlePrompt }] }],
         generationConfig: {
@@ -272,7 +285,7 @@ export async function POST(req: Request) {
           maxOutputTokens: 300,
         },
       });
-      
+
       const titleData = titleResponse.response.text();
       titleInfo = JSON.parse(cleanJsonOutput(titleData));
     }
@@ -521,17 +534,21 @@ function convertToPortfolioFormat(
 
     // Add profile image only for LumenFlow template
     if (finalTheme === "LumenFlow") {
-      userInfoData.profileImage = "https://placehold.co/400x400?text=Profile+Image";
+      userInfoData.profileImage =
+        "https://placehold.co/400x400?text=Profile+Image";
     }
 
     // Add title/role to userInfo
     if (themePrompts?.titlePrefixSuffix) {
-      userInfoData.title = `${titleInfo?.titlePrefix || "Software"} ${titleInfo?.titleSuffixOptions?.[0] || "Engineer"}`;
+      userInfoData.title = `${titleInfo?.titlePrefix || "Software"} ${
+        titleInfo?.titleSuffixOptions?.[0] || "Engineer"
+      }`;
     } else if (themePrompts?.title) {
       userInfoData.title = titleInfo?.title || "Software Developer";
     } else {
       // Fallback to first experience role or default
-      userInfoData.title = resumeData.experience?.[0]?.role || "Software Developer";
+      userInfoData.title =
+        resumeData.experience?.[0]?.role || "Software Developer";
     }
 
     sections.push({
@@ -539,13 +556,17 @@ function convertToPortfolioFormat(
       data: userInfoData,
     });
   }
-  
+
   // Hero Section - Always include, with fallbacks for all required fields
   const name = resumeData.personalInfo?.name || "Developer";
-  
+
   // Use generated summary lines or fall back to alternatives
   let summaryLines;
-  if (summaryInfo && summaryInfo.summaryLines && summaryInfo.summaryLines.length > 0) {
+  if (
+    summaryInfo &&
+    summaryInfo.summaryLines &&
+    summaryInfo.summaryLines.length > 0
+  ) {
     summaryLines = summaryInfo.summaryLines.join("\n");
   } else if (resumeData.summary) {
     summaryLines = resumeData.summary.split(". ").slice(0, 3).join(".\n");
@@ -557,7 +578,7 @@ function convertToPortfolioFormat(
     const primarySkill = skillNames[0] || "Software";
     summaryLines = `Passionate ${primarySkill} developer.\nEnthusiastic about creating innovative solutions.\nDedicated to continuous learning and growth.`;
   }
-  
+
   // Use generated title info or fallback based on template type
   let heroData: any = {
     name: name,
@@ -567,7 +588,10 @@ function convertToPortfolioFormat(
   // Add title based on template configuration
   if (themePrompts?.titlePrefixSuffix) {
     heroData.titlePrefix = titleInfo?.titlePrefix || "Software";
-    heroData.titleSuffixOptions = titleInfo?.titleSuffixOptions || ["Engineer", "Developer"];
+    heroData.titleSuffixOptions = titleInfo?.titleSuffixOptions || [
+      "Engineer",
+      "Developer",
+    ];
   } else if (themePrompts?.title) {
     heroData.title = titleInfo?.title || "Software Developer";
   }
@@ -600,11 +624,7 @@ function convertToPortfolioFormat(
   // Add badge only if template has badge enabled
   if (themePrompts?.badge) {
     heroData.badge = {
-      texts: [
-        "Open to work",
-        "Available for freelance",
-        "Let's Collaborate!",
-      ],
+      texts: ["Open to work", "Available for freelance", "Let's Collaborate!"],
       color: "green",
       isVisible: true,
     };
@@ -627,7 +647,7 @@ function convertToPortfolioFormat(
       },
     ];
   }
-  
+
   // Always include hero section with robust fallbacks
   sections.push({
     type: "hero",

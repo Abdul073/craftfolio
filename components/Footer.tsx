@@ -21,7 +21,7 @@ const Footer = () => {
 
           {/* GitHub Star Button */}
           <motion.a
-            href="https://github.com/Abdul073"
+            href="https://github.com/Abdul073/craftfolio"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all"

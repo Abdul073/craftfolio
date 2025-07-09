@@ -822,7 +822,7 @@ export default function Page() {
                   </li>
                   <li>
                     <motion.a
-                      href="https://github.com/Abdul073"
+                      href="https://github.com/Abdul073/craftfolio"
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ color: ColorTheme.textSecondary }}
@@ -842,7 +842,7 @@ export default function Page() {
           >
             <div className="flex flex-col items-center gap-4">
               <motion.a
-                href="https://github.com/Abdul073"
+                href="https://github.com/Abdul073/craftfolio"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all"
